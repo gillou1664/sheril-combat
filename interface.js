@@ -161,7 +161,7 @@
       '<span>combativité max <b>' + r.combativite + '</b></span>' +
       (r.collisions ? '<span title="Collisions internes de fin de tour (Flotte.gererCollisionVaisseaux), sur la flotte intacte, sans combat. Force = ⌈vaisseaux / (45 à 65)⌉ − 2 × maîtrise militaire ; rien si elle est nulle.' +
         (r.collisions.moyenne ? ' Par type : ' + Object.keys(r.collisions.types).map(function (t) { return t + ' ' + fmt(r.collisions.types[t], 1); }).join(', ') : '') + '">collisions en fin de tour ' +
-        (r.collisions.forceMax <= 0 ? '<b>aucune</b>' : r.collisions.moyenne < 0.05 ? '<b>dégâts sans perte</b>' : '<b>' + fmt(r.collisions.moyenne, 1) + '</b> vaisseaux perdus (' + fmt(r.collisions.q10) + ' à ' + fmt(r.collisions.q90) + ')') + '</span>' : '') +
+        (r.collisions.forceMax <= 0 || !r.collisions.dommagesMoyens ? '<b>aucune</b>' : r.collisions.moyenne < 0.05 ? '<b>dégâts sans perte</b> (' + fmt(r.collisions.dommagesMoyens, 1) + ' points en moyenne)' : '<b>' + fmt(r.collisions.moyenne, 1) + '</b> vaisseaux perdus (' + fmt(r.collisions.q10) + ' à ' + fmt(r.collisions.q90) + ')') + '</span>' : '') +
       '<span>coût <b>' + fmt(r.prix) + '</b> ¢ · <b>' + fmt(r.minerai) + '</b> minerai · <b>' + fmt(r.pdc) + '</b> PdC</span>' +
       (r.prix ? '<span title="Puissance (AS + AP/2) obtenue pour 100 centaures">puissance pour 100 ¢ <b>' + fmt(100 * r.puissance / r.prix, 1) + '</b></span>' : '');
   }
@@ -673,7 +673,7 @@
         return '<div class="camp' + i + '">' + esc(etat.camps[i].nom) + ' : ' + res.nbFin[i] + ' / ' + res.nbDepart[i] + ' vaisseaux, puissance ' + res.puissanceFin[i] + ' / ' + res.puissanceDepart[i] +
           (t.length ? ' (pertes : ' + t.map(function (k) { return p[k] + ' ' + esc(k); }).join(', ') + ')' : ' (aucune perte)') +
           (res.gardeDirective[i] ? ', garde sa directive' : ', passe en attitude neutre') +
-          (res.collisions && res.collisions[i].force > 0 ? '. Collisions de fin de tour : ' + (res.collisions[i].nbDetruits ? '<b>' + res.collisions[i].nbDetruits + ' vaisseau(x) perdu(s)</b> (' + Object.keys(res.collisions[i].detruits).map(function (t) { return res.collisions[i].detruits[t] + ' ' + esc(t); }).join(', ') + '), ' + res.nbApresCollisions[i] + ' restent' : 'aucune perte' + (res.collisions[i].endommages ? ', ' + res.collisions[i].endommages + ' vaisseau(x) endommagé(s)' : '')) : '') + '</div>';
+          (res.collisions && res.collisions[i].dommages > 0 ? '. Collisions de fin de tour : ' + (res.collisions[i].nbDetruits ? '<b>' + res.collisions[i].nbDetruits + ' vaisseau(x) perdu(s)</b> (' + Object.keys(res.collisions[i].detruits).map(function (t) { return res.collisions[i].detruits[t] + ' ' + esc(t); }).join(', ') + '), ' + res.nbApresCollisions[i] + ' restent' : 'aucune perte' + (res.collisions[i].endommages ? ', ' + res.collisions[i].endommages + ' vaisseau(x) endommagé(s)' : '')) : '') + '</div>';
       }).join('') + (res.debris ? '<div class="muted">Plus de 200 points de dégâts : un champ de débris se forme.</div>' : '');
     rendreTables(res);
     redimensionner(); majBoutonJouer(); majTour(); boucle();

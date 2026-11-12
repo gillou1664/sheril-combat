@@ -644,6 +644,7 @@
     var forces = res.map(function (r) { return r.force; });
     return { n: liste.length, forceMin: Math.min.apply(null, forces), forceMax: Math.max.apply(null, forces),
       moyenne: pertes.reduce(function (s, x) { return s + x; }, 0) / pertes.length,
+      dommagesMoyens: res.reduce(function (s, r) { return s + r.dommages; }, 0) / res.length,
       q10: quantile(pertes, 0.1), q90: quantile(pertes, 0.9), types: types };
   }
 
