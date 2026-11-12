@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulateur de combats</title>
+<style>
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --surface-2: #f0f2f5; --text: #1d2127; --muted: #5d6673; --border: #d9dde3;
+  --accent: #2f6fd6; --err: #c62828; --err-bg: #fdecea; --warn: #9a6200; --warn-bg: #fff4dc; --ok: #2e7d32; --ok-bg: #e8f5e9;
+  --camp0: #2a78d6; --camp1: #eb6834; --bouclier: #1baf7a; --rate: #9aa0a8;
+  --arene: #fcfcfb; --grille: #e6e8ec;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14171c; --surface: #1c2027; --surface-2: #232832; --text: #e6e9ee; --muted: #9aa4b2; --border: #333a45;
+    --accent: #6ea3ff; --err: #ff8a80; --err-bg: #3a1f1f; --warn: #ffcc66; --warn-bg: #3a2f17; --ok: #81c784; --ok-bg: #1d3320;
+    --camp0: #3987e5; --camp1: #d95926; --bouclier: #199e70; --rate: #6b7380;
+    --arene: #1a1a19; --grille: #2c2f35;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14171c; --surface: #1c2027; --surface-2: #232832; --text: #e6e9ee; --muted: #9aa4b2; --border: #333a45;
+  --accent: #6ea3ff; --err: #ff8a80; --err-bg: #3a1f1f; --warn: #ffcc66; --warn-bg: #3a2f17; --ok: #81c784; --ok-bg: #1d3320;
+  --camp0: #3987e5; --camp1: #d95926; --bouclier: #199e70; --rate: #6b7380;
+  --arene: #1a1a19; --grille: #2c2f35;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 1280px; margin: 0 auto; padding: 20px 16px 64px; }
+h1 { font-size: 22px; margin: 0; }
+h2 { font-size: 17px; margin: 0 0 10px; }
+h3 { font-size: 14px; margin: 14px 0 6px; }
+.sub { color: var(--muted); margin: 2px 0 16px; font-size: 13px; }
+.entete { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; margin-bottom: 4px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
+.grid2 > * { min-width: 0; }
+[data-camp] table input[type=number] { width: 56px; }
+[data-camp] table input.court { width: 40px; }
+[data-camp] table select[data-champ="plan"] { max-width: 165px; }
+[data-camp] table th, [data-camp] table td { padding: 4px 4px; }
+[data-camp] td.cout { line-height: 1.25; }
+.barresCout { display: grid; gap: 6px; }
+.bc-ligne { display: grid; grid-template-columns: 76px 90px minmax(120px, 1fr) 90px minmax(180px, 30%); align-items: center; gap: 10px; font-size: 13px; }
+.bc-res { font-weight: 600; }
+.bc-val { font-variant-numeric: tabular-nums; font-weight: 600; }
+.bc-val.camp0 { text-align: right; }
+.bc-barre { display: flex; gap: 2px; height: 14px; }
+.bc-seg { display: block; height: 100%; min-width: 3px; }
+.bc-seg:first-child { border-radius: 4px 0 0 4px; } .bc-seg:last-child { border-radius: 0 4px 4px 0; }
+.bc-seg:only-child { border-radius: 4px; }
+.bc-note { font-size: 12px; }
+@media (max-width: 760px) { .bc-ligne { grid-template-columns: 64px 70px 1fr 70px; } .bc-note { grid-column: 1 / -1; } }
+.onglets { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 16px; flex-wrap: wrap; }
+.onglets button { background: none; border: 0; border-bottom: 3px solid transparent; padding: 8px 14px; font: inherit; font-weight: 600; color: var(--muted); cursor: pointer; }
+.onglets button.actif { color: var(--text); border-bottom-color: var(--accent); }
+.vue { display: none; } .vue.active { display: block; }
+button { font: inherit; cursor: pointer; }
+button.go { background: var(--accent); color: #fff; border: 0; border-radius: 6px; padding: 7px 14px; font-weight: 600; }
+button.go:disabled { opacity: .5; cursor: default; }
+button.sec { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; }
+button.mini { background: none; border: 1px solid var(--border); color: var(--text); border-radius: 4px; padding: 1px 7px; font-size: 12px; }
+button.mini.danger { color: var(--err); }
+input, select, textarea { font: inherit; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 3px 6px; }
+input[type=number] { width: 72px; }
+input.court { width: 56px; }
+label { color: var(--muted); font-size: 13px; }
+.ligne { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin: 6px 0; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 4px 7px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+th { background: var(--surface-2); font-weight: 600; white-space: nowrap; }
+td.n, th.n { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+tr.sel td { background: var(--surface-2); }
+.pastille { display: inline-block; border-radius: 999px; padding: 0 8px; font-size: 11px; font-weight: 600; background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+.pastille.perso { color: var(--accent); } .pastille.manque { color: var(--warn); background: var(--warn-bg); }
+.msg { padding: 7px 10px; border-radius: 6px; margin: 6px 0; border-left: 4px solid; font-size: 13px; }
+.msg.err { background: var(--err-bg); border-color: var(--err); } .msg.warn { background: var(--warn-bg); border-color: var(--warn); }
+.msg.ok { background: var(--ok-bg); border-color: var(--ok); }
+.muted { color: var(--muted); }
+.camp0 { color: var(--camp0); } .camp1 { color: var(--camp1); }
+.titreCamp { display: flex; align-items: center; gap: 8px; }
+.titreCamp .puce { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.resume { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; margin-top: 8px; }
+.resume b { font-variant-numeric: tabular-nums; }
+.tuiles { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 14px; }
+.tuile { background: var(--surface-2); border-radius: 8px; padding: 8px 14px; min-width: 150px; }
+.tuile .v { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tuile .l { font-size: 12px; color: var(--muted); }
+.barre { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; margin: 6px 0; }
+.barre > div { height: 100%; background: var(--accent); width: 0; }
+.arene-wrap { position: relative; }
+canvas#arene { width: 100%; max-width: 760px; aspect-ratio: 1 / 1; display: block; border: 1px solid var(--border); border-radius: 8px; background: var(--arene); }
+.legende { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); margin: 6px 0; }
+.legende span::before { content: ""; display: inline-block; width: 18px; height: 3px; margin-right: 5px; vertical-align: middle; background: var(--c); border-radius: 2px; }
+.legende span.pt::before { width: 10px; height: 10px; border-radius: 50%; }
+details summary { cursor: pointer; font-weight: 600; margin: 4px 0; }
+.composants td:first-child { min-width: 240px; }
+.infobulle { position: fixed; pointer-events: none; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.15); display: none; z-index: 10; }
+svg text { fill: var(--muted); font-size: 11px; }
+.fichiers { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.journal { font-size: 12px; color: var(--muted); max-height: 110px; overflow: auto; margin-top: 6px; }
+.cote { display: grid; grid-template-columns: minmax(0, 760px) minmax(240px, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 1000px) { .cote { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="entete">
+    <div>
+      <h1>Simulateur de combats</h1>
+      <div class="sub">Combat flotte contre flotte, repris du moteur Java de Sheril (<code>Combat.combatFlotteFlotte</code>). Version <span id="version"></span>.</div>
+    </div>
+    <div class="fichiers">
+      <button class="go" id="btnFichiers" title="rapport.xml, data.xml, combat.htm ou export JSON (plusieurs à la fois)">📂 Charger des fichiers</button>
+      <input type="file" id="fichiers" multiple accept=".xml,.htm,.html,.json" hidden>
+      <button class="sec" id="btnExporter" title="Plans persos, plans rencontrés et scénarios, en JSON">⬇ Exporter</button>
+      <button class="sec" id="btnTheme" title="Thème clair ou sombre">◐</button>
+    </div>
+  </div>
+  <div id="messages"></div>
+
+  <nav class="onglets" id="onglets">
+    <button data-vue="flottes" class="actif">⚔️ Flottes</button>
+    <button data-vue="resultats">📊 Résultats</button>
+    <button data-vue="plans">📐 Plans</button>
+    <button data-vue="aide">❔ Aide</button>
+  </nav>
+
+  <section class="vue active" id="vue-flottes"></section>
+  <section class="vue" id="vue-resultats"></section>
+  <section class="vue" id="vue-plans"></section>
+  <section class="vue" id="vue-aide">
+    <div class="card">
+      <h2>Fichiers à charger</h2>
+      <ul>
+        <li><b>rapport.xml</b> (un ou plusieurs tours) : vos plans privés, vos flottes (moral, expérience, héros) et les noms des vaisseaux ennemis vus en combat.</li>
+        <li><b>data.xml</b> (dossier <code>stats</code> du site) : les plans publics avec leurs composants.</li>
+        <li><b>combat.htm</b> : les noms des vaisseaux vus en combat.</li>
+        <li><b>Export JSON</b> du simulateur (par exemple <code>combat/plans-perso.json</code> du dépôt) : plans persos et scénarios, pour les retrouver sur l'autre ordinateur.</li>
+      </ul>
+      <p class="muted">Les plans standard et raciaux sont toujours présents. Un vaisseau ennemi vu en combat sans plan connu apparaît dans « Plans » comme <i>à compléter</i> : donnez-lui une composition pour l'utiliser. Tout est gardé dans ce navigateur d'une session à l'autre.</p>
+      <h2>Règles du moteur reprises</h2>
+      <ul>
+        <li>Combativité = 5 + niveau de moral (moral / 1000, plafonné à 11) + moral du héros ; un tour de combat par point, −1 à chaque tour. Le combat s'arrête quand une flotte est détruite ou que plus aucun vaisseau n'est combatif (9 tours au moral de départ 4 500).</li>
+        <li>Arène 30 × 30 en 3D. L'attaquant se place en bas (y 0 à 9), le défenseur en haut (y 20 à 29), plus un écart aléatoire (moins grand avec la Maîtrise du savoir du héros).</li>
+        <li>Chaque tour : initiative (vitesse × 100 + aléa + vitesse des armes), choix d'<b>une seule cible</b> par vaisseau (une taille tirée à 50 % en partant de la plus grande, puis le plus proche), déplacement du plus lent au plus rapide, tirs du plus rapide au plus lent.</li>
+        <li>Chance de toucher = chance de l'arme selon la taille de la cible × (100 − 90 × distance / portée) %, + niveau d'expérience et attaque du héros, − ceux de la cible.</li>
+        <li>Un tir réussi sur un vaisseau dont un bouclier a encore de la charge ne fait <b>aucun dégât à la coque</b>, quelle que soit la charge restante. Les boucliers ne se rechargent pas pendant le combat.</li>
+        <li>Les dégâts de coque passent par l'absorbeur (meilleur absorbeur seulement, rechargé à chaque salve), puis chaque point tombe sur un composant valide au hasard. Le vaisseau est détruit quand tous ses composants sont hors d'usage, ou 1 fois sur 100 quand son réacteur est détruit.</li>
+        <li>Fuite selon l'agressivité de la stratégie (Normal : si la flotte a moins du quart de la puissance adverse) : la flotte s'éloigne à vitesse − 2, mais reste dans le combat et continue de tirer. Les vaisseaux sans arme spatiale ou plus combatifs s'éloignent aussi.</li>
+        <li>Après le combat, une flotte garde sa directive seulement si sa puissance de départ était au moins 5 fois celle de l'adversaire.</li>
+      </ul>
+      <p class="muted">Limites : un seul combat d'une flotte contre une autre (pas l'enchaînement de plusieurs flottes sur une case). Les dégâts déjà subis et l'usure des boucliers d'un combat précédent dans le même tour ne sont pas repris. Détail et sources Java dans <code>docs/regles-moteur.md</code>.</p>
+    </div>
+  </section>
+  <div class="infobulle" id="infobulle"></div>
+</main>
+<script src="catalogue.js"></script>
+<script src="moteur-combat.js"></script>
+<script src="donnees.js"></script>
+<script src="interface.js"></script>
+</body>
+</html>
