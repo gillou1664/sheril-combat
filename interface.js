@@ -768,15 +768,20 @@
   var dernierePuissance = '';
   function majPuissance(st) {
     var el = $('#aPuissance'); if (!el || !anim.res) return;
-    var tours = anim.res.trace.tours, k = anim.tour, val, lib;
+    var tours = anim.res.trace.tours, k = anim.tour, val, nb, quand;
     var fini = k >= 0 && (anim.t >= 1 || (st && st.fin));
-    if (k < 0 || (k === 0 && !fini)) { val = anim.res.puissanceDepart; lib = 'Puissance restante (avant le combat)'; }
-    else if (fini) { val = tours[k].puissance; lib = 'Puissance restante (fin du tour ' + (k + 1) + ')'; }
-    else { val = tours[k - 1].puissance; lib = 'Puissance restante (fin du tour ' + k + ')'; }
-    var cle = lib + val.join('/');
+    if (k < 0 || (k === 0 && !fini)) { val = anim.res.puissanceDepart; nb = anim.res.nbDepart; quand = 'avant le combat'; }
+    else if (fini) { val = tours[k].puissance; nb = tours[k].nombre; quand = 'fin du tour ' + (k + 1); }
+    else { val = tours[k - 1].puissance; nb = tours[k - 1].nombre; quand = 'fin du tour ' + k; }
+    var cle = quand + val.join('/') + nb.join('/');
     if (cle === dernierePuissance) return;
     dernierePuissance = cle;
-    el.innerHTML = htmlBarresPuissance(anim.res.puissanceDepart, val, true, false, lib);
+    var dep = anim.res.nbDepart;
+    var perdus = [0, 1].map(function (i) { return dep[i] - nb[i]; });
+    el.innerHTML = htmlBarresPuissance(anim.res.puissanceDepart, val, true, false, 'Puissance restante (' + quand + ')') +
+      '<div class="barresCout etroit" style="margin-top:4px">' +
+      barreDuo('Vaisseaux restants (' + quand + ')', nb[0], nb[1], '',
+        'sur ' + fmt(dep[0]) + ' · ' + fmt(dep[1]) + ' au départ, perdus : <b class="camp0">' + fmt(perdus[0]) + '</b> · <b class="camp1">' + fmt(perdus[1]) + '</b>') + '</div>';
   }
   function dessiner() {
     var cv = $('#arene'); if (!cv || !anim.res || !cv.width) return;
