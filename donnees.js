@@ -57,6 +57,13 @@
       plans: [], flottes: [], rencontres: [],
     };
     enfants(premier(cdt, 'plans'), 'p').forEach(function (p) { res.plans.push(lirePlanXml(p, 'privé', tour)); });
+    // niveau de maîtrise militaire (Technologie.getNiveauMaitriseMilitaire : maitmilI = 1 … maitmilX = 10)
+    var ROM = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+    res.militaire = 0;
+    enfants(premier(cdt, 'technologies'), 'connue').forEach(function (t) {
+      var m = /^maitmil([IVX]+)$/.exec(t.getAttribute('code') || '');
+      if (m && ROM.indexOf(m[1]) + 1 > res.militaire) res.militaire = ROM.indexOf(m[1]) + 1;
+    });
     var heros = {};
     enfants(premier(cdt, 'lieutenants'), 'l').forEach(function (l) {
       if (l.getAttribute('type') !== '0') return;
@@ -190,7 +197,9 @@
     if (lu.type === 'rapport') {
       // flottes proposées à l'import : celles du rapport le plus récent
       if (!reg.flottes || !reg.flottes.tour || lu.tour >= reg.flottes.tour)
-        reg.flottes = { tour: lu.tour, commandant: lu.commandant, liste: lu.flottes, fichier: nomFichier };
+        reg.flottes = { tour: lu.tour, commandant: lu.commandant, liste: lu.flottes, fichier: nomFichier, militaire: lu.militaire };
+      reg.militaireParTour = reg.militaireParTour || {};
+      reg.militaireParTour[lu.tour] = lu.militaire;
       r.flottes = lu.flottes.length;
       reg.flottesParTour = reg.flottesParTour || {};
       reg.flottesParTour[lu.tour] = lu.flottes;

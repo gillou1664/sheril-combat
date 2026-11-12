@@ -3,7 +3,7 @@
 // Sans DOM : utilisable dans la page et sous Node (require).
 (function (racine) {
   'use strict';
-  var VERSION = '1.4';
+  var VERSION = '1.5';
 
   // ---------------------------------------------------------------- hasard
   // Générateur à graine (mulberry32). Les tirages suivent l'ordre du Java (Univers.getInt / getInd / getTest).
@@ -552,6 +552,14 @@
       debris: nbDommages[0] + nbDommages[1] > 200,
       tables: tables,
     };
+    // Collisions internes de fin de tour sur les survivants (config.camps[i].militaire = niveau de maîtrise militaire)
+    if (config.collisions !== false) {
+      res.collisions = [f1, f2].map(function (f, i) {
+        var liste = f.map(function (v) { return { type: v.type, plan: v.plan, restant: v.plan.nbCases - pointsDeDommage(v) }; });
+        return collisionsInternes(liste, config.camps[i].militaire || 0, H);
+      });
+      res.nbApresCollisions = [0, 1].map(function (i) { return res.nbFin[i] - res.collisions[i].nbDetruits; });
+    }
     if (trace) res.trace = trace;
     return res;
   }
@@ -569,6 +577,74 @@
       var domA = m[1] + (d[0] - m[0]) * cases[t];
       return { type: t, nombre: n[0], variation: n[0] - m[0], encaisses: dom, variationEncaisses: dom - domA, infliges: n[2] };
     });
+  }
+
+
+  // ---------------------------------------------------------------- collisions internes (fin de tour)
+  // Commandant.resolutionGestionFlottes ~l.1664 et Flotte.gererCollisionVaisseaux, après les combats :
+  //   force = ⌈vaisseaux / (45 + 5 × aléa(5))⌉ − 2 × maîtrise militaire ; rien si force ≤ 0
+  //   D = force² ; réserve = D × (5 + aléa(3)) + aléa(10)
+  //   pour chaque vaisseau, dans l'ordre de la flotte : protégé si au moins la moitié de ses composants
+  //   sont des dragueurs, ou avec la chance de son détecteur de mines ; sinon dégâts = aléa(max(1, D / (taille + 1))),
+  //   répartis sur ses composants (détruit si ses cases restantes y passent) ; la réserve baisse des dégâts tirés,
+  //   et tout s'arrête quand elle est épuisée.
+  // liste : [{ type, plan, restant (cases encore valides) }] dans l'ordre de la flotte.
+  function protectionCollision(plan) {
+    if (plan._protection) return plan._protection;
+    var det = 0, drag = 0;
+    plan.composants.forEach(function (c) {
+      if (c.caracs && c.caracs.detectionMines) det += c.caracs.detectionMines;
+      if (c.caracs && c.caracs.dragueur) drag++;
+    });
+    plan._protection = { detection: det, immunise: drag >= trunc(plan.composants.length / 2) && drag > 0 };
+    return plan._protection;
+  }
+  function collisionsInternes(liste, militaire, H) {
+    var r = { force: 0, detruits: {}, nbDetruits: 0, endommages: 0, dommages: 0 };
+    var n = liste.length;
+    if (!n) return r;
+    var diviseur = 45 + 5 * H.getInt(5);
+    var force = Math.ceil(n / diviseur) - 2 * (militaire || 0);
+    r.force = force;
+    if (force <= 0) return r;
+    var D = force * force;
+    var reserve = D * (5 + H.getInt(3)) + H.getInt(10);
+    for (var i = 0; i < n; i++) {
+      var v = liste[i], pr = protectionCollision(v.plan);
+      var vulnerable = true;
+      if (pr.detection > 0 && H.getTest(pr.detection)) vulnerable = false;
+      if (pr.immunise) vulnerable = false;
+      if (!vulnerable) continue;
+      var dg = H.getInt(Math.max(1, trunc(D / (v.plan.taille + 1))));
+      if (dg >= v.restant) { r.detruits[v.type] = (r.detruits[v.type] || 0) + 1; r.nbDetruits++; }
+      else if (dg > 0) r.endommages++;
+      r.dommages += dg;
+      reserve -= dg;
+      if (reserve <= 0) break;
+    }
+    return r;
+  }
+  // Liste pour collisionsInternes à partir des lignes d'un camp (vaisseaux intacts sauf dégâts de départ)
+  function listeCollisionCamp(camp) {
+    var l = [];
+    (camp.vaisseaux || []).forEach(function (x) {
+      var restant = Math.max(0, x.plan.nbCases - (+x.dommages || 0));
+      for (var i = 0; i < (x.nombre | 0); i++) l.push({ type: x.plan.nom, plan: x.plan, restant: restant });
+    });
+    return l;
+  }
+  // Estimation sans combat : n tirages
+  function estimerCollisions(camp, militaire, n, graine) {
+    var H = creerHasard(graine || 12345), liste = listeCollisionCamp(camp), res = [];
+    for (var k = 0; k < (n || 300); k++) res.push(collisionsInternes(liste, militaire, H));
+    var pertes = res.map(function (r) { return r.nbDetruits; }).sort(function (a, b) { return a - b; });
+    var types = {};
+    res.forEach(function (r) { Object.keys(r.detruits).forEach(function (t) { types[t] = (types[t] || 0) + r.detruits[t]; }); });
+    Object.keys(types).forEach(function (t) { types[t] /= res.length; });
+    var forces = res.map(function (r) { return r.force; });
+    return { n: liste.length, forceMin: Math.min.apply(null, forces), forceMax: Math.max.apply(null, forces),
+      moyenne: pertes.reduce(function (s, x) { return s + x; }, 0) / pertes.length,
+      q10: quantile(pertes, 0.1), q90: quantile(pertes, 0.9), types: types };
   }
 
   // ---------------------------------------------------------------- statistiques
@@ -595,8 +671,15 @@
         var s = 0; l.forEach(function (x) { s += x; });
         res.types[t] = { depart: types[t].depart, moyenne: s / l.length, q10: quantile(l, 0.1), q50: quantile(l, 0.5), q90: quantile(l, 0.9), toutPerdu: l.filter(function (x) { return x === types[t].depart; }).length / l.length };
       });
-      resultats.forEach(function (r) { res.encaisses.push(r.dommagesEncaisses[c]); res.puissanceFin.push(r.puissanceFin[c]); res.survivants.push(r.nbFin[c]); });
-      ['encaisses', 'puissanceFin', 'survivants'].forEach(function (k) {
+      res.collisions = []; res.typesCollisions = {};
+      resultats.forEach(function (r) {
+        res.encaisses.push(r.dommagesEncaisses[c]); res.puissanceFin.push(r.puissanceFin[c]); res.survivants.push(r.nbFin[c]);
+        var co = r.collisions ? r.collisions[c] : null;
+        res.collisions.push(co ? co.nbDetruits : 0);
+        if (co) Object.keys(co.detruits).forEach(function (t) { res.typesCollisions[t] = (res.typesCollisions[t] || 0) + co.detruits[t]; });
+      });
+      Object.keys(res.typesCollisions).forEach(function (t) { res.typesCollisions[t] /= n; });
+      ['encaisses', 'puissanceFin', 'survivants', 'collisions'].forEach(function (k) {
         var l = res[k].slice().sort(function (x, y) { return x - y; }), s = 0;
         l.forEach(function (x) { s += x; });
         res[k] = { moyenne: n ? s / n : 0, q10: quantile(l, 0.1), q50: quantile(l, 0.5), q90: quantile(l, 0.9) };
@@ -617,6 +700,7 @@
     VERSION: VERSION, creerHasard: creerHasard, compilerPlan: compilerPlan, statsComposants: statsComposants,
     preparerHeros: preparerHeros, niveauExperience: niveauExperience, niveauMoral: niveauMoral,
     niveauPuissance: niveauPuissance, chanceDeToucher: chanceDeToucher, combattre: combattre, agreger: agreger,
+    collisionsInternes: collisionsInternes, estimerCollisions: estimerCollisions,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else racine.MoteurCombat = API;

@@ -133,6 +133,15 @@
   function texteCout(c, k) {
     return fmt(c.centaures * k) + ' ¢ · ' + fmt(c.minerai * k) + ' minerai · ' + fmt(c.pdc * k) + ' PdC';
   }
+  var cacheCollisions = {};
+  function estimationCollisions(camp) {
+    var vs = [];
+    camp.lignes.forEach(function (l) { var p = planCompile(l.plan); if (p && +l.nombre > 0) vs.push({ plan: p, nombre: +l.nombre, dommages: +l.dommages || 0 }); });
+    if (!vs.length) return null;
+    var cle = (+camp.militaire || 0) + '|' + vs.map(function (v) { return v.plan.nom + ':' + v.plan.nbCases + ':' + v.nombre + ':' + v.dommages; }).join(',');
+    if (!cacheCollisions[cle]) cacheCollisions[cle] = M.estimerCollisions({ vaisseaux: vs }, +camp.militaire || 0, 300, 4242);
+    return cacheCollisions[cle];
+  }
   function resumeCamp(i) {
     var camp = etat.camps[i], as = 0, ap = 0, p = 0, n = 0, prix = 0, minerai = 0, pdc = 0, maxCombat = 0, err = [];
     var h = M.preparerHeros(camp.heros);
@@ -145,11 +154,14 @@
       prix += k * co.centaures; minerai += k * co.minerai; pdc += k * co.pdc;
       maxCombat = Math.max(maxCombat, 5 + M.niveauMoral(+l.moral || 0) + h.mor);
     });
-    return { n: n, as: as, ap: ap, puissance: p, prix: prix, minerai: minerai, pdc: pdc, combativite: maxCombat, erreurs: err };
+    return { n: n, as: as, ap: ap, puissance: p, prix: prix, minerai: minerai, pdc: pdc, combativite: maxCombat, erreurs: err, collisions: estimationCollisions(camp) };
   }
   function texteResume(r) {
     return '<span><b>' + fmt(r.n) + '</b> vaisseaux</span><span>puissance <b>' + fmt(r.puissance) + '</b></span><span>AS <b>' + fmt(r.as) + '</b> · AP <b>' + fmt(r.ap) + '</b></span>' +
       '<span>combativité max <b>' + r.combativite + '</b></span>' +
+      (r.collisions ? '<span title="Collisions internes de fin de tour (Flotte.gererCollisionVaisseaux), sur la flotte intacte, sans combat. Force = ⌈vaisseaux / (45 à 65)⌉ − 2 × maîtrise militaire ; rien si elle est nulle.' +
+        (r.collisions.moyenne ? ' Par type : ' + Object.keys(r.collisions.types).map(function (t) { return t + ' ' + fmt(r.collisions.types[t], 1); }).join(', ') : '') + '">collisions en fin de tour ' +
+        (r.collisions.forceMax <= 0 ? '<b>aucune</b>' : r.collisions.moyenne < 0.05 ? '<b>dégâts sans perte</b>' : '<b>' + fmt(r.collisions.moyenne, 1) + '</b> vaisseaux perdus (' + fmt(r.collisions.q10) + ' à ' + fmt(r.collisions.q90) + ')') + '</span>' : '') +
       '<span>coût <b>' + fmt(r.prix) + '</b> ¢ · <b>' + fmt(r.minerai) + '</b> minerai · <b>' + fmt(r.pdc) + '</b> PdC</span>' +
       (r.prix ? '<span title="Puissance (AS + AP/2) obtenue pour 100 centaures">puissance pour 100 ¢ <b>' + fmt(100 * r.puissance / r.prix, 1) + '</b></span>' : '');
   }
@@ -223,7 +235,9 @@
           '<td class="n cout" style="font-size:12px">' + celluleCout(l) + '</td>' +
           '<td><button class="mini danger" data-action="supprLigne" title="Retirer">✕</button></td></tr>';
       }).join('') + '</tbody></table></div>' +
-      '<div class="ligne"><button class="sec" data-action="ajoutLigne">+ Ajouter un type de vaisseau</button></div>';
+      '<div class="ligne"><button class="sec" data-action="ajoutLigne">+ Ajouter un type de vaisseau</button>' +
+      '<label title="Niveau de maîtrise militaire du commandant : chaque niveau retire 2 à la force des collisions internes de fin de tour">Maîtrise militaire <select data-champ="militaire">' +
+      ['—', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'].map(function (r, k) { return '<option value="' + k + '"' + (k === (+c.militaire || 0) ? ' selected' : '') + '>' + r + '</option>'; }).join('') + '</select></label></div>';
     // héros
     html += '<details' + (h ? ' open' : '') + '><summary>Héros' + (h ? ' : ' + esc(h.nom || 'présent') : ' (aucun)') + '</summary>' +
       '<div class="ligne"><label><input type="checkbox" data-action="heros"' + (h ? ' checked' : '') + '> héros sur la flotte</label>' +
@@ -293,6 +307,7 @@
     var c = etat.camps[+carte.dataset.camp], tr = t.closest('tr');
     var restructure = false;
     if (t.dataset.champ === 'nom') c.nom = t.value;
+    else if (t.dataset.champ === 'militaire') c.militaire = +t.value;
     else if (t.dataset.champ && tr && tr.dataset.ligne != null) {
       var l = c.lignes[+tr.dataset.ligne];
       l[t.dataset.champ] = t.dataset.champ === 'plan' ? t.value : +t.value;
@@ -375,6 +390,7 @@
     else if (a === 'importer') {
       var f = reg.flottes.liste[+$('select[data-action="choixFlotte"]', carte).value];
       c.nom = f.nom;
+      c.militaire = reg.flottes.militaire || 0;
       c.lignes = f.lignes.map(function (l) { return { plan: l.plan, nombre: l.nombre, moral: l.moral, experience: l.experience, race: l.race }; });
       if (f.heros) {
         var comp = {};
@@ -476,7 +492,9 @@
         heros = { nom: info.heros.nom, att: info.heros.att, def: info.heros.def, mor: info.heros.mor, vit: info.heros.vit, race: info.heros.race, competences: comp };
       }
       if (f.proprio === cb.moi) notes.push(info ? 'votre flotte reprise du rapport ' + info.source : 'votre flotte introuvable dans les rapports chargés : moral et expérience par défaut');
-      return { nom: nomFlotteReelle(cb, f), lignes: lignes, heros: heros, strategie: { agressivite: 3, typeCible: 0, positions: {}, cibles: {} } };
+      var mt = reg.militaireParTour || {};
+      var militaire = f.proprio === cb.moi ? (mt[cb.tour - 1] != null ? mt[cb.tour - 1] : mt[cb.tour] || 0) : 0;
+      return { nom: nomFlotteReelle(cb, f), lignes: lignes, heros: heros, militaire: militaire, strategie: { agressivite: 3, typeCible: 0, positions: {}, cibles: {} } };
     });
     etat.combatReel = { cle: cb.cle, titre: titreCombat(cb), ordre: ordre, inverse: false };
     etat.nomScenario = 'Combat T' + cb.tour + ' ' + cb.position.replace(/^0_/, '').replace('_', '-');
@@ -582,7 +600,7 @@
         vs.push({ plan: p, nombre: +l.nombre, moral: +l.moral, experience: +l.experience, race: +l.race, dommages: +l.dommages || 0 });
       });
       if (!vs.length) erreurs.push((i ? 'défenseur' : 'attaquant') + ' sans vaisseau');
-      return { nom: c.nom, vaisseaux: vs, heros: c.heros, strategie: c.strategie };
+      return { nom: c.nom, vaisseaux: vs, heros: c.heros, strategie: c.strategie, militaire: +c.militaire || 0 };
     }) };
     return { cfg: cfg, erreurs: erreurs };
   }
@@ -654,7 +672,8 @@
         var p = res.pertes[i], t = Object.keys(p).filter(function (k) { return p[k]; });
         return '<div class="camp' + i + '">' + esc(etat.camps[i].nom) + ' : ' + res.nbFin[i] + ' / ' + res.nbDepart[i] + ' vaisseaux, puissance ' + res.puissanceFin[i] + ' / ' + res.puissanceDepart[i] +
           (t.length ? ' (pertes : ' + t.map(function (k) { return p[k] + ' ' + esc(k); }).join(', ') + ')' : ' (aucune perte)') +
-          (res.gardeDirective[i] ? ', garde sa directive' : ', passe en attitude neutre') + '</div>';
+          (res.gardeDirective[i] ? ', garde sa directive' : ', passe en attitude neutre') +
+          (res.collisions && res.collisions[i].force > 0 ? '. Collisions de fin de tour : ' + (res.collisions[i].nbDetruits ? '<b>' + res.collisions[i].nbDetruits + ' vaisseau(x) perdu(s)</b> (' + Object.keys(res.collisions[i].detruits).map(function (t) { return res.collisions[i].detruits[t] + ' ' + esc(t); }).join(', ') + '), ' + res.nbApresCollisions[i] + ' restent' : 'aucune perte' + (res.collisions[i].endommages ? ', ' + res.collisions[i].endommages + ' vaisseau(x) endommagé(s)' : '')) : '') + '</div>';
       }).join('') + (res.debris ? '<div class="muted">Plus de 200 points de dégâts : un champ de débris se forme.</div>' : '');
     rendreTables(res);
     redimensionner(); majBoutonJouer(); majTour(); boucle();
@@ -917,7 +936,9 @@
         }).join('') + '</tbody></table></div>' +
         '<div class="resume"><span>vaisseaux restants <b>' + fmt(c.survivants.moyenne, 1) + '</b> (' + fmt(c.survivants.q10) + ' à ' + fmt(c.survivants.q90) + ')</span>' +
         '<span>puissance restante <b>' + fmt(c.puissanceFin.moyenne, 0) + '</b></span><span>dégâts encaissés <b>' + fmt(c.encaisses.moyenne, 0) + '</b></span>' +
-        '<span>valeur perdue <b>' + fmt(coutPertes(a, cfg, i)) + '</b> ¢</span></div></div>';
+        '<span>valeur perdue <b>' + fmt(coutPertes(a, cfg, i)) + '</b> ¢</span>' +
+        (c.collisions && c.collisions.q90 > 0 ? '<span title="Collisions internes de fin de tour, sur les survivants du combat' + (Object.keys(c.typesCollisions).length ? ' ; par type : ' + Object.keys(c.typesCollisions).map(function (t) { return t + ' ' + fmt(c.typesCollisions[t], 1); }).join(', ') : '') + '">puis perdus en collisions de fin de tour <b>' + fmt(c.collisions.moyenne, 1) + '</b> (' + fmt(c.collisions.q10) + ' à ' + fmt(c.collisions.q90) + ')</span>' : '') +
+        '</div></div>';
     }).join('') + '</div>';
     // histogramme du nombre de tours
     var maxN = Math.max.apply(null, tours.map(function (t) { return a.tours[t]; }));
