@@ -373,11 +373,12 @@
     }).join('') + '</div>';
   }
   // Puissance au départ et puissance restante (fin du combat, ou moyenne des simulations)
-  function htmlBarresPuissance(dep, fin, etroit, moyenne) {
+  // libelle : texte de la seconde barre (par défaut « Puissance restante », ou « (moyenne) » pour les statistiques)
+  function htmlBarresPuissance(dep, fin, etroit, moyenne, libelle) {
     var garde = [0, 1].map(function (i) { return dep[i] ? fmt(100 * fin[i] / dep[i], 0) + ' %' : '–'; });
     return '<div class="barresCout' + (etroit ? ' etroit' : '') + '">' +
       barreDuo('Puissance au départ', dep[0], dep[1], '', plusGros(dep[0], dep[1], 'a')) +
-      barreDuo(moyenne ? 'Puissance restante (moyenne)' : 'Puissance restante', fin[0], fin[1], '',
+      barreDuo(libelle || (moyenne ? 'Puissance restante (moyenne)' : 'Puissance restante'), fin[0], fin[1], '',
         'part de sa puissance gardée : <b class="camp0">' + garde[0] + '</b> · <b class="camp1">' + garde[1] + '</b>') + '</div>';
   }
   vueF.addEventListener('click', function (e) {
@@ -662,12 +663,13 @@
     var g = etat.graine ? (parseInt(etat.graine, 10) >>> 0) : ((Math.random() * 4294967295) >>> 0);
     var res = M.combattre(c.cfg, g, { trace: true });
     res.cfg = c.cfg;
+    dernierePuissance = '';
     anim = { res: res, tour: -1, t: 0, joue: true, vitesse: +($('#aVitesse') ? $('#aVitesse').value : 1), fini: false };
     $('#carteUnique').hidden = false;
     $('#aTour').innerHTML = '<option value="-1">Tour 0 (placement)</option>' + res.trace.tours.map(function (x, k) { return '<option value="' + k + '">Tour ' + (k + 1) + '</option>'; }).join('');
     var issue = res.vainqueur === 0 ? '<b class="camp0">victoire de l\'attaquant</b>' : res.vainqueur === 1 ? '<b class="camp1">victoire du défenseur</b>' : '<b>aucun vainqueur</b> (plus aucun vaisseau combatif)';
     $('#aResume').innerHTML = '<div>Graine <b>' + g + '</b> · ' + res.tours + ' tours · ' + issue + '</div>' +
-      '<div style="margin:8px 0">' + htmlBarresPuissance(res.puissanceDepart, res.puissanceFin, true, false) + '</div>' +
+      '<div style="margin:8px 0" id="aPuissance"></div>' +
       [0, 1].map(function (i) {
         var p = res.pertes[i], t = Object.keys(p).filter(function (k) { return p[k]; });
         return '<div class="camp' + i + '">' + esc(etat.camps[i].nom) + ' : ' + res.nbFin[i] + ' / ' + res.nbDepart[i] + ' vaisseaux, puissance ' + res.puissanceFin[i] + ' / ' + res.puissanceDepart[i] +
@@ -683,7 +685,7 @@
     $('#aTables').innerHTML = htmlTables(res.tables, [etat.camps[0].nom, etat.camps[1].nom]);
   }
   function majBoutonJouer() { var b = $('#aJouer'); if (b) b.textContent = anim.joue ? '⏸' : '▶'; }
-  function majTour() { var s = $('#aTour'); if (s) s.value = anim.tour; majJournal(); }
+  function majTour() { var s = $('#aTour'); if (s) s.value = anim.tour; majJournal(); majPuissance(null); }
   function majJournal() {
     if (!anim.res) return;
     if (anim.tour < 0) {
@@ -761,6 +763,21 @@
     });
     return { pos: pos, ptirs: Math.max(0, Math.min(1, (anim.t * T - DUREE.mouvement) / DUREE.tirs)), fin: anim.t * T >= DUREE.mouvement + DUREE.tirs };
   }
+  // Barre « puissance restante » du tour affiché : avant la fin des tirs du tour, celle du tour précédent
+  // (ou de départ) ; une fois les tirs joués, celle de la fin du tour.
+  var dernierePuissance = '';
+  function majPuissance(st) {
+    var el = $('#aPuissance'); if (!el || !anim.res) return;
+    var tours = anim.res.trace.tours, k = anim.tour, val, lib;
+    var fini = k >= 0 && (anim.t >= 1 || (st && st.fin));
+    if (k < 0 || (k === 0 && !fini)) { val = anim.res.puissanceDepart; lib = 'Puissance restante (avant le combat)'; }
+    else if (fini) { val = tours[k].puissance; lib = 'Puissance restante (fin du tour ' + (k + 1) + ')'; }
+    else { val = tours[k - 1].puissance; lib = 'Puissance restante (fin du tour ' + k + ')'; }
+    var cle = lib + val.join('/');
+    if (cle === dernierePuissance) return;
+    dernierePuissance = cle;
+    el.innerHTML = htmlBarresPuissance(anim.res.puissanceDepart, val, true, false, lib);
+  }
   function dessiner() {
     var cv = $('#arene'); if (!cv || !anim.res || !cv.width) return;
     var g = cv.getContext('2d'); if (!g) return;
@@ -781,6 +798,7 @@
     g.fillStyle = col.txt; g.font = (11 * dpr) + 'px system-ui, sans-serif';
     g.fillText(anim.tour < 0 ? 'Tour 0 (placement) / ' + anim.res.trace.tours.length : 'Tour ' + (anim.tour + 1) + ' / ' + anim.res.trace.tours.length, 8 * dpr, 16 * dpr);
     var st = positionsCourantes(), tr = anim.tour < 0 ? { tirs: [] } : anim.res.trace.tours[anim.tour];
+    majPuissance(st);
     var infos = anim.res.trace.vaisseaux;
     // tirs
     var n = tr.tirs.length, visibles = Math.floor(st.ptirs * n + (st.ptirs > 0 ? 1 : 0));

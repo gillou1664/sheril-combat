@@ -3,7 +3,7 @@
 // Sans DOM : utilisable dans la page et sous Node (require).
 (function (racine) {
   'use strict';
-  var VERSION = '1.5';
+  var VERSION = '1.6';
 
   // ---------------------------------------------------------------- hasard
   // Générateur à graine (mulberry32). Les tirages suivent l'ordre du Java (Univers.getInt / getInd / getTest).
@@ -522,7 +522,7 @@
       f2.forEach(function (v) { v.combativite--; });
       var inter = [parType(f1), parType(f2)];
       tables.push([tableTour(depart[0], mem[0], inter[0], config.camps[0]), tableTour(depart[1], mem[1], inter[1], config.camps[1])]);
-      if (tTour) trace.tours.push(tTour);
+      if (tTour) { tTour.puissance = [puissanceFlotte(f1), puissanceFlotte(f2)]; trace.tours.push(tTour); }
       if (f1.length === 0) vainqueur[1] = true;
       if (f2.length === 0) vainqueur[0] = true;
       var combatif1 = f1.some(function (v) { return v.combativite > 0; });
