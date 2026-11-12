@@ -334,23 +334,36 @@
     rendreDuel();
   }
   // Une barre par ressource : part de l'attaquant (à gauche) et du défenseur (à droite) dans le coût total.
+  // Barre partagée entre l'attaquant (bleu, à gauche) et le défenseur (orange, à droite), au prorata de x et y.
+  function barreDuo(libelle, x, y, suffixe, note) {
+    var t = x + y, px = t ? 100 * x / t : 50;
+    return '<div class="bc-ligne"><span class="bc-res">' + libelle + '</span>' +
+      '<span class="bc-val camp0">' + fmt(x) + suffixe + '</span>' +
+      '<span class="bc-barre" title="' + esc(libelle) + ' : ' + fmt(x) + suffixe + ' contre ' + fmt(y) + suffixe + '">' +
+      (t ? (x ? '<span class="bc-seg" style="width:' + px + '%;background:var(--camp0)"></span>' : '') +
+        (y ? '<span class="bc-seg" style="width:' + (100 - px) + '%;background:var(--camp1)"></span>' : '')
+        : '<span class="bc-seg" style="width:100%;background:var(--surface-2)"></span>') +
+      '</span><span class="bc-val camp1">' + fmt(y) + suffixe + '</span>' +
+      '<span class="bc-note muted">' + (t ? fmt(px, 0) + ' % · ' + fmt(100 - px, 0) + ' %' + (note ? ' — ' + note : '') : (note || '—')) + '</span></div>';
+  }
+  function plusGros(x, y, verbe) {
+    if (!(x + y) || Math.abs(x - y) < 1e-9) return 'à égalité';
+    if (Math.min(x, y) === 0) return (x > y ? esc(etat.camps[0].nom) : esc(etat.camps[1].nom)) + ' seul';
+    return (x > y ? esc(etat.camps[0].nom) : esc(etat.camps[1].nom)) + ' ' + verbe + ' ' + fmt(Math.max(x, y) / Math.min(x, y), 2) + ' fois plus';
+  }
   function htmlBarresCout() {
     var a = resumeCamp(0), d = resumeCamp(1);
-    var res = [['prix', 'Centaures', ' ¢'], ['pdc', 'PdC', ''], ['minerai', 'Minerai', '']];
-    return '<div class="barresCout">' + res.map(function (r) {
-      var x = a[r[0]], y = d[r[0]], t = x + y;
-      var px = t ? 100 * x / t : 50;
-      var plus = !t || Math.abs(x - y) < 1e-9 ? 'à égalité' : (x > y ? esc(etat.camps[0].nom) : esc(etat.camps[1].nom)) + ' coûte ' + fmt(Math.max(x, y) / Math.max(Math.min(x, y), 1e-9), 2) + ' fois plus';
-      if (t && Math.min(x, y) === 0) plus = (x > y ? esc(etat.camps[0].nom) : esc(etat.camps[1].nom)) + ' seul';
-      return '<div class="bc-ligne"><span class="bc-res">' + r[1] + '</span>' +
-        '<span class="bc-val camp0">' + fmt(x) + r[2] + '</span>' +
-        '<span class="bc-barre" title="' + r[1] + ' : ' + fmt(x) + r[2] + ' contre ' + fmt(y) + r[2] + ' (' + plus + ')">' +
-        (t ? (x ? '<span class="bc-seg" style="width:' + px + '%;background:var(--camp0)"></span>' : '') +
-          (y ? '<span class="bc-seg" style="width:' + (100 - px) + '%;background:var(--camp1)"></span>' : '')
-          : '<span class="bc-seg" style="width:100%;background:var(--surface-2)"></span>') +
-        '</span><span class="bc-val camp1">' + fmt(y) + r[2] + '</span>' +
-        '<span class="bc-note muted">' + (t ? fmt(px, 0) + ' % · ' + fmt(100 - px, 0) + ' % — ' + plus : '—') + '</span></div>';
+    return '<div class="barresCout">' + [['prix', 'Centaures', ' ¢'], ['pdc', 'PdC', ''], ['minerai', 'Minerai', '']].map(function (r) {
+      return barreDuo(r[1], a[r[0]], d[r[0]], r[2], plusGros(a[r[0]], d[r[0]], 'coûte'));
     }).join('') + '</div>';
+  }
+  // Puissance au départ et puissance restante (fin du combat, ou moyenne des simulations)
+  function htmlBarresPuissance(dep, fin, etroit, moyenne) {
+    var garde = [0, 1].map(function (i) { return dep[i] ? fmt(100 * fin[i] / dep[i], 0) + ' %' : '–'; });
+    return '<div class="barresCout' + (etroit ? ' etroit' : '') + '">' +
+      barreDuo('Puissance au départ', dep[0], dep[1], '', plusGros(dep[0], dep[1], 'a')) +
+      barreDuo(moyenne ? 'Puissance restante (moyenne)' : 'Puissance restante', fin[0], fin[1], '',
+        'part de sa puissance gardée : <b class="camp0">' + garde[0] + '</b> · <b class="camp1">' + garde[1] + '</b>') + '</div>';
   }
   vueF.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
@@ -636,6 +649,7 @@
     $('#aTour').innerHTML = '<option value="-1">Tour 0 (placement)</option>' + res.trace.tours.map(function (x, k) { return '<option value="' + k + '">Tour ' + (k + 1) + '</option>'; }).join('');
     var issue = res.vainqueur === 0 ? '<b class="camp0">victoire de l\'attaquant</b>' : res.vainqueur === 1 ? '<b class="camp1">victoire du défenseur</b>' : '<b>aucun vainqueur</b> (plus aucun vaisseau combatif)';
     $('#aResume').innerHTML = '<div>Graine <b>' + g + '</b> · ' + res.tours + ' tours · ' + issue + '</div>' +
+      '<div style="margin:8px 0">' + htmlBarresPuissance(res.puissanceDepart, res.puissanceFin, true, false) + '</div>' +
       [0, 1].map(function (i) {
         var p = res.pertes[i], t = Object.keys(p).filter(function (k) { return p[k]; });
         return '<div class="camp' + i + '">' + esc(etat.camps[i].nom) + ' : ' + res.nbFin[i] + ' / ' + res.nbDepart[i] + ' vaisseaux, puissance ' + res.puissanceFin[i] + ' / ' + res.puissanceDepart[i] +
@@ -880,6 +894,8 @@
       '<div class="tuile"><div class="v camp1">' + pct(pv[2]) + '</div><div class="l">victoire de ' + esc(noms[1]) + '</div></div>' +
       '<div class="tuile"><div class="v">' + pct(a.garde[0] / a.n) + '</div><div class="l">l\'attaquant garde sa directive</div></div>' +
       '<div class="tuile"><div class="v">' + med + '</div><div class="l">tours de combat (médiane)</div></div></div>';
+    var dep = [0, 1].map(function (i) { return cfg.camps[i].vaisseaux.reduce(function (t, v) { return t + v.nombre * v.plan.stats.puissance; }, 0); });
+    html += '<div style="margin-bottom:12px">' + htmlBarresPuissance(dep, [a.camps[0].puissanceFin.moyenne, a.camps[1].puissanceFin.moyenne], false, true) + '</div>';
     // barre d'issue (3 segments, 2px d'écart)
     html += '<svg width="100%" height="18" viewBox="0 0 1000 18" preserveAspectRatio="none" style="display:block;margin-bottom:12px" aria-label="Répartition des issues">' +
       (function () {
