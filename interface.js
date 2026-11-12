@@ -779,9 +779,15 @@
     var dep = anim.res.nbDepart;
     var perdus = [0, 1].map(function (i) { return dep[i] - nb[i]; });
     el.innerHTML = htmlBarresPuissance(anim.res.puissanceDepart, val, true, false, 'Puissance restante (' + quand + ')') +
-      '<div class="barresCout etroit" style="margin-top:4px">' +
-      barreDuo('Vaisseaux restants (' + quand + ')', nb[0], nb[1], '',
-        'sur ' + fmt(dep[0]) + ' · ' + fmt(dep[1]) + ' au départ, perdus : <b class="camp0">' + fmt(perdus[0]) + '</b> · <b class="camp1">' + fmt(perdus[1]) + '</b>') + '</div>';
+      '<div class="vaisseauxRestants"><div class="muted" style="font-size:12px;margin:6px 0 2px">Vaisseaux restants (' + quand + ')</div>' +
+      [0, 1].map(function (i) {
+        var pv = dep[i] ? 100 * nb[i] / dep[i] : 0;
+        return '<div class="vr-ligne" title="' + esc(etat.camps[i].nom) + ' : ' + fmt(nb[i]) + ' vaisseaux sur ' + fmt(dep[i]) + ', ' + fmt(perdus[i]) + ' perdus">' +
+          '<span class="vr-nom camp' + i + '">' + esc(etat.camps[i].nom) + '</span>' +
+          '<span class="vr-barre">' + (nb[i] ? '<span class="vr-vivant" style="width:' + pv + '%;background:var(--camp' + i + ')"></span>' : '') +
+          (perdus[i] ? '<span class="vr-perdu" style="width:' + (100 - pv) + '%"></span>' : '') + '</span>' +
+          '<span class="vr-val"><b class="camp' + i + '">' + fmt(nb[i]) + '</b> / ' + fmt(dep[i]) + (perdus[i] ? ' <span class="muted">(−' + fmt(perdus[i]) + ')</span>' : '') + '</span></div>';
+      }).join('') + '</div>';
   }
   function dessiner() {
     var cv = $('#arene'); if (!cv || !anim.res || !cv.width) return;

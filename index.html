@@ -56,6 +56,13 @@ h3 { font-size: 14px; margin: 14px 0 6px; }
 .barresCout.etroit .bc-ligne { grid-template-columns: 88px 44px minmax(60px, 1fr) 44px; gap: 6px; row-gap: 0; }
 .barresCout.etroit .bc-note { grid-column: 1 / -1; padding-left: 94px; }
 .barresCout.etroit .bc-res { font-size: 12px; line-height: 1.2; }
+.vr-ligne { display: grid; grid-template-columns: 88px minmax(60px, 1fr) auto; gap: 6px; align-items: center; font-size: 12px; margin: 3px 0; }
+.vr-nom { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vr-barre { display: flex; gap: 2px; height: 12px; }
+.vr-vivant, .vr-perdu { display: block; height: 100%; min-width: 2px; }
+.vr-vivant:first-child { border-radius: 4px 0 0 4px; } .vr-barre > :last-child { border-radius: 0 4px 4px 0; } .vr-barre > :only-child { border-radius: 4px; }
+.vr-perdu { background: repeating-linear-gradient(135deg, var(--rate) 0 2px, transparent 2px 5px); opacity: .7; outline: 1px solid var(--border); outline-offset: -1px; }
+.vr-val { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .onglets { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 16px; flex-wrap: wrap; }
 .onglets button { background: none; border: 0; border-bottom: 3px solid transparent; padding: 8px 14px; font: inherit; font-weight: 600; color: var(--muted); cursor: pointer; }
 .onglets button.actif { color: var(--text); border-bottom-color: var(--accent); }
