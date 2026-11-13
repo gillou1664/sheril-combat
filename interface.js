@@ -710,7 +710,7 @@
     if (!anim.res) return;
     if (anim.tour < 0) {
       $('#aJournal').innerHTML = '<b>Tour 0 : placement initial</b><br>' + [0, 1].map(function (i) {
-        return '<span class="camp' + i + '">' + esc(etat.camps[i].nom) + '</span> : ' + anim.res.trace.vaisseaux[i].length + ' vaisseaux dans sa zone de départ (y ' + (i ? '20 à 29' : '0 à 9') + ', plus un écart aléatoire)';
+        return '<span class="camp' + i + '">' + esc(etat.camps[i].nom) + '</span> : ' + anim.res.trace.vaisseaux[i].length + ' vaisseaux dans sa zone de départ (' + (i ? 'à droite, y 20 à 29' : 'à gauche, y 0 à 9') + ', plus un écart aléatoire)';
       }).join('<br>');
       return;
     }
@@ -743,7 +743,8 @@
   function ecran(cv, x, y) {
     var w = cv.width, h = cv.height;
     var cx = Math.max(X0 + 0.5, Math.min(X1 - 0.5, x)), cy = Math.max(Y0 + 0.5, Math.min(Y1 - 0.5, y));
-    return [(cx - X0) / (X1 - X0) * w, h - (cy - Y0) / (Y1 - Y0) * h, cx !== x || cy !== y];
+    // vue de gauche à droite : l'axe y du jeu (attaquant en 0-9, défenseur en 20-29) devient l'horizontale
+    return [(cy - Y0) / (Y1 - Y0) * w, (cx - X0) / (X1 - X0) * h, cx !== x || cy !== y];
   }
   var DUREE = { placement: 900, mouvement: 700, tirs: 1100, pause: 250 };
   function boucle() {
