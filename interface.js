@@ -1278,14 +1278,16 @@
     $('#pGraine').value = pl.graine || ''; $('#pN').value = pl.n || 1000;
     var html = '';
     // imports
-    var sys = reg.systemes && reg.systemes.liste ? reg.systemes.liste : [], att = listeAttaquesPlanetes();
+    var sys = reg.systemes && reg.systemes.liste ? reg.systemes.liste : [], att = listeAttaquesPlanetes(), connus = listeConnus();
     html += '<div class="card"><div class="ligne"><b>Importer</b>' +
       (sys.length ? '<select id="pSysListe">' + sys.map(function (s, k) { return '<option value="' + k + '">' + esc(s.nom) + ' (' + esc(s.pos.replace(/^0_/, '').replace('_', '-')) + ', ' + s.planetes.length + ' planètes)</option>'; }).join('') + '</select><button class="sec" id="pSysImporter">⤓ un de mes systèmes (T' + esc(reg.systemes.tour) + ')</button>' : '') +
+      (connus.length ? '<select id="pConnuListe">' + connus.map(function (e) { return '<option value="' + esc(e.pos) + '"' + (pl.connuChoisi === e.pos ? ' selected' : '') + '>' + esc(titreConnu(e)) + '</option>'; }).join('') + '</select><button class="sec" id="pConnuImporter">⤓ un système connu</button>' : '') +
       (att.length ? '<select id="pAttListe">' + att.map(function (s) { return '<option value="' + esc(s.cle) + '"' + (pl.reel && pl.reel.cle === s.cle ? ' selected' : '') + '>' + esc(titreAttaque(s)) + '</option>'; }).join('') + '</select><button class="sec" id="pAttImporter">⤓ une attaque réelle</button>' : '') +
-      (!sys.length && !att.length ? '<span class="muted">Chargez un rapport.xml (bouton « 📂 Charger des fichiers ») pour importer vos systèmes ou les attaques de planètes du tour.</span>' : '') +
+      (!sys.length && !att.length && !connus.length ? '<span class="muted">Chargez un rapport.xml (bouton « 📂 Charger des fichiers ») pour importer vos systèmes ou les attaques de planètes du tour.</span>' : '') +
       (pl.reel ? '<span class="muted">comparé au réel : <b>' + esc(pl.reel.titre) + '</b></span><button class="mini" id="pReelOublier" title="Ne plus comparer">✕</button>' : '') +
       '<span style="flex:1"></span><button class="sec" id="pReinit">Réinitialiser</button></div>' +
       '<div class="muted" style="font-size:12px">Un système importé donne la population, la stabilité et les bâtiments de chaque planète, la politique Défense, le stock d\'Armement du poste et votre gouverneur ; vos planètes sont marquées « protégées » (décochez pour simuler une attaque contre vous). ' +
+      'Un système connu rassemble ce que disent tous les rapports chargés : le détail complet le plus récent si vous y avez eu une planète, les planètes vues lors d\'une attaque (milice et bâtiments) et la dernière détection (nombre de planètes, population, propriétaires) ; les planètes inconnues sont estimées (« estimée » dans leur nom) et restent modifiables. ' +
       'Une attaque réelle reprend la flotte, l\'ordre réel des planètes, leur milice et leurs bâtiments au début de chaque combat ; les statistiques la comparent alors au résultat réel.</div></div>';
     html += rendreCamp('p') + rendreSysteme();
     $('#pConfig').innerHTML = html;
@@ -1437,6 +1439,84 @@
       (manquants.length ? ' Plans sans composition : ' + manquants.map(esc).join(', ') + ' (à compléter dans l\'onglet Plans).' : ''), 10000);
   }
 
+
+  // ---- systèmes connus : toutes les sources des rapports chargés, planètes inconnues estimées
+  function listeConnus() {
+    var c = reg.systemesConnus || {};
+    return Object.keys(c).map(function (k) { return c[k]; }).sort(function (a, b) { return (a.nom || '').localeCompare(b.nom || '', 'fr') || a.pos.localeCompare(b.pos); });
+  }
+  function resumeConnu(e) {
+    var nb = e.detail ? e.detail.systeme.planetes.length : e.detection ? e.detection.nbpla : 0;
+    var parAttaque = Object.keys(e.planetes).length;
+    if (!nb) nb = Math.max.apply(null, Object.keys(e.planetes).map(function (k) { return +k + 1; }).concat([0]));
+    return { nb: nb, detail: !!e.detail, attaques: parAttaque };
+  }
+  function titreConnu(e) {
+    var r = resumeConnu(e), pos = e.pos.replace(/^0_/, '').replace('_', '-'), parts = [];
+    if (r.detail) parts.push('détail complet T' + e.detail.tour);
+    else {
+      if (r.attaques) parts.push(r.attaques + ' planète(s) vues en attaque');
+      if (e.detection) parts.push('détecté T' + e.detection.tour + ', pop. ' + fmt(e.detection.pop));
+    }
+    return (e.nom || '?') + ' (' + pos + ', ' + r.nb + ' planètes) — ' + parts.join(', ');
+  }
+  function importerConnu(e) {
+    var pl = etat.planetaire, nomsBat = {}, notes = [];
+    Object.keys(CAT.batiments).forEach(function (k) { nomsBat[CAT.batiments[k].nom] = k; });
+    var moi = (e.detail && e.detail.moi) || (e.detection && e.detection.moi) || (reg.flottes && reg.flottes.commandant && reg.flottes.commandant.numero) || null;
+    var index = {}, proprios = [];
+    function proprio(num) {
+      num = String(num);
+      if (index[num] == null) { index[num] = proprios.length; proprios.push(num === moi ? { nom: 'Vous', protege: true, defense: false, armement: false, gouverneur: null } : proprioDefaut(num === '0' ? 'Neutre' : 'Commandant n°' + num)); }
+      return index[num];
+    }
+    var nb = resumeConnu(e).nb, planetes = [], inconnus = {};
+    var detail = e.detail ? e.detail.systeme : null;
+    var toursDetail = e.detail ? e.detail.tour : -1;
+    for (var k = 0; k < nb; k++) {
+      var d = detail ? detail.planetes.filter(function (p) { return p.num === k; })[0] : null;
+      var a = e.planetes[k];
+      if (a && (!d || a.tour > toursDetail)) {
+        // vue en attaque (plus récente que le détail) : milice et bâtiments au début du combat
+        planetes.push({ nom: a.nom || (e.nom + ' ' + (k + 1)), proprio: proprio(a.proprio), population: a.milice, stabilite: 100, milice: a.milice, source: 'attaque T' + a.tour,
+          batiments: (a.batiments || []).filter(function (b) { if (!nomsBat[b.nom]) { inconnus[b.nom] = 1; return false; } return b.nombre > 0; })
+            .map(function (b) { return { code: nomsBat[b.nom], nombre: b.nombre, dommages: Math.floor((b.encaisses || 0) / b.nombre) }; }) });
+      } else if (d) {
+        planetes.push({ nom: e.nom + ' ' + (k + 1), proprio: proprio(d.proprio), population: d.population, stabilite: d.stabilite, milice: '', source: 'T' + toursDetail,
+          batiments: d.batiments.filter(function (b) { if (!CAT.batiments[b.code]) { inconnus[b.code] = 1; return false; } return true; }).map(function (b) { return { code: b.code, nombre: b.nombre }; }) });
+      } else planetes.push(null);
+    }
+    // planètes inconnues : population restante de la détection répartie, propriétaire le plus probable
+    var vides = planetes.filter(function (p) { return !p; }).length;
+    if (vides) {
+      var det = e.detection, connue = 0;
+      planetes.forEach(function (p) { if (p) connue += +p.population || 0; });
+      var reste = det ? Math.max(0, det.pop - connue) : 0, popEst = vides ? Math.round(reste / vides) : 0;
+      var autres = det ? det.proprios.filter(function (x) { return x !== moi; }) : [];
+      var parDefaut = autres.length === 1 ? autres[0] : autres.filter(function (x) { return x !== '0'; })[0] || autres[0] || '0';
+      planetes = planetes.map(function (p, k) {
+        if (p) return p;
+        return { nom: (e.nom || 'Planète') + ' ' + (k + 1) + ' (estimée)', proprio: proprio(parDefaut), population: popEst, stabilite: 100, milice: '', batiments: [], estimee: true };
+      });
+      notes.push(vides + ' planète(s) inconnue(s) estimée(s)' + (det ? ' : ' + fmt(popEst) + ' habitants chacune (population détectée au T' + det.tour + ' moins celle des planètes connues), stabilité 100 % (milice maximale), propriétaire ' + (parDefaut === '0' ? 'neutre' : 'n°' + parDefaut) + (autres.length > 1 ? ' (propriétaires possibles : ' + autres.map(function (x) { return x === '0' ? 'neutre' : 'n°' + x; }).join(', ') + ')' : '') : ' sans population connue'));
+    }
+    if (e.detection) e.detection.proprios.forEach(function (x) { proprio(x); });
+    planetes.forEach(function (p) { delete p.source; delete p.estimee; });
+    if (detail && moi && e.detail.moi === moi) {
+      var mien = proprios[index[moi]];
+      if (mien) { mien.defense = detail.politique === 2; mien.armement = detail.armement >= 100; mien.gouverneur = detail.gouverneur ? JSON.parse(JSON.stringify(detail.gouverneur)) : null; }
+    }
+    pl.proprios = proprios; pl.planetes = planetes; pl.reel = null; pl.cible = 0;
+    var sources = [];
+    if (e.detail) sources.push('détail complet du T' + e.detail.tour);
+    var attaques = Object.keys(e.planetes).map(function (k) { return e.planetes[k]; });
+    if (attaques.length) sources.push(attaques.length + ' planète(s) vues en attaque (milice et bâtiments, ' + Array.from(new Set(attaques.map(function (x) { return 'T' + x.tour; }))).join(', ') + ')');
+    if (e.detection) sources.push('détection du T' + e.detection.tour);
+    message(vides ? 'warn' : 'ok', 'Système ' + esc(e.nom) + ' importé (' + nb + ' planètes) à partir de : ' + sources.join(' ; ') + '.' + (notes.length ? ' ' + notes.join(' ; ') + '. Corrigez-les dans le tableau si vous en savez plus.' : '') +
+      (Object.keys(inconnus).length ? ' Bâtiments inconnus ignorés : ' + Object.keys(inconnus).map(esc).join(', ') + '.' : '') +
+      ' Politique, Armement et gouverneur des autres propriétaires inconnus.', 12000);
+  }
+
   var vueP = $('#vue-planetes');
   vueP.addEventListener('change', function (e) {
     var pl = etat.planetaire;
@@ -1445,7 +1525,7 @@
     var t = e.target, tr = t.closest('tr');
     if (t.id === 'pGraine') { pl.graine = t.value.trim(); memoriser(); return; }
     if (t.id === 'pN') { pl.n = Math.max(1, +t.value || 1000); memoriser(); return; }
-    if (t.id === 'pSysListe' || t.id === 'pAttListe') return;
+    if (t.id === 'pSysListe' || t.id === 'pAttListe' || t.id === 'pConnuListe') return;
     if (t.dataset.pchamp) {
       var k = t.dataset.pchamp;
       pl[k] = k === 'ordre' ? t.value : +t.value;
@@ -1482,6 +1562,7 @@
     else if (a === 'ajoutBat') pl.planetes[+tr.dataset.planete].batiments.push({ code: 'battlaI', nombre: 1 });
     else if (a === 'supprBat') pl.planetes[+tr.dataset.planete].batiments.splice(+b.closest('[data-bat]').dataset.bat, 1);
     else if (a === 'pSysImporter') importerSysteme(reg.systemes.liste[+$('#pSysListe').value]);
+    else if (a === 'pConnuImporter') { var ec = (reg.systemesConnus || {})[$('#pConnuListe').value]; if (ec) { pl.connuChoisi = ec.pos; importerConnu(ec); } }
     else if (a === 'pAttImporter') { var s = reg.attaquesPlanetes[$('#pAttListe').value]; if (s) importerAttaque(s); }
     else if (a === 'pReelOublier') pl.reel = null;
     else if (a === 'pReinit') { if (!confirm('Revenir à l\'exemple de départ ?')) return; etat.planetaire = planetaireDefaut(); }

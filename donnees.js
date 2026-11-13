@@ -4,7 +4,7 @@
   var CLE = 'sheril-combat:v1';
 
   function registreVide() {
-    return { version: 1, plans: {}, rencontres: {}, scenarios: {}, flottes: {}, flottesParTour: {}, combats: {}, attaquesPlanetes: {}, systemes: null, brouillon: null };
+    return { version: 1, plans: {}, rencontres: {}, scenarios: {}, flottes: {}, flottesParTour: {}, combats: {}, attaquesPlanetes: {}, systemes: null, systemesConnus: {}, brouillon: null };
   }
 
   function charger() {
@@ -149,6 +149,11 @@
       suite.fin = tours[tours.length - 1].numero;
     });
     res.attaquesPlanetes.forEach(function (s, k) { s.cle = 'T' + tour + '|' + s.position + '|' + s.attaquant + '|' + k; });
+    // Systèmes détectés (detections > systeme) : seulement le total (planètes, population, propriétaires)
+    res.systemesDetectes = enfants(premier(cdt, 'detections'), 'systeme').map(function (x) {
+      return { nom: x.getAttribute('nom'), pos: x.getAttribute('pos'), nbpla: +x.getAttribute('nbpla'), pop: +x.getAttribute('pop'),
+        popMax: +x.getAttribute('popMax'), proprios: enfants(x, 'proprio').map(function (p) { return p.textContent.trim(); }) };
+    });
     // Nos systèmes : planètes (propriétaire, population, stabilité, bâtiments), politique, Armement au poste, gouverneur
     var postes = {};
     enfants(premier(cdt, 'postes_commerciaux'), 'p').forEach(function (p) {
@@ -261,6 +266,7 @@
       lu.combats.forEach(function (cb) { if (!reg.combats[cb.cle]) r.combats = (r.combats || 0) + 1; reg.combats[cb.cle] = cb; });
       reg.attaquesPlanetes = reg.attaquesPlanetes || {};
       (lu.attaquesPlanetes || []).forEach(function (s) { if (!reg.attaquesPlanetes[s.cle]) r.attaquesPlanetes = (r.attaquesPlanetes || 0) + 1; reg.attaquesPlanetes[s.cle] = s; });
+      integrerSystemesConnus(reg, lu);
       // systèmes proposés à l'import : ceux du rapport le plus récent
       if (lu.systemes && (!reg.systemes || !reg.systemes.tour || lu.tour >= reg.systemes.tour))
         reg.systemes = { tour: lu.tour, commandant: lu.commandant, liste: lu.systemes };
@@ -273,6 +279,36 @@
       r.scenarios = Object.keys(c.scenarios || {}).length;
     }
     return r;
+  }
+
+  // Systèmes connus, par position : le détail complet le plus récent (systèmes où l'on a une planète),
+  // la dernière détection (totaux), et, planète par planète, ce qu'ont montré les attaques (milice, bâtiments).
+  function integrerSystemesConnus(reg, lu) {
+    var c = reg.systemesConnus = reg.systemesConnus || {};
+    var t = lu.tour, moi = lu.commandant.numero;
+    function entree(pos, nom) {
+      var e = c[pos] || (c[pos] = { pos: pos, nom: nom, detail: null, detection: null, planetes: {} });
+      if (nom) e.nom = nom;
+      return e;
+    }
+    (lu.systemes || []).forEach(function (sy) {
+      var e = entree(sy.pos, sy.nom);
+      if (!e.detail || t >= e.detail.tour) e.detail = { tour: t, moi: moi, systeme: sy };
+    });
+    (lu.systemesDetectes || []).forEach(function (d) {
+      var e = entree(d.pos, d.nom);
+      if (!e.detection || t >= e.detection.tour) e.detection = { tour: t, moi: moi, nbpla: d.nbpla, pop: d.pop, popMax: d.popMax, proprios: d.proprios };
+    });
+    (lu.attaquesPlanetes || []).forEach(function (a) {
+      a.combats.forEach(function (cb) {
+        var p = cb.initial.planete; if (!p || !p.numero) return;
+        var e = entree(a.position, null);
+        if (!e.nom && p.nom) e.nom = p.nom.replace(/\s+\d+$/, '');
+        var k = +p.numero - 1, ex = e.planetes[k];   // numéro affiché = index + 1
+        if (!ex || t >= ex.tour)
+          e.planetes[k] = { tour: t, moi: moi, nom: p.nom, proprio: p.proprio, milice: cb.initial.milice, batiments: cb.initial.batiments };
+      });
+    });
   }
 
   // Export : plans persos (et à compléter), plans rencontrés sans composition, scénarios
