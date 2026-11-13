@@ -1745,7 +1745,7 @@
   var ROMAINS10 = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
   function minesDefaut() {
     var f = campDefaut('Ma flotte', 'Fregate standard', 20);
-    return { flotte: f, debris: 0, mines: 50000, tours: 3, collisionsInternes: false, n: 1000, graine: '',
+    return { flotte: f, debris: 0, mines: 50000, tours: 1, collisionsInternes: false, n: 1000, graine: '',
       calcLanceur: 0, calcNb: 10, calcTours: 1, calcCombat: 1000 };
   }
   if (!etat.mines) etat.mines = minesDefaut();
@@ -1859,6 +1859,17 @@
     return { cfg: { vaisseaux: v.vaisseaux, debris: +m.debris || 0, mines: +m.mines || 0, tours: +m.tours || 1,
       collisionsInternes: !!m.collisionsInternes, militaire: +m.flotte.militaire || 0 }, erreurs: v.erreurs };
   }
+  // Barres « restant / perdu » (vaisseaux et puissance), avec le pourcentage de pertes, comme après un combat
+  function htmlBarresPertes(nbDep, nbFin, pDep, pFin, dec) {
+    function ligne(nom, dep, fin) {
+      var pv = dep ? Math.max(0, Math.min(100, 100 * fin / dep)) : 0;
+      return '<div class="vr-ligne"><span class="vr-nom camp0">' + nom + '</span><span class="vr-barre">' +
+        (pv > 0 ? '<span class="vr-vivant" style="width:' + pv + '%;background:var(--camp0)"></span>' : '') +
+        (pv < 100 ? '<span class="vr-perdu" style="width:' + (100 - pv) + '%"></span>' : '') +
+        '</span><span class="vr-val">' + fmt(fin, dec) + ' / ' + fmt(dep) + ' <b' + (pv < 100 ? ' style="color:var(--err)"' : '') + '>−' + fmt(100 - pv, 0) + ' %</b></span></div>';
+    }
+    return '<div style="margin:8px 0 12px">' + ligne('Vaisseaux', nbDep, nbFin) + ligne('Puissance', pDep, pFin) + '</div>';
+  }
   function minesUnique() {
     var c = configMines();
     if (c.erreurs.length) { message('err', 'Impossible de simuler : ' + c.erreurs.map(esc).join(', ') + '.'); return; }
@@ -1868,6 +1879,7 @@
     var parType = function (o) { var k = Object.keys(o); return k.length ? k.map(function (t) { return o[t] + ' ' + esc(t); }).join(', ') : '—'; };
     el.innerHTML = '<h2>Un tirage</h2><div>Graine <b>' + g + '</b> · ' + r.tours.length + ' tour(s) · ' +
       (r.flotteDetruite ? '<b style="color:var(--err)">flotte détruite</b>' : '<b>' + r.nbFin + '</b> vaisseaux sur ' + r.nbDepart + ' restent, puissance ' + fmt(r.puissanceFin) + ' / ' + fmt(r.puissanceDepart)) + '.</div>' +
+      htmlBarresPertes(r.nbDepart, r.flotteDetruite ? 0 : r.nbFin, r.puissanceDepart, r.flotteDetruite ? 0 : r.puissanceFin, 0) +
       '<div class="tablewrap"><table style="margin-top:8px"><thead><tr><th>Tour</th><th class="n">Débris avant → après dragage</th><th class="n">Mines avant → après dragage</th><th class="n">Dragage</th><th class="n">Dégâts débris</th><th class="n">Dégâts mines</th>' +
       (c.cfg.collisionsInternes ? '<th class="n">Collisions internes</th>' : '') + '<th class="n">Vaisseaux touchés</th><th>Détruits</th><th class="n">Restants</th></tr></thead><tbody>' +
       r.tours.map(function (t, k) {
@@ -1901,9 +1913,7 @@
       '<div class="tuiles"><div class="tuile"><div class="v">' + fmt(dernier.perdusCumul.moyenne, 1) + '</div><div class="l">vaisseaux perdus en moyenne (' + fmt(dernier.perdusCumul.q10) + ' à ' + fmt(dernier.perdusCumul.q90) + ') sur ' + fmt(a.nbDepart) + '</div></div>' +
       '<div class="tuile"><div class="v">' + pct(a.detruite) + '</div><div class="l">flotte entièrement détruite</div></div>' +
       '<div class="tuile"><div class="v">' + fmt(a.puissanceFin.moyenne) + '</div><div class="l">puissance restante moyenne, sur ' + fmt(a.puissanceDepart) + '</div></div></div>' +
-      '<div style="margin-bottom:12px"><div class="vr-ligne"><span class="vr-nom camp0">Vaisseaux</span><span class="vr-barre">' +
-      (function () { var pv = a.nbDepart ? 100 * (a.nbDepart - dernier.perdusCumul.moyenne) / a.nbDepart : 0; return '<span class="vr-vivant" style="width:' + pv + '%;background:var(--camp0)"></span>' + (pv < 100 ? '<span class="vr-perdu" style="width:' + (100 - pv) + '%"></span>' : ''); })() +
-      '</span><span class="vr-val">' + fmt(a.nbDepart - dernier.perdusCumul.moyenne, 1) + ' / ' + fmt(a.nbDepart) + '</span></div></div>' +
+      htmlBarresPertes(a.nbDepart, a.nbDepart - dernier.perdusCumul.moyenne, a.puissanceDepart, a.puissanceFin.moyenne, 1) +
       '<h3>Tour par tour (moyennes)</h3><div class="tablewrap"><table><thead><tr><th>Tour</th><th class="n">Débris après dragage</th><th class="n">Mines après dragage</th><th class="n">Dragage</th><th class="n">Dégâts</th>' +
       (cfg.collisionsInternes ? '<th class="n">Collisions internes</th>' : '') + '<th class="n">Perdus depuis le début (10 % · médiane · 90 %)</th></tr></thead><tbody>' +
       a.tours.map(function (t, k) {
