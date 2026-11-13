@@ -112,6 +112,7 @@ details summary { cursor: pointer; font-weight: 600; margin: 4px 0; }
 svg text { fill: var(--muted); font-size: 11px; }
 .fichiers { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .journal { font-size: 12px; color: var(--muted); max-height: 110px; overflow: auto; margin-top: 6px; }
+.bats { min-width: 290px; } .bats .ligne { flex-wrap: nowrap; }
 .cote { display: grid; grid-template-columns: minmax(0, 760px) minmax(240px, 1fr); gap: 16px; align-items: start; }
 @media (max-width: 1000px) { .cote { grid-template-columns: 1fr; } }
 </style>
@@ -121,7 +122,7 @@ svg text { fill: var(--muted); font-size: 11px; }
   <div class="entete">
     <div>
       <h1>Simulateur de combats</h1>
-      <div class="sub">Combat flotte contre flotte, repris du moteur Java de Sheril (<code>Combat.combatFlotteFlotte</code>). Version <span id="version"></span>.</div>
+      <div class="sub">Combats flotte contre flotte et flotte contre planètes, repris du moteur Java de Sheril (<code>Combat.combatFlotteFlotte</code>, <code>Combat.combatFlottePlanete</code>). Version <span id="version"></span>.</div>
     </div>
     <div class="fichiers">
       <button class="go" id="btnFichiers" title="rapport.xml, data.xml, combat.htm ou export JSON (plusieurs à la fois)">📂 Charger des fichiers</button>
@@ -135,12 +136,16 @@ svg text { fill: var(--muted); font-size: 11px; }
   <nav class="onglets" id="onglets">
     <button data-vue="flottes" class="actif">⚔️ Flottes</button>
     <button data-vue="resultats">📊 Résultats</button>
+    <button data-vue="planetes">🪐 Combat planétaire</button>
+    <button data-vue="mines">💣 Mines et débris</button>
     <button data-vue="plans">📐 Plans</button>
     <button data-vue="aide">❔ Aide</button>
   </nav>
 
   <section class="vue active" id="vue-flottes"></section>
   <section class="vue" id="vue-resultats"></section>
+  <section class="vue" id="vue-planetes"></section>
+  <section class="vue" id="vue-mines"></section>
   <section class="vue" id="vue-plans"></section>
   <section class="vue" id="vue-aide">
     <div class="card">
@@ -164,6 +169,14 @@ svg text { fill: var(--muted); font-size: 11px; }
         <li>Après le combat, une flotte garde sa directive seulement si sa puissance de départ était au moins 5 fois celle de l'adversaire.</li>
       </ul>
       <p class="muted">Limites : un seul combat d'une flotte contre une autre (pas l'enchaînement de plusieurs flottes sur une case). Les dégâts déjà subis et l'usure des boucliers d'un combat précédent dans le même tour ne sont pas repris. Détail et sources Java dans <code>docs/regles-moteur.md</code>.</p>
+      <h2>Combat planétaire</h2>
+      <ul>
+        <li>Il faut au moins <b>50 de puissance</b>, dégâts compris, avant <b>chaque</b> planète. En attaque système, les planètes non protégées sont attaquées dans un ordre au hasard, neutres comprises ; les tours de combat s'additionnent d'une planète à l'autre jusqu'à la combativité moyenne de la flotte.</li>
+        <li>Milice = population × stabilité / 100, × 1,5 en politique Défense, × 1,5 avec au moins 100 Armement au poste, plafonnée à la population. La planète est prise quand la milice tombe à 0. La population perd la milice tuée, au plus 10 %.</li>
+        <li>Chaque tour : les batteries tirent 50 salves chacune (sur la stratosphère, sinon l'air-sol) ; la stratosphère bombarde les bâtiments s'il y en a, sinon la milice ; la milice riposte sur l'air-sol (1 + milice / 100 tirs de 50 salves de laser I, si elle dépasse 50) ; puis l'air-sol tire sur la milice. Tant qu'un bouclier planétaire tient, toute la flotte tire sur lui.</li>
+        <li>Toucher un bâtiment ou la milice : 50 % + expérience et attaque du héros − défense et inspiration fanatique du gouverneur. Les boucliers des vaisseaux ne se rechargent pas d'une planète à l'autre.</li>
+      </ul>
+      <p class="muted">Limites du combat planétaire : une seule flotte (le jeu fait attaquer chaque flotte à part, les suivantes sautent les planètes déjà prises). Les flottes présentes ne défendent pas les planètes pendant ce combat (seule l'attaque préventive les fait intervenir, avant).</p>
     </div>
   </section>
   <div class="infobulle" id="infobulle"></div>

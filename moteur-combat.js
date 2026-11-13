@@ -1,9 +1,10 @@
-// Moteur de combat flotte contre flotte de Sheril, repris de Combat.combatFlotteFlotte
+// Moteur de combat de Sheril : flotte contre flotte (Combat.combatFlotteFlotte) et flotte contre planètes
+// (Combat.combatFlottePlanete), repris du Java
 // (sheril-old-java : Combat.java, Vaisseau.java, PlanDeVaisseau.java, Arme.java, Position3D.java, Leader.java).
 // Sans DOM : utilisable dans la page et sous Node (require).
 (function (racine) {
   'use strict';
-  var VERSION = '1.8';
+  var VERSION = '2.0';
 
   // ---------------------------------------------------------------- hasard
   // Générateur à graine (mulberry32). Les tirages suivent l'ordre du Java (Univers.getInt / getInd / getTest).
@@ -206,7 +207,9 @@
   }
 
   // Vaisseau.ajouterDommage / ajouterDommageAuHasard
-  function ajouterDommagesAuHasard(v, nb, H) {
+  // horsCombat : la liste des armes valides n'existe pas (Java : listeArmesValides == null), donc pas
+  // de test d'explosion du réacteur (débris, mines et collisions en début ou fin de tour).
+  function ajouterDommagesAuHasard(v, nb, H, horsCombat) {
     for (var i = 0; i < nb; i++) {
       if (v.valides.length === 0) return false;
       var num = v.valides[H.getInt(v.valides.length)];
@@ -216,7 +219,7 @@
         v.valides.splice(v.valides.indexOf(num), 1);
         var ia = v.armes.indexOf(num);
         if (ia >= 0) v.armes.splice(ia, 1);
-        if (c.type === 'moteur' && H.getTest(1)) v.detruit = true;   // CHANCE_EXPLOSION_MOTEUR
+        if (!horsCombat && c.type === 'moteur' && H.getTest(1)) v.detruit = true;   // CHANCE_EXPLOSION_MOTEUR
       }
       if (v.valides.length === 0) return false;
     }
@@ -580,6 +583,357 @@
   }
 
 
+  // ---------------------------------------------------------------- combat flotte contre planète
+  // Repris de Combat.resolutionAttaqueSysteme / resolutionAttaquePlanete / combatFlottePlanete / tirDefensesPlanetaires /
+  // tirMilicesPlanetaires / tirAirSol, ConstructionPlanetaire.tir / tirArme / reussiteTir / ajouterDommages,
+  // Vaisseau.tirSurConstruction / tirSurMilices, Flotte.forceAttaqueStratospherique / forceAttaqueAirSol.
+  var DIRECTIVES = { 1: 'attaque système', 5: 'attaque de planète', 4: 'pillage système', 6: 'pillage de planète', 7: 'éradication de planète' };
+
+  // Vaisseau.preparerAuCombat(false) : toutes les armes valides, quel que soit leur type
+  function preparerPlanetaire(v) {
+    v.armes = [];
+    for (var i = 0; i < v.plan.composants.length; i++)
+      if (estValide(v, i) && v.plan.composants[i].type === 'arme') v.armes.push(i);
+    v.dommagesEffectues = 0;
+    v.detruit = false;
+    v.st = statsVaisseau(v);
+    if (v.boucliers === null) {
+      var nb = 0;
+      for (var j = 0; j < v.plan.composants.length; j++) {
+        var cj = v.plan.composants[j];
+        if (estValide(v, j) && cj.caracs && cj.caracs.bouclier) nb++;
+      }
+      v.boucliers = new Array(nb).fill(0);
+    }
+  }
+
+  function creerBatiment(code, catalogue, dommages, experience) {
+    var b = catalogue.batiments[code];
+    if (!b) return null;
+    return { code: code, b: b, arme: b.arme ? catalogue.composants[b.arme] : null,
+      dommages: Math.min(+dommages || 0, b.structure), experience: +experience || 0, detruit: false, dommagesEffectues: 0 };
+  }
+  function augmenterExperienceBatiment(c, mod, H) { c.experience += mod * trunc(H.getInt(2000) / 50); }
+  // ConstructionPlanetaire.ajouterDommages
+  function dommagesBatiment(c, nb) {
+    c.dommages = Math.min(c.dommages + nb, c.b.structure);
+    if (c.dommages >= c.b.structure) c.detruit = true;
+  }
+
+  // ConstructionPlanetaire.tir (batterie ou milice) sur un vaisseau ; g = gouverneur, h = héros de la flotte
+  function tirBatiment(c, v, g, h, boutPortant, H) {
+    if (v.detruit || !c.arme) return;
+    var arme = c.arme;
+    var portee = boutPortant ? 0 : arme.arme.portee - 1;
+    var chance = chanceDeToucher(arme, v.plan.taille, portee);
+    if (chance === 0) return;
+    var test = chance + niveauExperience(c.experience) + g.att + g.inspiration;
+    test -= niveauExperience(v.experience) + h.def;
+    if (h.race === v.race) test -= 1 + h.inspiration;
+    if (!H.getTest(Math.max(1, test))) return;
+    diminuerMoral(v, H);
+    var b = bouclierValide(v);
+    if (b !== -1) {
+      v.boucliers[b] += arme.arme.degatBouclier;
+      c.dommagesEffectues += arme.arme.degatBouclier;
+    } else {
+      c.dommagesEffectues += arme.arme.degatCoque;
+      if (!ajouterDommagesAuHasard(v, arme.arme.degatCoque, H)) v.detruit = true;
+      augmenterExperienceBatiment(c, 1 + g.savoir, H);
+      augmenterExperience(v, 1 + h.savoir, H);
+    }
+  }
+  // Combat.tirDefensesPlanetaires : 50 salves par bâtiment, chacune sur un vaisseau au hasard
+  // (stratosphère s'il y en a, sinon air-sol ; un vaisseau déjà détruit absorbe la salve).
+  function tirDefenses(liste, strato, sol, g, h, boutPortant, H) {
+    var inter = strato.length > 0 ? strato : sol;
+    if (!inter.length) return 0;
+    var total = 0;
+    for (var i = 0; i < liste.length; i++) {
+      if (!liste[i].arme) continue;
+      var avant = liste[i].dommagesEffectues;
+      for (var j = 0; j < 50; j++) tirBatiment(liste[i], inter[H.getInt(inter.length)], g, h, boutPortant, H);
+      total += liste[i].dommagesEffectues - avant;
+    }
+    return total;
+  }
+  // Combat.tirMilicesPlanetaires : si milice > 50, 1 + milice / 100 tirs d'une « Batterie de lasers I » neuve, sur l'air-sol seulement
+  function tirMilices(nbPop, sol, g, h, catalogue, H) {
+    var nbTirs = nbPop > 50 ? 1 + trunc(nbPop / 100) : 0, total = 0;
+    if (!sol.length) return 0;
+    for (var i = 0; i < nbTirs; i++) total += tirDefenses([creerBatiment('battlaI', catalogue)], sol, sol, g, h, false, H);
+    return total;
+  }
+  // Vaisseau.tirSurConstruction
+  function tirSurConstruction(v, cibles, h, g, bombe, H) {
+    for (var i = 0; i < v.armes.length; i++) {
+      var arme = v.plan.composants[v.armes[i]];
+      if (bombe && !(arme.typeArme === 'CP' || arme.typeArme === 'M')) continue;
+      var c = cibles[H.getInt(cibles.length)];
+      var chance = 50 + niveauExperience(v.experience) + h.att;
+      if (h.race === v.race) chance += 1 + h.inspiration;
+      chance -= niveauExperience(c.experience) + g.def + g.inspiration;
+      if (H.getTest(chance)) {
+        augmenterMoral(v, H);
+        augmenterExperience(v, 1 + h.savoir, H);
+        augmenterExperienceBatiment(c, 1 + g.savoir, H);
+        var reste = Math.max(0, c.b.structure - c.dommages);
+        dommagesBatiment(c, arme.arme.degatSol);
+        v.dommagesEffectues += Math.min(arme.arme.degatSol, reste);
+      }
+    }
+  }
+  // Vaisseau.tirSurMilices : renvoie la milice tuée
+  function tirSurMilices(v, h, g, bombe, popRestante, H) {
+    var retour = 0;
+    for (var i = 0; i < v.armes.length; i++) {
+      var arme = v.plan.composants[v.armes[i]];
+      if (bombe && !(arme.typeArme === 'CP' || arme.typeArme === 'M')) continue;
+      var chance = 50 + niveauExperience(v.experience) + h.att;
+      if (h.race === v.race) chance += 1 + h.inspiration;
+      chance -= g.def + g.inspiration;
+      if (H.getTest(chance)) {
+        augmenterMoral(v, H);
+        augmenterExperience(v, 1 + h.savoir, H);
+        if (popRestante > 0) {
+          var d = Math.min(Math.max(arme.arme.degatSol, 0), popRestante);
+          retour += d; v.dommagesEffectues += d;
+          popRestante = Math.max(0, popRestante - d);
+        } else return retour;
+      }
+    }
+    return retour;
+  }
+  // Combat.tirAirSol : boucliers planétaires d'abord ; sinon la stratosphère (construCible) vise tous les bâtiments,
+  // l'air-sol vise la milice. bombe = construCible : en stratosphère, seules les armes de combat planétaire tirent.
+  function tirAirSol(liste, batiments, nbPop, construCible, g, h, H) {
+    var boucliers = batiments.filter(function (c) { return !!c.b.bouclier; });
+    var cibles = boucliers.length ? boucliers : (batiments.length ? batiments : null);
+    for (var i = 0; i < liste.length; i++) {
+      var v = liste[i];
+      if (v.detruit) continue;
+      if (cibles && (construCible || boucliers.length > 0)) tirSurConstruction(v, cibles, h, g, construCible, H);
+      else nbPop -= tirSurMilices(v, h, g, construCible, nbPop, H);
+    }
+    return nbPop;
+  }
+  // Flotte.forceAttaqueStratospherique / forceAttaqueAirSol selon l'agressivité
+  function forcesAttaque(f, ag) {
+    var strato = [], sol = [];
+    f.forEach(function (v) {
+      var s = v.st;
+      if (ag === 2 || ag === 1) strato.push(v);
+      else if (ag === 3 || ag === 0) { if (s.bombardier) strato.push(v); else sol.push(v); }
+      else if (ag === 4) { if (!s.chasseur) strato.push(v); else sol.push(v); }
+      else if (ag === 5) sol.push(v);
+    });
+    return { strato: strato, sol: sol };
+  }
+  function parTypeBatiments(liste) {
+    var r = {};
+    liste.forEach(function (c) { var e = r[c.code] || (r[c.code] = [0, 0]); e[0]++; e[1] += c.dommages; });
+    return r;
+  }
+  // Ligne du rapport pour la planète : nombre, variation, dommages (destructions comptées à la structure), variation
+  function tableBatiments(depart, avant, apres, catalogue) {
+    return Object.keys(depart).map(function (code) {
+      var d = depart[code], m = avant[code] || [0, 0], n = apres[code] || [0, 0], st = catalogue.batiments[code].structure;
+      var dom = n[1] + (d[0] - n[0]) * st, domA = m[1] + (d[0] - m[0]) * st;
+      return { code: code, nom: catalogue.batiments[code].nom, nombre: n[0], variation: n[0] - m[0], encaisses: dom, variationEncaisses: dom - domA };
+    });
+  }
+
+  // Milice de départ d'une planète (Combat.combatFlottePlanete ~l.415-428)
+  function miliceDeDepart(p, proprio) {
+    var pop = Math.max(0, +p.population || 0);
+    if (p.milice !== undefined && p.milice !== null && p.milice !== '') return Math.max(0, +p.milice);
+    var nb = trunc((pop * Math.max(0, Math.min(100, +p.stabilite || 0))) / 100);
+    if (proprio && proprio.defense) nb = Math.min(pop, nb + trunc(nb / 2));
+    if (proprio && proprio.armement) nb = Math.min(pop, trunc((nb * 3) / 2));
+    return nb;
+  }
+
+  // config : {
+  //   flotte: { vaisseaux: [{ plan (compilé), nombre, experience, moral, race, dommages }], heros, strategie: { agressivite }, militaire },
+  //   directive: 1 (attaque système), 5 (attaque de planète), 4 (pillage système), 6 (pillage de planète), 7 (éradication),
+  //   cible: index de la planète visée (directives 5, 6, 7),
+  //   planetes: [{ nom, proprio (index dans proprios), population, stabilite, milice (facultatif : impose la milice),
+  //                batiments: [{ code, nombre, dommages (par bâtiment), experience }] }],
+  //   proprios: [{ nom, protege (PNA, alliance ou nous-mêmes : planètes ignorées), defense (politique Défense),
+  //                armement (≥ 100 Armement au poste), gouverneur }],
+  //   ordre: 'hasard' (Utile.ordreAuHasard, par défaut) ou 'liste'
+  // }
+  function combattrePlanetes(config, graine, options) {
+    options = options || {};
+    var catalogue = options.catalogue || racine.CATALOGUE;
+    if (!catalogue) throw new Error('catalogue manquant');
+    var H = creerHasard(graine == null ? (Math.random() * 4294967296) >>> 0 : graine);
+    var trace = !!options.trace;
+    var fl = config.flotte || {};
+    var f = [], id = 0;
+    (fl.vaisseaux || []).forEach(function (l) {
+      for (var i = 0; i < (l.nombre | 0); i++) f.push(creerVaisseau(id++, 0, l.plan, l));
+    });
+    f.forEach(function (v) { v.st = statsVaisseau(v); });
+    var h = preparerHeros(fl.heros);
+    var ag = fl.strategie && fl.strategie.agressivite != null ? +fl.strategie.agressivite : 3;
+    var directive = config.directive == null ? 1 : +config.directive;
+    var systeme = directive === 1 || directive === 4;
+    var proprios = (config.proprios || []).map(function (p) { return p || {}; });
+    var gouv = proprios.map(function (p) { return preparerHeros(p.gouverneur); });
+    var planetes = (config.planetes || []).map(function (p, i) {
+      var pr = proprios[+p.proprio || 0] || {};
+      var bats = [];
+      (p.batiments || []).forEach(function (b) {
+        for (var k = 0; k < (+b.nombre || 0); k++) { var c = creerBatiment(b.code, catalogue, b.dommages, b.experience); if (c) bats.push(c); }
+      });
+      return { index: i, nom: p.nom || ('Planète ' + (i + 1)), proprio: +p.proprio || 0, protege: !!pr.protege,
+        population: Math.max(0, +p.population || 0), milice: miliceDeDepart(p, pr), batiments: bats };
+    });
+    var P0 = puissanceFlotte(f);
+    var depart = parType(f);
+    var nbDepart = f.length;
+    var ordre;
+    if (!systeme) ordre = [+config.cible || 0];
+    else if (config.ordre === 'liste') ordre = planetes.map(function (p, i) { return i; });
+    else {
+      // Utile.ordreAuHasard : permutation au hasard
+      ordre = planetes.map(function (p, i) { return i; });
+      for (var i = ordre.length - 1; i > 0; i--) { var j = H.getInt(i + 1), x = ordre[i]; ordre[i] = ordre[j]; ordre[j] = x; }
+    }
+    var resultats = [], nbTour = 0, arret = null, prises = 0;
+    for (var o = 0; o < ordre.length; o++) {
+      var p = planetes[ordre[o]];
+      if (!p || p.protege) continue;
+      var r = combatPlanete(p, systeme ? nbTour : 0);
+      resultats.push(r);
+      if (r.prise) prises++;
+      if (r.retour === -1) { arret = r.arret; break; }
+      nbTour = r.retour;
+      if (!systeme) break;
+    }
+
+    function combatPlanete(p, tour) {
+      var g = gouv[p.proprio] || preparerHeros(null);
+      var r = { index: p.index, nom: p.nom, proprio: p.proprio, tourDebut: tour, puissanceDepart: puissanceFlotte(f),
+        miliceDepart: p.milice, populationDepart: p.population, batimentsDepart: parTypeBatiments(p.batiments),
+        vaisseauxDepart: parType(f), tables: [], prise: false, retour: -1, arret: null };
+      if (r.puissanceDepart < 50) { r.arret = 'puissance'; r.tourFin = tour; r.miliceFin = p.milice; r.populationFin = p.population; r.batimentsFin = r.batimentsDepart; r.vaisseauxFin = r.vaisseauxDepart; r.puissanceFin = r.puissanceDepart; return r; }
+      // Flotte.calculeCombativiteMoyenne : moyenne entière de 5 + niveau de moral + moral modifié du héros
+      var somme = 0;
+      f.forEach(function (v) { v.combativite = 5 + niveauMoral(v.moral) + h.mor; somme += v.combativite; });
+      var nbTourMax = f.length ? trunc(somme / f.length) : 0;
+      r.combativite = nbTourMax;
+      var nbPop = p.milice, memoirePop = nbPop, memoireTot = trunc(p.population / 10);
+      var memfin = r.vaisseauxDepart, matDepart = r.batimentsDepart;
+      var numTour = tour, fin = false, garde = 0;
+      while (!fin) {
+        var listeC = p.batiments.slice();
+        f.forEach(preparerPlanetaire);
+        var mem = parType(f), mat = parTypeBatiments(p.batiments), popTour = nbPop;
+        var forces = forcesAttaque(f, ag);
+        var degatsBatteries = tirDefenses(listeC, forces.strato, forces.sol, g, h, true, H);
+        nbPop = tirAirSol(forces.strato, listeC, nbPop, true, g, h, H);
+        var degatsMilice = tirMilices(nbPop, forces.sol, g, h, catalogue, H);
+        p.batiments = p.batiments.filter(function (c) { return !c.detruit; });
+        nbPop = tirAirSol(forces.sol, p.batiments.slice(), nbPop, false, g, h, H);
+        f = f.filter(function (v) { return !v.detruit; });
+        p.batiments = p.batiments.filter(function (c) { return !c.detruit; });
+        var apres = parType(f), matApres = parTypeBatiments(p.batiments);
+        var t = { tour: numTour + 1, flotte: tableTour(memfin, mem, apres, { vaisseaux: (fl.vaisseaux || []) }),
+          batiments: tableBatiments(matDepart, mat, matApres, catalogue), miliceAvant: popTour, milice: Math.max(0, nbPop),
+          strato: forces.strato.length, sol: forces.sol.length, degatsBatteries: degatsBatteries, degatsMilice: degatsMilice };
+        if (trace) { t.puissance = puissanceFlotte(f); t.nombre = f.length; }
+        r.tables.push(t);
+        if (nbPop <= 0) fin = true;
+        if (f.length === 0) fin = true;
+        numTour++;
+        if (numTour === nbTourMax) fin = true;
+        if (++garde >= 1000) fin = true;   // sécurité : le Java boucle tant que la milice tient si tour ≥ nbTourMax
+      }
+      r.tourFin = numTour;
+      r.miliceFin = Math.max(0, nbPop);
+      var perte = Math.min(memoirePop - Math.max(0, nbPop), memoireTot);
+      p.population = Math.max(0, p.population - perte);
+      r.populationPerdue = perte;
+      if (nbPop <= 0) {
+        r.prise = true;
+        if (directive === 4 || directive === 6) { r.resultat = 'pillée'; r.pillage = memoirePop; p.population = 0; }
+        else if (directive === 7) { r.resultat = 'éradiquée'; p.population = 0; }
+        else r.resultat = 'prise';
+      }
+      r.populationFin = p.population;
+      r.batimentsFin = parTypeBatiments(p.batiments);
+      r.vaisseauxFin = parType(f);
+      r.puissanceFin = puissanceFlotte(f);
+      if (numTour === nbTourMax || f.length === 0) { r.retour = -1; r.arret = f.length === 0 ? 'flotte' : 'combativite'; }
+      else r.retour = numTour;
+      return r;
+    }
+
+    var survivants = parType(f), pertes = {};
+    Object.keys(depart).forEach(function (t) { pertes[t] = depart[t][0] - (survivants[t] ? survivants[t][0] : 0); });
+    var res = {
+      graine: graine, directive: directive, ordre: ordre, planetes: resultats, prises: prises,
+      ciblesPossibles: planetes.filter(function (p) { return !p.protege; }).length,
+      arret: arret, tours: resultats.length ? resultats[resultats.length - 1].tourFin : 0,
+      puissanceDepart: P0, puissanceFin: puissanceFlotte(f), nbDepart: nbDepart, nbFin: f.length,
+      depart: depart, survivants: survivants, pertes: pertes,
+    };
+    if (config.collisions !== false) {
+      var liste = f.map(function (v) { return { type: v.type, plan: v.plan, restant: v.plan.nbCases - pointsDeDommage(v) }; });
+      res.collisions = collisionsInternes(liste, fl.militaire || 0, H);
+      res.nbApresCollisions = res.nbFin - res.collisions.nbDetruits;
+    }
+    return res;
+  }
+
+  // Agrège une liste de résultats de combattrePlanetes()
+  function agregerPlanetes(resultats) {
+    var n = resultats.length;
+    var a = { n: n, prises: {}, arrets: {}, planetes: {}, types: {}, puissanceFin: null, survivants: null, collisions: null, tours: {} };
+    var listes = { puissanceFin: [], survivants: [], collisions: [], nbPrises: [] };
+    resultats.forEach(function (r) {
+      a.prises[r.prises] = (a.prises[r.prises] || 0) + 1;
+      var ar = r.arret || 'aucun';
+      a.arrets[ar] = (a.arrets[ar] || 0) + 1;
+      a.tours[r.tours] = (a.tours[r.tours] || 0) + 1;
+      listes.puissanceFin.push(r.puissanceFin); listes.survivants.push(r.nbFin); listes.nbPrises.push(r.prises);
+      listes.collisions.push(r.collisions ? r.collisions.nbDetruits : 0);
+      r.planetes.forEach(function (pl) {
+        var e = a.planetes[pl.index] || (a.planetes[pl.index] = { nom: pl.nom, attaquee: 0, prise: 0, milice: [], population: [], batimentsDetruits: 0, rang: 0 });
+        e.attaquee++; if (pl.prise) e.prise++;
+        e.milice.push(pl.miliceFin); e.population.push(pl.populationPerdue || 0);
+        var nd = 0, nf = 0;
+        Object.keys(pl.batimentsDepart).forEach(function (k) { nd += pl.batimentsDepart[k][0]; });
+        Object.keys(pl.batimentsFin).forEach(function (k) { nf += pl.batimentsFin[k][0]; });
+        e.batimentsDetruits += nd - nf;
+      });
+      Object.keys(r.depart).forEach(function (t) {
+        (a.types[t] = a.types[t] || { depart: r.depart[t][0], pertes: [] }).pertes.push(r.pertes[t]);
+      });
+    });
+    function stats(l) {
+      var tri = l.slice().sort(function (x, y) { return x - y; }), s = 0;
+      tri.forEach(function (x) { s += x; });
+      return { moyenne: tri.length ? s / tri.length : 0, q10: quantile(tri, 0.1), q50: quantile(tri, 0.5), q90: quantile(tri, 0.9) };
+    }
+    Object.keys(listes).forEach(function (k) { a[k] = stats(listes[k]); });
+    Object.keys(a.types).forEach(function (t) {
+      var e = a.types[t], st = stats(e.pertes);
+      a.types[t] = { depart: e.depart, moyenne: st.moyenne, q10: st.q10, q50: st.q50, q90: st.q90,
+        toutPerdu: e.pertes.filter(function (x) { return x === e.depart; }).length / (e.pertes.length || 1) };
+    });
+    Object.keys(a.planetes).forEach(function (k) {
+      var e = a.planetes[k];
+      e.pAttaquee = e.attaquee / n; e.pPrise = e.prise / n;
+      e.miliceFin = stats(e.milice); e.populationPerdue = stats(e.population);
+      e.batimentsDetruits = e.attaquee ? e.batimentsDetruits / e.attaquee : 0;
+      delete e.milice; delete e.population;
+    });
+    return a;
+  }
+
   // ---------------------------------------------------------------- collisions internes (fin de tour)
   // Commandant.resolutionGestionFlottes ~l.1664 et Flotte.gererCollisionVaisseaux, après les combats :
   //   force = ⌈vaisseaux / (45 + 5 × aléa(5))⌉ − 2 × maîtrise militaire ; rien si force ≤ 0
@@ -596,7 +950,7 @@
       if (c.caracs && c.caracs.detectionMines) det += c.caracs.detectionMines;
       if (c.caracs && c.caracs.dragueur) drag++;
     });
-    plan._protection = { detection: det, immunise: drag >= trunc(plan.composants.length / 2) && drag > 0 };
+    plan._protection = { detection: det, immunise: drag >= trunc(plan.composants.length / 2) };
     return plan._protection;
   }
   function collisionsInternes(liste, militaire, H) {
@@ -646,6 +1000,162 @@
       moyenne: pertes.reduce(function (s, x) { return s + x; }, 0) / pertes.length,
       dommagesMoyens: res.reduce(function (s, r) { return s + r.dommages; }, 0) / res.length,
       q10: quantile(pertes, 0.1), q90: quantile(pertes, 0.9), types: types };
+  }
+
+
+  // ---------------------------------------------------------------- mines et débris (début de tour)
+  // Commandant.resolutionCollisions (DeroulementDuTour l.60, avant les ordres) → Debris.gererCollisions :
+  //  1. dragage : capacité = Σ dragueurs valides de la flotte ; pour chaque type de débris présent
+  //     (débris de vaisseaux puis mines, ordre du HashMap du Java), enlève min(capacité, quantité) ;
+  //     la capacité n'est pas décomptée : elle sert en entier au type suivant, sauf si elle a été
+  //     épuisée exactement sur le premier (break quand capacité == enlevé).
+  //  2. pour chaque type restant : Flotte.gererCollision(quantité) sur chaque vaisseau, dans l'ordre de la flotte :
+  //     protégé par son détecteur (aléa(100) < détection) ou si dragueurs ≥ composants / 2 ;
+  //     sinon dégâts = aléa(max(1, (Q / (aléa(500) + 1)) / (11 − taille))) / 10, sur des composants au hasard.
+  //  Les débris ne disparaissent jamais d'eux-mêmes ; les collisions ne les réduisent pas.
+  var TYPES_DEBRIS = ['debris', 'mines'];
+  function capaciteDragage(f) {
+    var s = 0;
+    f.forEach(function (v) {
+      v.valides.forEach(function (i) { var c = v.plan.composants[i]; if (c.caracs && c.caracs.dragueur) s += c.caracs.dragueur; });
+    });
+    return s;
+  }
+  function detectionVaisseau(v) {
+    var s = 0;
+    v.valides.forEach(function (i) { var c = v.plan.composants[i]; if (c.caracs && c.caracs.detectionMines) s += c.caracs.detectionMines; });
+    return s;
+  }
+  function collisionDebris(f, quantite, H, detail) {
+    var total = 0;
+    for (var i = 0; i < f.length; i++) {
+      var v = f[i];
+      if (v.detruit) continue;
+      var vulnerable = true, det = detectionVaisseau(v);
+      if (det > 0 && H.getTest(det)) vulnerable = false;
+      if (protectionCollision(v.plan).immunise) vulnerable = false;
+      if (!vulnerable) { if (detail) detail.proteges++; continue; }
+      var dg = trunc(H.getInt(Math.max(1, trunc(trunc(quantite / (H.getInt(500) + 1)) / (11 - v.plan.taille)))) / 10);
+      if (dg > 0) {
+        if (detail) detail.touches++;
+        if (!ajouterDommagesAuHasard(v, dg, H, true)) v.detruit = true;
+        total += dg;
+      }
+    }
+    return total;
+  }
+  // Collisions internes appliquées aux vaisseaux (fin de tour), pour les simulations sur plusieurs tours
+  function collisionsInternesFlotte(f, militaire, H) {
+    var r = { force: 0, dommages: 0 };
+    var n = f.length; if (!n) return r;
+    var force = Math.ceil(n / (45 + 5 * H.getInt(5))) - 2 * (militaire || 0);
+    r.force = force;
+    if (force <= 0) return r;
+    var D = force * force, reserve = D * (5 + H.getInt(3)) + H.getInt(10);
+    for (var i = 0; i < n; i++) {
+      var v = f[i];
+      var vulnerable = true, det = detectionVaisseau(v);
+      if (det > 0 && H.getTest(det)) vulnerable = false;
+      if (protectionCollision(v.plan).immunise) vulnerable = false;
+      if (!vulnerable) continue;
+      var dg = H.getInt(Math.max(1, trunc(D / (v.plan.taille + 1))));
+      if (!ajouterDommagesAuHasard(v, dg, H, true)) v.detruit = true;
+      r.dommages += dg;
+      reserve -= dg;
+      if (reserve <= 0) break;
+    }
+    return r;
+  }
+  // config : { vaisseaux: [{ plan, nombre, dommages }], debris, mines, tours, collisionsInternes, militaire }
+  function simulerMines(config, graine) {
+    var H = creerHasard(graine == null ? (Math.random() * 4294967296) >>> 0 : graine);
+    var f = [], id = 0;
+    (config.vaisseaux || []).forEach(function (l) {
+      for (var i = 0; i < (l.nombre | 0); i++) f.push(creerVaisseau(id++, 0, l.plan, l));
+    });
+    var champ = { debris: Math.max(0, +config.debris || 0), mines: Math.max(0, +config.mines || 0) };
+    var depart = parType(f), nbDepart = f.length, pDepart = puissanceFlotte(f);
+    var res = { graine: graine, nbDepart: nbDepart, puissanceDepart: pDepart, depart: depart, tours: [] };
+    var nbTours = Math.max(1, +config.tours || 1);
+    for (var t = 0; t < nbTours && f.length; t++) {
+      var tr = { champAvant: { debris: champ.debris, mines: champ.mines }, dragage: capaciteDragage(f), enleve: { debris: 0, mines: 0 },
+        degats: { debris: 0, mines: 0 }, touches: 0, proteges: 0, detruits: {}, nbDetruits: 0, interne: 0 };
+      if (tr.dragage) {
+        for (var k = 0; k < TYPES_DEBRIS.length; k++) {
+          var ty = TYPES_DEBRIS[k];
+          if (!champ[ty]) continue;
+          var enl = Math.min(tr.dragage, champ[ty]);
+          champ[ty] -= enl; tr.enleve[ty] = enl;
+          if (tr.dragage === enl) break;
+        }
+      }
+      tr.champApres = { debris: champ.debris, mines: champ.mines };
+      TYPES_DEBRIS.forEach(function (ty) {
+        if (champ[ty] > 0) tr.degats[ty] = collisionDebris(f, champ[ty], H, tr);
+      });
+      var avantInterne = f.filter(function (v) { return v.detruit; }).length;
+      if (config.collisionsInternes) {
+        var vivants = f.filter(function (v) { return !v.detruit; });
+        tr.interne = collisionsInternesFlotte(vivants, config.militaire || 0, H).dommages;
+      }
+      f.forEach(function (v) {
+        if (v.detruit) { tr.detruits[v.type] = (tr.detruits[v.type] || 0) + 1; tr.nbDetruits++; }
+      });
+      tr.detruitsInterne = f.filter(function (v) { return v.detruit; }).length - avantInterne;
+      f = f.filter(function (v) { return !v.detruit; });
+      tr.nbFin = f.length; tr.puissanceFin = puissanceFlotte(f);
+      res.tours.push(tr);
+    }
+    res.nbFin = f.length; res.puissanceFin = puissanceFlotte(f);
+    res.survivants = parType(f);
+    res.flotteDetruite = f.length === 0;
+    res.champFin = { debris: champ.debris, mines: champ.mines };
+    return res;
+  }
+  // Agrège n résultats de simulerMines, tour par tour
+  function agregerMines(resultats, nbTours) {
+    var n = resultats.length, tours = [];
+    for (var t = 0; t < nbTours; t++) {
+      var l = resultats.map(function (r) { return r.tours[t] || null; });
+      var perdus = resultats.map(function (r) { return r.nbDepart - (r.tours[t] ? r.tours[t].nbFin : (r.tours.length ? r.tours[r.tours.length - 1].nbFin : r.nbDepart)); }).sort(function (a, b) { return a - b; });
+      var moy = function (f) { var s = 0, k = 0; l.forEach(function (x) { if (x) { s += f(x); k++; } }); return k ? s / k : 0; };
+      tours.push({
+        presents: l.filter(Boolean).length / n,
+        champAvant: { debris: moy(function (x) { return x.champAvant.debris; }), mines: moy(function (x) { return x.champAvant.mines; }) },
+        champApres: { debris: moy(function (x) { return x.champApres.debris; }), mines: moy(function (x) { return x.champApres.mines; }) },
+        dragage: moy(function (x) { return x.dragage; }),
+        degats: moy(function (x) { return x.degats.debris + x.degats.mines; }),
+        interne: moy(function (x) { return x.interne; }),
+        perdusCumul: { moyenne: perdus.reduce(function (s, x) { return s + x; }, 0) / n, q10: quantile(perdus, 0.1), q50: quantile(perdus, 0.5), q90: quantile(perdus, 0.9) },
+        detruite: resultats.filter(function (r) { return r.tours.length <= t + 1 && r.flotteDetruite && (r.tours.length === t + 1 || r.tours.length < t + 1); }).length / n,
+      });
+    }
+    var types = {};
+    resultats.forEach(function (r) {
+      Object.keys(r.depart).forEach(function (ty) { (types[ty] = types[ty] || { depart: r.depart[ty][0], pertes: [] }).pertes.push(r.depart[ty][0] - (r.survivants[ty] ? r.survivants[ty][0] : 0)); });
+    });
+    Object.keys(types).forEach(function (ty) {
+      var x = types[ty], tri = x.pertes.slice().sort(function (a, b) { return a - b; });
+      types[ty] = { depart: x.depart, moyenne: tri.reduce(function (s, y) { return s + y; }, 0) / n, q10: quantile(tri, 0.1), q90: quantile(tri, 0.9),
+        toutPerdu: tri.filter(function (y) { return y === x.depart; }).length / n };
+    });
+    var pf = resultats.map(function (r) { return r.puissanceFin; }).sort(function (a, b) { return a - b; });
+    return { n: n, tours: tours, types: types, detruite: resultats.filter(function (r) { return r.flotteDetruite; }).length / n,
+      puissanceFin: { moyenne: pf.reduce(function (s, x) { return s + x; }, 0) / n, q10: quantile(pf, 0.1), q90: quantile(pf, 0.9) },
+      puissanceDepart: resultats.length ? resultats[0].puissanceDepart : 0, nbDepart: resultats.length ? resultats[0].nbDepart : 0 };
+  }
+  // Dégât d'un vaisseau de taille t (index 0-9) pour une quantité Q : distribution exacte (pour l'aide)
+  function distributionDegatDebris(Q, t) {
+    var dist = {}, total = 0;
+    for (var r = 0; r < 500; r++) {
+      var m = Math.max(1, trunc(trunc(Q / (r + 1)) / (11 - t)));
+      // aléa(m) uniforme sur 0..m-1, puis /10
+      var parValeur = {};
+      for (var x = 0; x < m; x++) { var d = trunc(x / 10); parValeur[d] = (parValeur[d] || 0) + 1; }
+      Object.keys(parValeur).forEach(function (d) { dist[d] = (dist[d] || 0) + parValeur[d] / m / 500; });
+    }
+    var moy = 0; Object.keys(dist).forEach(function (d) { moy += +d * dist[d]; total += dist[d]; });
+    return { moyenne: moy, pZero: dist[0] || 0, dist: dist };
   }
 
   // ---------------------------------------------------------------- statistiques
@@ -702,6 +1212,8 @@
     preparerHeros: preparerHeros, niveauExperience: niveauExperience, niveauMoral: niveauMoral,
     niveauPuissance: niveauPuissance, chanceDeToucher: chanceDeToucher, combattre: combattre, agreger: agreger,
     collisionsInternes: collisionsInternes, estimerCollisions: estimerCollisions,
+    simulerMines: simulerMines, agregerMines: agregerMines, distributionDegatDebris: distributionDegatDebris,
+    combattrePlanetes: combattrePlanetes, agregerPlanetes: agregerPlanetes, miliceDeDepart: miliceDeDepart, DIRECTIVES: DIRECTIVES,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else racine.MoteurCombat = API;

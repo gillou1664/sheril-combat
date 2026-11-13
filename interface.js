@@ -70,7 +70,7 @@
           var r = D.integrer(reg, lu, f.name);
           total.plans += r.plans; total.rencontres += r.rencontres; total.flottes += r.flottes || 0;
           return f.name + ' : ' + (lu.type === 'rapport' ? 'rapport du tour ' + lu.tour + ', ' + r.flottes + ' flottes, ' : '') +
-            r.plans + ' plans' + (r.combats ? ', ' + r.combats + ' combats de flottes' : '') + (r.rencontres ? ', ' + r.rencontres + ' vaisseaux rencontrés à compléter' : '') + (r.scenarios ? ', ' + r.scenarios + ' scénarios' : '');
+            r.plans + ' plans' + (r.combats ? ', ' + r.combats + ' combats de flottes' : '') + (r.attaquesPlanetes ? ', ' + r.attaquesPlanetes + ' attaques de planètes' : '') + (r.rencontres ? ', ' + r.rencontres + ' vaisseaux rencontrés à compléter' : '') + (r.scenarios ? ', ' + r.scenarios + ' scénarios' : '');
         } catch (err) { message('err', esc(f.name) + ' : ' + esc(err.message)); return null; }
       });
     })).then(function (lignes) {
@@ -143,7 +143,7 @@
     return cacheCollisions[cle];
   }
   function resumeCamp(i) {
-    var camp = etat.camps[i], as = 0, ap = 0, p = 0, n = 0, prix = 0, minerai = 0, pdc = 0, maxCombat = 0, err = [];
+    var camp = campPar(i), as = 0, ap = 0, p = 0, n = 0, prix = 0, minerai = 0, pdc = 0, maxCombat = 0, err = [];
     var h = M.preparerHeros(camp.heros);
     camp.lignes.forEach(function (l) {
       var pl = planCompile(l.plan);
@@ -207,15 +207,17 @@
     rendreDuel();
   }
 
+  // Camp par clé : 0 et 1 pour l'onglet Flottes, 'p' pour la flotte du combat planétaire
+  function campPar(k) { return k === 'p' ? etat.planetaire.flotte : k === 'm' ? etat.mines.flotte : etat.camps[+k]; }
   function rendreCamp(i) {
-    var c = etat.camps[i];
+    var c = campPar(i);
     var fl = reg.flottes && reg.flottes.liste ? reg.flottes.liste : [];
     var h = c.heros;
     var s = c.strategie;
     var types = {};
     c.lignes.forEach(function (l) { types[l.plan] = 1; });
     var html = '<div class="card" data-camp="' + i + '">' +
-      '<div class="titreCamp"><span class="puce" style="background:var(--camp' + i + ')"></span><h2 style="margin:0">' + (i === 0 ? 'Attaquant' : 'Défenseur') + '</h2>' +
+      '<div class="titreCamp"><span class="puce" style="background:var(--camp' + (i === 'p' || i === 'm' ? 0 : i) + ')"></span><h2 style="margin:0">' + (i === 'p' ? 'Flotte attaquante' : i === 'm' ? 'Flotte sur la case' : i === 0 ? 'Attaquant' : 'Défenseur') + '</h2>' +
       '<input data-champ="nom" value="' + esc(c.nom) + '" style="flex:1"></div>';
     if (fl.length) {
       html += '<div class="ligne"><label>Importer une de mes flottes (T' + esc(reg.flottes.tour) + ')</label><select data-action="choixFlotte">' +
@@ -238,6 +240,7 @@
       '<div class="ligne"><button class="sec" data-action="ajoutLigne">+ Ajouter un type de vaisseau</button>' +
       '<label title="Niveau de maîtrise militaire du commandant : chaque niveau retire 2 à la force des collisions internes de fin de tour">Maîtrise militaire <select data-champ="militaire">' +
       ['—', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'].map(function (r, k) { return '<option value="' + k + '"' + (k === (+c.militaire || 0) ? ' selected' : '') + '>' + r + '</option>'; }).join('') + '</select></label></div>';
+    if (i !== 'm') {
     // héros
     html += '<details' + (h ? ' open' : '') + '><summary>Héros' + (h ? ' : ' + esc(h.nom || 'présent') : ' (aucun)') + '</summary>' +
       '<div class="ligne"><label><input type="checkbox" data-action="heros"' + (h ? ' checked' : '') + '> héros sur la flotte</label>' +
@@ -257,7 +260,8 @@
     }
     html += '</details>';
     // stratégie
-    html += '<details' + (s.agressivite !== 3 || s.typeCible !== 0 || Object.keys(s.positions || {}).length || Object.keys(s.cibles || {}).length ? ' open' : '') + '><summary>Stratégie : ' + AGRESSIVITE[s.agressivite] + ', cible ' + CIBLES[s.typeCible].toLowerCase() + '</summary>' +
+    if (i === 'p') html += htmlStrategiePlanetaire(s);
+    else html += '<details' + (s.agressivite !== 3 || s.typeCible !== 0 || Object.keys(s.positions || {}).length || Object.keys(s.cibles || {}).length ? ' open' : '') + '><summary>Stratégie : ' + AGRESSIVITE[s.agressivite] + ', cible ' + CIBLES[s.typeCible].toLowerCase() + '</summary>' +
       '<div class="ligne"><label>Agressivité <select data-strat="agressivite">' + AGRESSIVITE.map(function (a, k) { return '<option value="' + k + '"' + (k === s.agressivite ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label>' +
       '<label>Cible principale <select data-strat="typeCible">' + CIBLES.map(function (a, k) { return '<option value="' + k + '"' + (k === s.typeCible ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label></div>' +
       '<div class="muted" style="font-size:12px">Fuite : Fuyard toujours, Prudent sous la moitié de la puissance adverse, Normal sous le quart, Combatif sous le huitième, Rage jamais, Pillage si l\'adversaire n\'a aucun vaisseau du type visé.</div>' +
@@ -270,6 +274,7 @@
       }).join('') + '</tbody></table>' +
       (i === 1 ? '<label style="display:block;margin-top:6px"><input type="checkbox" data-action="bugMiroir"' + (etat.bugMiroir === false ? '' : ' checked') + '> Bizarrerie du moteur : un vaisseau défenseur sur deux d\'un même type garde la position non retournée (le Java modifie la stratégie en place)</label>' : '') +
       '</details>';
+    }
     var r = resumeCamp(i);
     html += '<div class="resume">' + texteResume(r) + '</div>' +
       (r.erreurs.length ? '<div class="msg warn">Plan sans composition : ' + r.erreurs.map(esc).join(', ') + '. Complétez-le dans l\'onglet Plans.</div>' : '') +
@@ -302,9 +307,16 @@
   // événements de la vue Flottes
   var vueF = $('#vue-flottes');
   vueF.addEventListener('change', function (e) {
+    var r = changementCamp(e);
+    if (!r) return;
+    memoriser();
+    if (r.restructure) rendreFlottes(); else { majResumes(); }
+  });
+  // Modification d'un champ d'une carte de flotte (onglets Flottes et Combat planétaire) ; null si hors carte
+  function changementCamp(e) {
     var t = e.target, carte = t.closest('[data-camp]');
-    if (!carte) return;
-    var c = etat.camps[+carte.dataset.camp], tr = t.closest('tr');
+    if (!carte) return null;
+    var c = campPar(carte.dataset.camp), tr = t.closest('tr');
     var restructure = false;
     if (t.dataset.champ === 'nom') c.nom = t.value;
     else if (t.dataset.champ === 'militaire') c.militaire = +t.value;
@@ -334,9 +346,8 @@
     } else if (t.dataset.action === 'heros') {
       c.heros = t.checked ? { nom: '', att: 0, def: 0, mor: 0, vit: 0, race: 0, competences: {} } : null; restructure = true;
     } else if (t.dataset.action === 'bugMiroir') etat.bugMiroir = t.checked;
-    memoriser();
-    if (restructure) rendreFlottes(); else { majResumes(); }
-  });
+    return { restructure: restructure, cle: carte.dataset.camp };
+  }
   function majResumes() {
     // résumé de camp et duel sans tout redessiner
     [0, 1].forEach(function (i) {
@@ -384,7 +395,34 @@
   vueF.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     if (b.dataset.egaliser != null) { egaliser(+b.dataset.egaliser, $('#egalRessource').value); memoriser(); rendreFlottes(); return; }
-    var carte = b.closest('[data-camp]'), c = carte ? etat.camps[+carte.dataset.camp] : null;
+    var a = b.dataset.action || b.id;
+    if (actionCamp(b)) { /* ligne ajoutée ou retirée, flotte importée */ }
+    else if (a === 'scSauver') {
+      var nom = $('#scNom').value.trim();
+      if (!nom) { message('warn', 'Donnez un nom au scénario.'); return; }
+      etat.nomScenario = nom;
+      reg.scenarios[nom] = JSON.parse(JSON.stringify({ camps: etat.camps, bugMiroir: etat.bugMiroir }));
+      message('ok', 'Scénario « ' + esc(nom) + ' » enregistré.', 4000);
+    }
+    else if (a === 'scCharger' || a === 'scSuppr') {
+      var n2 = $('#scListe').value; if (!n2) return;
+      if (a === 'scCharger') { var sc = JSON.parse(JSON.stringify(reg.scenarios[n2])); etat.camps = sc.camps; etat.bugMiroir = sc.bugMiroir; etat.nomScenario = n2; etat.combatReel = null; }
+      else if (confirm('Supprimer le scénario « ' + n2 + ' » ?')) delete reg.scenarios[n2];
+    }
+    else if (a === 'inverser') { etat.camps.reverse(); if (etat.combatReel) etat.combatReel.inverse = !etat.combatReel.inverse; }
+    else if (a === 'cbImporter') { var cb = reg.combats[$('#cbListe').value]; if (cb) importerCombat(cb); }
+    else if (a === 'cbOublier') { etat.combatReel = null; }
+    else if (a === 'reinit') { if (!confirm('Revenir aux flottes d\'exemple ?')) return; var g = etat; etat = etatDefaut(); etat.n = g.n; etat.planetaire = g.planetaire; }
+    else if (a === 'allerResultats') { montrer('resultats'); lancerUnique(); return; }
+    else return;
+    memoriser(); rendreFlottes();
+  });
+
+
+  // Boutons d'une carte de flotte (onglets Flottes et Combat planétaire) ; true si traité
+  function actionCamp(b) {
+    var carte = b.closest('[data-camp]'), c = carte ? campPar(carte.dataset.camp) : null;
+    if (!c) return false;
     var a = b.dataset.action || b.id;
     if (a === 'ajoutLigne') { c.lignes.push({ plan: c.lignes.length ? c.lignes[c.lignes.length - 1].plan : 'Fregate standard', nombre: 1, moral: 4500, experience: 0, race: c.lignes.length ? c.lignes[0].race : 0 }); }
     else if (a === 'supprLigne') { c.lignes.splice(+b.closest('tr').dataset.ligne, 1); }
@@ -405,27 +443,9 @@
         if (r0 && r0 > f.as + f.ap) message('warn', 'La flotte « ' + esc(f.nom) + ' » est endommagée (AS + AP ' + (f.as + f.ap) + ' au lieu de ' + r0 + ') : le simulateur la prend intacte.');
       }
     }
-    else if (a === 'scSauver') {
-      var nom = $('#scNom').value.trim();
-      if (!nom) { message('warn', 'Donnez un nom au scénario.'); return; }
-      etat.nomScenario = nom;
-      reg.scenarios[nom] = JSON.parse(JSON.stringify({ camps: etat.camps, bugMiroir: etat.bugMiroir }));
-      message('ok', 'Scénario « ' + esc(nom) + ' » enregistré.', 4000);
-    }
-    else if (a === 'scCharger' || a === 'scSuppr') {
-      var n2 = $('#scListe').value; if (!n2) return;
-      if (a === 'scCharger') { var sc = JSON.parse(JSON.stringify(reg.scenarios[n2])); etat.camps = sc.camps; etat.bugMiroir = sc.bugMiroir; etat.nomScenario = n2; etat.combatReel = null; }
-      else if (confirm('Supprimer le scénario « ' + n2 + ' » ?')) delete reg.scenarios[n2];
-    }
-    else if (a === 'inverser') { etat.camps.reverse(); if (etat.combatReel) etat.combatReel.inverse = !etat.combatReel.inverse; }
-    else if (a === 'cbImporter') { var cb = reg.combats[$('#cbListe').value]; if (cb) importerCombat(cb); }
-    else if (a === 'cbOublier') { etat.combatReel = null; }
-    else if (a === 'reinit') { if (!confirm('Revenir aux flottes d\'exemple ?')) return; var g = etat; etat = etatDefaut(); etat.n = g.n; }
-    else if (a === 'allerResultats') { montrer('resultats'); lancerUnique(); return; }
-    else return;
-    memoriser(); rendreFlottes();
-  });
-
+    else return false;
+    return true;
+  }
 
   // ------------------------------------------------------------------ combats réels (rapport.xml)
   function listeCombats() {
@@ -1168,8 +1188,657 @@
     if (edition && (a === 'nouveau' || a === 'dupliquer' || a === 'modifier' || a === 'completer')) $('#editeur').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
+  // ------------------------------------------------------------------ combat planétaire
+  // Une flotte (même carte que l'onglet Flottes) contre les planètes d'un système (M.combattrePlanetes).
+  var DIRECTIVES_P = [[1, 'Attaque système'], [5, 'Attaque de planète'], [4, 'Pillage système'], [6, 'Pillage de planète'], [7, 'Éradication de planète']];
+  var ARRETS = { combativite: 'combativité épuisée', puissance: 'puissance sous 50', flotte: 'flotte détruite', aucun: 'toutes les cibles traitées' };
+  function planetaireDefaut() {
+    var f = campDefaut('Ma flotte', 'Fregate standard', 6);
+    f.lignes.push({ plan: 'Grand Bombardier standard', nombre: 3, moral: 4500, experience: 0, race: 0 });
+    return { flotte: f, directive: 1, cible: 0, ordre: 'hasard', n: 1000, graine: '', reel: null,
+      proprios: [{ nom: 'Neutre', protege: false, defense: false, armement: false, gouverneur: null }],
+      planetes: [
+        { nom: 'Planète 1', proprio: 0, population: 150, stabilite: 100, milice: '', batiments: [{ code: 'mineI', nombre: 2 }] },
+        { nom: 'Planète 2', proprio: 0, population: 400, stabilite: 80, milice: '', batiments: [{ code: 'battlaI', nombre: 1 }] },
+        { nom: 'Planète 3', proprio: 0, population: 90, stabilite: 100, milice: '', batiments: [] }] };
+  }
+  if (!etat.planetaire) etat.planetaire = planetaireDefaut();
+  function proprioDefaut(nom) { return { nom: nom, protege: false, defense: false, armement: false, gouverneur: null }; }
+
+  var optionsBatimentsCache = null;
+  function optionsBatiments(choisi) {
+    if (!optionsBatimentsCache) {
+      var groupes = { 'Défense': [], 'Boucliers planétaires': [], 'Autres': [] };
+      Object.keys(CAT.batiments).forEach(function (k) {
+        var b = CAT.batiments[k];
+        (b.arme ? groupes['Défense'] : b.bouclier ? groupes['Boucliers planétaires'] : groupes['Autres']).push(b);
+      });
+      optionsBatimentsCache = groupes;
+    }
+    var html = '';
+    Object.keys(optionsBatimentsCache).forEach(function (g) {
+      html += '<optgroup label="' + g + '">' + optionsBatimentsCache[g].map(function (b) {
+        return '<option value="' + b.code + '"' + (b.code === choisi ? ' selected' : '') + '>' + esc(b.nom) + '</option>';
+      }).join('') + '</optgroup>';
+    });
+    return html;
+  }
+  function texteBatiment(code) {
+    var b = CAT.batiments[code]; if (!b) return code;
+    var a = b.arme ? CAT.composants[b.arme] : null;
+    return b.nom + ' : structure ' + fmt(b.structure) + (a ? ', ' + esc(a.nom) + ' (50 salves par tour, dégâts coque ' + a.arme.degatCoque + ', bouclier ' + a.arme.degatBouclier + ')' : '') +
+      (b.bouclier ? ' ; tant qu\'il tient, toute la flotte tire sur lui et la milice n\'est pas touchée' : '');
+  }
+  function milicePlanete(p) {
+    var pl = etat.planetaire, pr = pl.proprios[+p.proprio || 0] || {};
+    return M.miliceDeDepart({ population: p.population, stabilite: p.stabilite }, pr);
+  }
+
+  function htmlStrategiePlanetaire(s) {
+    var c = etat.planetaire.flotte, strato = 0, sol = 0;
+    c.lignes.forEach(function (l) {
+      var p = planCompile(l.plan), k = +l.nombre || 0; if (!p) return;
+      var ag = s.agressivite, st = p.stats;
+      if (ag === 1 || ag === 2) strato += k;
+      else if (ag === 0 || ag === 3) { if (st.bombardier) strato += k; else sol += k; }
+      else if (ag === 4) { if (!st.chasseur) strato += k; else sol += k; }
+      else sol += k;
+    });
+    return '<details' + (s.agressivite !== 3 ? ' open' : '') + '><summary>Stratégie : ' + AGRESSIVITE[s.agressivite] + '</summary>' +
+      '<div class="ligne"><label>Agressivité <select data-strat="agressivite">' + AGRESSIVITE.map(function (a, k) { return '<option value="' + k + '"' + (k === s.agressivite ? ' selected' : '') + '>' + a + '</option>'; }).join('') + '</select></label>' +
+      '<span>stratosphère <b>' + strato + '</b> · air-sol <b>' + sol + '</b></span></div>' +
+      '<div class="muted" style="font-size:12px">En combat planétaire, l\'agressivité répartit la flotte (<code>Flotte.forceAttaqueStratospherique</code> / <code>forceAttaqueAirSol</code>). ' +
+      'Normal ou Pillage : les vaisseaux qui ont une arme de combat planétaire bombardent depuis la stratosphère, les autres attaquent en air-sol. Combatif : seuls ceux qui ont une arme spatiale vont en air-sol. ' +
+      'Prudent ou Fuyard : tout en stratosphère (seules les armes planétaires tirent, la milice ne riposte pas). Rage : tout en air-sol. ' +
+      'Les batteries visent la stratosphère s\'il y a quelqu\'un, sinon l\'air-sol ; la milice ne tire que sur l\'air-sol.</div></details>';
+  }
+
+  function listeAttaquesPlanetes() {
+    var l = Object.keys(reg.attaquesPlanetes || {}).map(function (k) { return reg.attaquesPlanetes[k]; });
+    return l.sort(function (a, b) { return b.tour - a.tour || a.position.localeCompare(b.position); });
+  }
+  function titreAttaque(s) {
+    var noms = s.combats.map(function (c) { return c.initial.planete.nom; });
+    return 'T' + s.tour + ' en ' + s.position.replace(/^0_/, '').replace('_', '-') + ' : ' + (s.attaquant === s.moi ? 'vous' : 'cdt ' + s.attaquant) + ' contre ' +
+      s.combats.length + ' planète(s) (' + noms.slice(0, 3).join(', ') + (noms.length > 3 ? '…' : '') + '), ' + s.fin + ' tours';
+  }
+
+  function rendrePlanetaire() {
+    var v = $('#vue-planetes'); if (!v) return;
+    if (!$('#pConfig', v)) {
+      v.innerHTML = '<div id="pConfig"></div>' +
+        '<div class="card"><div class="ligne"><label>Graine <input id="pGraine" placeholder="au hasard" style="width:110px"></label>' +
+        '<button class="go" id="pUnique">▶ Un combat</button><span style="width:20px"></span>' +
+        '<label>Nombre de combats <input type="number" id="pN" min="10" step="100"></label>' +
+        '<button class="go" id="pStats">📊 Statistiques</button><button class="sec" id="pStop" disabled>■ Arrêter</button></div>' +
+        '<div class="barre" id="pBarre" hidden><div></div></div><div class="muted" id="pProgres"></div></div>' +
+        '<div class="card" id="pCarteUnique" hidden></div><div class="card" id="pCarteStats" hidden></div>';
+    }
+    var pl = etat.planetaire;
+    $('#pGraine').value = pl.graine || ''; $('#pN').value = pl.n || 1000;
+    var html = '';
+    // imports
+    var sys = reg.systemes && reg.systemes.liste ? reg.systemes.liste : [], att = listeAttaquesPlanetes();
+    html += '<div class="card"><div class="ligne"><b>Importer</b>' +
+      (sys.length ? '<select id="pSysListe">' + sys.map(function (s, k) { return '<option value="' + k + '">' + esc(s.nom) + ' (' + esc(s.pos.replace(/^0_/, '').replace('_', '-')) + ', ' + s.planetes.length + ' planètes)</option>'; }).join('') + '</select><button class="sec" id="pSysImporter">⤓ un de mes systèmes (T' + esc(reg.systemes.tour) + ')</button>' : '') +
+      (att.length ? '<select id="pAttListe">' + att.map(function (s) { return '<option value="' + esc(s.cle) + '"' + (pl.reel && pl.reel.cle === s.cle ? ' selected' : '') + '>' + esc(titreAttaque(s)) + '</option>'; }).join('') + '</select><button class="sec" id="pAttImporter">⤓ une attaque réelle</button>' : '') +
+      (!sys.length && !att.length ? '<span class="muted">Chargez un rapport.xml (bouton « 📂 Charger des fichiers ») pour importer vos systèmes ou les attaques de planètes du tour.</span>' : '') +
+      (pl.reel ? '<span class="muted">comparé au réel : <b>' + esc(pl.reel.titre) + '</b></span><button class="mini" id="pReelOublier" title="Ne plus comparer">✕</button>' : '') +
+      '<span style="flex:1"></span><button class="sec" id="pReinit">Réinitialiser</button></div>' +
+      '<div class="muted" style="font-size:12px">Un système importé donne la population, la stabilité et les bâtiments de chaque planète, la politique Défense, le stock d\'Armement du poste et votre gouverneur ; vos planètes sont marquées « protégées » (décochez pour simuler une attaque contre vous). ' +
+      'Une attaque réelle reprend la flotte, l\'ordre réel des planètes, leur milice et leurs bâtiments au début de chaque combat ; les statistiques la comparent alors au résultat réel.</div></div>';
+    html += rendreCamp('p') + rendreSysteme();
+    $('#pConfig').innerHTML = html;
+  }
+
+  function rendreSysteme() {
+    var pl = etat.planetaire, unique = pl.directive === 5 || pl.directive === 6 || pl.directive === 7;
+    var html = '<div class="card" id="pSysteme"><div class="titreCamp"><span class="puce" style="background:var(--camp1)"></span><h2 style="margin:0">Système visé</h2></div>' +
+      '<div class="ligne"><label>Directive <select data-pchamp="directive">' + DIRECTIVES_P.map(function (d) { return '<option value="' + d[0] + '"' + (d[0] === pl.directive ? ' selected' : '') + '>' + d[1] + '</option>'; }).join('') + '</select></label>' +
+      (unique ? '<label>Planète visée <select data-pchamp="cible">' + pl.planetes.map(function (p, k) { return '<option value="' + k + '"' + (k === +pl.cible ? ' selected' : '') + '>' + esc(p.nom) + '</option>'; }).join('') + '</select></label>'
+        : '<label title="Le jeu attaque les planètes dans un ordre au hasard (Utile.ordreAuHasard)">Ordre <select data-pchamp="ordre"><option value="hasard"' + (pl.ordre !== 'liste' ? ' selected' : '') + '>au hasard, comme le jeu</option><option value="liste"' + (pl.ordre === 'liste' ? ' selected' : '') + '>celui de la liste</option></select></label>') + '</div>';
+    // propriétaires
+    html += '<h3>Propriétaires</h3><div class="tablewrap"><table><thead><tr><th>Nom</th><th title="Vos planètes, ou celles d\'un commandant avec qui vous avez un PNA ou une alliance : elles ne sont pas attaquées">Protégé</th><th title="Politique Défense dans ce système : milice × 1,5, plafonnée à la population">Défense</th><th title="Au moins 100 Armement au poste commercial du système : milice × 1,5, plafonnée à la population">Armement</th><th title="Gouverneur du système : son attaque aide les batteries et la milice, sa défense et son inspiration fanatique gênent les tirs de la flotte">Gouverneur</th><th></th></tr></thead><tbody>' +
+      pl.proprios.map(function (pr, k) {
+        var g = pr.gouverneur;
+        return '<tr data-proprio="' + k + '"><td><input data-pc="nom" value="' + esc(pr.nom) + '" style="width:130px"></td>' +
+          '<td><input type="checkbox" data-pc="protege"' + (pr.protege ? ' checked' : '') + '></td>' +
+          '<td><input type="checkbox" data-pc="defense"' + (pr.defense ? ' checked' : '') + '></td>' +
+          '<td><input type="checkbox" data-pc="armement"' + (pr.armement ? ' checked' : '') + '></td>' +
+          '<td><label><input type="checkbox" data-pc="gouverneur"' + (g ? ' checked' : '') + '></label>' +
+          (g ? ' <label title="Attaque">att <input type="number" class="court" min="0" data-pg="att" value="' + esc(g.att) + '"></label> <label title="Défense">déf <input type="number" class="court" min="0" data-pg="def" value="' + esc(g.def) + '"></label>' +
+            ' <label title="Inspiration fanatique">insp. <select data-pgc="5">' + [0, 1, 2, 3, 4, 5].map(function (n) { return '<option value="' + n + '"' + (n === (+(g.competences || {})[5] || 0) ? ' selected' : '') + '>' + (n ? ROMAINS[n] : '—') + '</option>'; }).join('') + '</select></label>' +
+            ' <label title="Maîtrise de l\'attaque">m.att <select data-pgc="1">' + [0, 1, 2, 3, 4, 5].map(function (n) { return '<option value="' + n + '"' + (n === (+(g.competences || {})[1] || 0) ? ' selected' : '') + '>' + (n ? ROMAINS[n] : '—') + '</option>'; }).join('') + '</select></label>' +
+            ' <label title="Maîtrise de la défense">m.déf <select data-pgc="2">' + [0, 1, 2, 3, 4, 5].map(function (n) { return '<option value="' + n + '"' + (n === (+(g.competences || {})[2] || 0) ? ' selected' : '') + '>' + (n ? ROMAINS[n] : '—') + '</option>'; }).join('') + '</select></label>' : '') + '</td>' +
+          '<td>' + (pl.proprios.length > 1 ? '<button class="mini danger" data-paction="supprProprio" title="Retirer">✕</button>' : '') + '</td></tr>';
+      }).join('') + '</tbody></table></div><div class="ligne"><button class="sec" data-paction="ajoutProprio">+ Ajouter un propriétaire</button></div>';
+    // planètes
+    html += '<h3>Planètes</h3><div class="tablewrap"><table><thead><tr><th>Planète</th><th>Propriétaire</th><th class="n">Population</th><th class="n">Stabilité</th><th class="n" title="Milice = population × stabilité / 100 (× 1,5 en Défense, × 1,5 avec Armement, plafond = population). Saisissez une valeur pour l\'imposer (par exemple celle d\'un rapport de combat).">Milice</th><th>Bâtiments</th><th></th></tr></thead><tbody>' +
+      pl.planetes.map(function (p, k) {
+        var pr = pl.proprios[+p.proprio || 0] || {}, calc = milicePlanete(p);
+        return '<tr data-planete="' + k + '"' + (pr.protege ? ' style="opacity:.55" title="Planète protégée : non attaquée"' : '') + '><td><input data-pc="nom" value="' + esc(p.nom) + '" style="width:100px"></td>' +
+          '<td><select data-pc="proprio">' + pl.proprios.map(function (x, j) { return '<option value="' + j + '"' + (j === (+p.proprio || 0) ? ' selected' : '') + '>' + esc(x.nom) + '</option>'; }).join('') + '</select></td>' +
+          '<td class="n"><input type="number" min="0" data-pc="population" value="' + esc(p.population) + '"></td>' +
+          '<td class="n"><input type="number" min="0" max="100" class="court" data-pc="stabilite" value="' + esc(p.stabilite) + '"></td>' +
+          '<td class="n"><input type="number" min="0" class="court" data-pc="milice" placeholder="' + calc + '" value="' + esc(p.milice) + '" style="width:64px"></td>' +
+          '<td class="bats">' + (p.batiments || []).map(function (b, j) {
+            return '<span class="ligne" style="margin:2px 0;gap:4px" data-bat="' + j + '" title="' + esc(texteBatiment(b.code)) + '"><input type="number" min="0" class="court" data-pb="nombre" value="' + esc(b.nombre) + '" style="width:44px"><select data-pb="code" style="max-width:190px">' + optionsBatiments(b.code) + '</select>' +
+              (+b.dommages > 0 ? '<span class="pastille manque" title="Dégâts déjà encaissés par bâtiment">dégâts ' + b.dommages + '</span>' : '') + '<button class="mini danger" data-paction="supprBat" title="Retirer">✕</button></span>';
+          }).join('') + '<button class="mini" data-paction="ajoutBat">+ bâtiment</button></td>' +
+          '<td><button class="mini danger" data-paction="supprPlanete" title="Retirer">✕</button></td></tr>';
+      }).join('') + '</tbody></table></div><div class="ligne"><button class="sec" data-paction="ajoutPlanete">+ Ajouter une planète</button></div>';
+    // résumé
+    var cibles = pl.planetes.filter(function (p) { return !(pl.proprios[+p.proprio || 0] || {}).protege; });
+    var milice = 0, batt = 0, bouc = 0;
+    cibles.forEach(function (p) {
+      milice += p.milice !== '' && p.milice != null ? +p.milice : milicePlanete(p);
+      (p.batiments || []).forEach(function (b) { var d = CAT.batiments[b.code]; if (!d) return; if (d.arme) batt += +b.nombre || 0; if (d.bouclier) bouc += +b.nombre || 0; });
+    });
+    var r = resumeCamp('p');
+    html += '<div class="resume"><span><b>' + cibles.length + '</b> planète(s) attaquable(s)</span><span>milice totale <b>' + fmt(milice) + '</b></span><span>batteries <b>' + batt + '</b></span><span>boucliers planétaires <b>' + bouc + '</b></span></div>' +
+      '<div class="resume" id="pAvis">' + avisPlanetaire(r) + '</div></div>';
+    return html;
+  }
+  function avisPlanetaire(r) {
+    var l = [];
+    if (r.puissance < 50) l.push('<span class="msg err" style="margin:0">Puissance ' + fmt(r.puissance) + ' : sous le minimum de 50, la flotte n\'attaquera pas.</span>');
+    else if (r.puissance < 100) l.push('<span class="msg warn" style="margin:0">Puissance ' + fmt(r.puissance) + ' : le seuil de 50 est revérifié avant chaque planète, dégâts compris ; la flotte peut s\'arrêter en route.</span>');
+    l.push('<span>combativité moyenne <b>' + combativiteMoyenne() + '</b> tours, partagés entre toutes les planètes</span>');
+    return l.join('');
+  }
+  function combativiteMoyenne() {
+    var c = etat.planetaire.flotte, h = M.preparerHeros(c.heros), s = 0, n = 0;
+    c.lignes.forEach(function (l) { var k = +l.nombre || 0; if (!planCompile(l.plan)) return; s += k * (5 + M.niveauMoral(+l.moral || 0) + h.mor); n += k; });
+    return n ? Math.trunc(s / n) : 0;
+  }
+
+  // Configuration du moteur depuis l'état de l'onglet
+  function configPlanetaire() {
+    var pl = etat.planetaire, c = construireConfig([pl.flotte]);
+    var cfg = { flotte: c.cfg.camps[0], directive: pl.directive, cible: +pl.cible || 0, ordre: pl.ordre,
+      proprios: pl.proprios.map(function (p) { return { nom: p.nom, protege: p.protege, defense: p.defense, armement: p.armement, gouverneur: p.gouverneur }; }),
+      planetes: pl.planetes.map(function (p) {
+        return { nom: p.nom, proprio: +p.proprio || 0, population: +p.population || 0, stabilite: +p.stabilite || 0, milice: p.milice === '' || p.milice == null ? undefined : +p.milice,
+          batiments: (p.batiments || []).filter(function (b) { return CAT.batiments[b.code] && +b.nombre > 0; }) };
+      }) };
+    if (!cfg.planetes.length) c.erreurs.push('aucune planète');
+    else if (!cfg.planetes.some(function (p) { return !(cfg.proprios[p.proprio] || {}).protege; })) c.erreurs.push('toutes les planètes sont protégées');
+    return { cfg: cfg, erreurs: c.erreurs };
+  }
+
+  // Imports
+  function importerSysteme(s) {
+    var pl = etat.planetaire, moi = reg.systemes.commandant ? reg.systemes.commandant.numero : null;
+    var index = {}, proprios = [];
+    s.planetes.forEach(function (p) {
+      if (index[p.proprio] != null) return;
+      index[p.proprio] = proprios.length;
+      if (p.proprio === moi) proprios.push({ nom: 'Vous', protege: true, defense: s.politique === 2, armement: s.armement >= 100, gouverneur: s.gouverneur ? JSON.parse(JSON.stringify(s.gouverneur)) : null });
+      else proprios.push(proprioDefaut(p.proprio === '0' ? 'Neutre' : 'Commandant n°' + p.proprio));
+    });
+    var inconnus = {};
+    pl.proprios = proprios;
+    pl.planetes = s.planetes.map(function (p) {
+      return { nom: s.nom + ' ' + (p.num + 1), proprio: index[p.proprio], population: p.population, stabilite: p.stabilite, milice: '',
+        batiments: p.batiments.filter(function (b) { if (!CAT.batiments[b.code]) { inconnus[b.code] = 1; return false; } return true; }).map(function (b) { return { code: b.code, nombre: b.nombre }; }) };
+    });
+    pl.reel = null; pl.cible = 0;
+    message('ok', 'Système ' + esc(s.nom) + ' importé : ' + s.planetes.length + ' planètes.' + (Object.keys(inconnus).length ? ' Bâtiments inconnus ignorés : ' + Object.keys(inconnus).map(esc).join(', ') + '.' : '') +
+      ' La politique, l\'Armement et le gouverneur des autres propriétaires ne sont pas connus.', 8000);
+  }
+  function importerAttaque(s) {
+    var pl = etat.planetaire, c0 = s.combats[0], nomsBat = {};
+    Object.keys(CAT.batiments).forEach(function (k) { nomsBat[CAT.batiments[k].nom] = k; });
+    var vaisseaux = c0.initial.vaisseaux.filter(function (v) { return v.nombre > 0; });
+    var lignes = vaisseaux.map(function (v) { return { plan: v.nom, nombre: v.nombre, moral: 4500, experience: 0, race: 0, dommages: Math.floor(v.encaisses / v.nombre) }; });
+    var heros = null, nom = s.attaquant === s.moi ? 'Ma flotte' : 'Flotte du cdt ' + s.attaquant, note = [];
+    // notre flotte : retrouvée par sa composition dans le rapport du tour précédent
+    if (s.attaquant === s.moi && reg.flottesParTour && reg.flottesParTour[s.tour - 1]) {
+      var sig = function (ls) { var o = {}; ls.forEach(function (l) { o[l.plan || l.nom] = (o[l.plan || l.nom] || 0) + l.nombre; }); return Object.keys(o).sort().map(function (k) { return o[k] + ' ' + k; }).join('+'); };
+      var cible = sig(vaisseaux), f = reg.flottesParTour[s.tour - 1].filter(function (x) { return sig(x.lignes) === cible; })[0];
+      if (f) {
+        nom = f.nom;
+        lignes.forEach(function (l) {
+          var ls = f.lignes.filter(function (x) { return x.plan === l.plan; }), n = 0, m = 0, e = 0;
+          ls.forEach(function (x) { n += x.nombre; m += x.moral * x.nombre; e += x.experience * x.nombre; });
+          if (n) { l.moral = Math.round(m / n); l.experience = Math.round(e / n); l.race = ls[0].race; }
+        });
+        if (f.heros) { var comp = {}; Object.keys(f.heros.competences || {}).forEach(function (k) { comp[k] = Math.max(1, +f.heros.competences[k]); }); heros = { nom: f.heros.nom, att: f.heros.att, def: f.heros.def, mor: f.heros.mor, vit: f.heros.vit, race: f.heros.race, competences: comp }; }
+        note.push('moral, expérience et héros repris du rapport du tour ' + (s.tour - 1));
+      } else note.push('flotte introuvable au tour ' + (s.tour - 1) + ' (fusion ?) : moral 4 500 supposé');
+    } else if (s.attaquant !== s.moi) note.push('flotte adverse : moral 4 500 supposé, héros inconnu');
+    // durée : si la dernière planète tient et que la flotte reste, la combativité vaut le nombre de tours
+    var dern = s.combats[s.combats.length - 1], dt = dern.tours[dern.tours.length - 1];
+    if (dt.milice > 0 && dt.vaisseaux.some(function (v) { return v.nombre > 0; })) {
+      var hm = M.preparerHeros(heros).mor, somme = 0, nb = 0;
+      lignes.forEach(function (l) { somme += l.nombre * (5 + M.niveauMoral(l.moral) + hm); nb += l.nombre; });
+      if (nb && Math.trunc(somme / nb) !== s.fin) {
+        var niv = Math.max(0, Math.min(11, s.fin - 5 - hm)), moral = niv <= 9 ? niv * 1000 + 500 : niv === 10 ? 12000 : 15000;
+        lignes.forEach(function (l) { l.moral = moral; });
+        note.push('moral ajusté à ' + fmt(moral) + ' pour retrouver la durée réelle (' + s.fin + ' tours)');
+      }
+    }
+    pl.flotte.nom = nom; pl.flotte.lignes = lignes; pl.flotte.heros = heros;
+    pl.flotte.militaire = reg.militaireParTour && reg.militaireParTour[s.tour] || 0;
+    var index = {}, inconnus = {};
+    pl.proprios = [];
+    pl.planetes = s.combats.map(function (c) {
+      var pr = c.initial.planete.proprio;
+      if (index[pr] == null) { index[pr] = pl.proprios.length; pl.proprios.push(proprioDefaut(pr === '0' ? 'Neutre' : pr === s.moi ? 'Vous' : 'Commandant n°' + pr)); }
+      return { nom: c.initial.planete.nom, proprio: index[pr], population: c.initial.milice, stabilite: 100, milice: c.initial.milice,
+        batiments: c.initial.batiments.filter(function (b) { if (!nomsBat[b.nom]) { inconnus[b.nom] = 1; return false; } return b.nombre > 0; })
+          .map(function (b) { return { code: nomsBat[b.nom], nombre: b.nombre, dommages: Math.floor(b.encaisses / b.nombre) }; }) };
+    });
+    pl.directive = 1; pl.ordre = 'liste'; pl.cible = 0;
+    pl.reel = { cle: s.cle, titre: titreAttaque(s) };
+    var manquants = lignes.filter(function (l) { return !planCompile(l.plan); }).map(function (l) { return l.plan; });
+    message(manquants.length ? 'warn' : 'ok', 'Attaque importée : ' + s.combats.length + ' planète(s), milice imposée à celle du début de chaque combat, ordre réel. ' + note.join(' ; ') + '.' +
+      (Object.keys(inconnus).length ? ' Bâtiments inconnus ignorés : ' + Object.keys(inconnus).map(esc).join(', ') + '.' : '') +
+      (manquants.length ? ' Plans sans composition : ' + manquants.map(esc).join(', ') + ' (à compléter dans l\'onglet Plans).' : ''), 10000);
+  }
+
+  var vueP = $('#vue-planetes');
+  vueP.addEventListener('change', function (e) {
+    var pl = etat.planetaire;
+    var r = changementCamp(e);
+    if (r) { memoriser(); rendrePlanetaire(); return; }
+    var t = e.target, tr = t.closest('tr');
+    if (t.id === 'pGraine') { pl.graine = t.value.trim(); memoriser(); return; }
+    if (t.id === 'pN') { pl.n = Math.max(1, +t.value || 1000); memoriser(); return; }
+    if (t.id === 'pSysListe' || t.id === 'pAttListe') return;
+    if (t.dataset.pchamp) {
+      var k = t.dataset.pchamp;
+      pl[k] = k === 'ordre' ? t.value : +t.value;
+    } else if (tr && tr.dataset.proprio != null) {
+      var pr = pl.proprios[+tr.dataset.proprio];
+      if (t.dataset.pc === 'nom') pr.nom = t.value;
+      else if (t.dataset.pc === 'gouverneur') pr.gouverneur = t.checked ? { nom: '', att: 0, def: 0, mor: 0, vit: 0, race: -1, competences: {} } : null;
+      else if (t.dataset.pc) pr[t.dataset.pc] = t.checked;
+      else if (t.dataset.pg) pr.gouverneur[t.dataset.pg] = +t.value || 0;
+      else if (t.dataset.pgc) { pr.gouverneur.competences = pr.gouverneur.competences || {}; if (+t.value) pr.gouverneur.competences[t.dataset.pgc] = +t.value; else delete pr.gouverneur.competences[t.dataset.pgc]; }
+    } else if (tr && tr.dataset.planete != null) {
+      var p = pl.planetes[+tr.dataset.planete], sb = t.closest('[data-bat]');
+      if (sb) { var b = p.batiments[+sb.dataset.bat]; if (t.dataset.pb === 'code') { b.code = t.value; b.dommages = 0; } else b.nombre = Math.max(0, +t.value || 0); }
+      else if (t.dataset.pc === 'nom') p.nom = t.value;
+      else if (t.dataset.pc === 'proprio') p.proprio = +t.value;
+      else if (t.dataset.pc === 'milice') p.milice = t.value === '' ? '' : Math.max(0, +t.value || 0);
+      else if (t.dataset.pc === 'stabilite') p.stabilite = Math.max(0, Math.min(100, +t.value || 0));
+      else if (t.dataset.pc) p[t.dataset.pc] = Math.max(0, +t.value || 0);
+    } else return;
+    memoriser(); rendrePlanetaire();
+  });
+  vueP.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var pl = etat.planetaire, tr = b.closest('tr'), a = b.dataset.paction || b.dataset.action || b.id;
+    if (actionCamp(b)) { /* carte de la flotte */ }
+    else if (a === 'ajoutProprio') pl.proprios.push(proprioDefaut('Commandant'));
+    else if (a === 'supprProprio') {
+      var k = +tr.dataset.proprio;
+      pl.proprios.splice(k, 1);
+      pl.planetes.forEach(function (p) { if (+p.proprio === k) p.proprio = 0; else if (+p.proprio > k) p.proprio = +p.proprio - 1; });
+    }
+    else if (a === 'ajoutPlanete') { var dp = pl.planetes[pl.planetes.length - 1]; pl.planetes.push({ nom: 'Planète ' + (pl.planetes.length + 1), proprio: dp ? dp.proprio : 0, population: 100, stabilite: 100, milice: '', batiments: [] }); }
+    else if (a === 'supprPlanete') { pl.planetes.splice(+tr.dataset.planete, 1); if (+pl.cible >= pl.planetes.length) pl.cible = 0; }
+    else if (a === 'ajoutBat') pl.planetes[+tr.dataset.planete].batiments.push({ code: 'battlaI', nombre: 1 });
+    else if (a === 'supprBat') pl.planetes[+tr.dataset.planete].batiments.splice(+b.closest('[data-bat]').dataset.bat, 1);
+    else if (a === 'pSysImporter') importerSysteme(reg.systemes.liste[+$('#pSysListe').value]);
+    else if (a === 'pAttImporter') { var s = reg.attaquesPlanetes[$('#pAttListe').value]; if (s) importerAttaque(s); }
+    else if (a === 'pReelOublier') pl.reel = null;
+    else if (a === 'pReinit') { if (!confirm('Revenir à l\'exemple de départ ?')) return; etat.planetaire = planetaireDefaut(); }
+    else if (a === 'pUnique') { lancerUniqueP(); return; }
+    else if (a === 'pStats') { lancerStatsP(); return; }
+    else if (a === 'pStop') { if (calcul) calcul.arreter = true; return; }
+    else return;
+    memoriser(); rendrePlanetaire();
+  });
+
+  // Combat unique
+  function lancerUniqueP() {
+    var c = configPlanetaire();
+    if (c.erreurs.length) { message('err', 'Impossible de simuler : ' + c.erreurs.map(esc).join(', ') + '.'); return; }
+    var pl = etat.planetaire;
+    var g = pl.graine ? (parseInt(pl.graine, 10) >>> 0) : ((Math.random() * 4294967295) >>> 0);
+    var res = M.combattrePlanetes(c.cfg, g, { trace: true, catalogue: CAT });
+    rendreUniqueP(res, c.cfg);
+  }
+  function attaqueReelle() {
+    var pl = etat.planetaire;
+    return pl.reel && reg.attaquesPlanetes ? reg.attaquesPlanetes[pl.reel.cle] || null : null;
+  }
+  function htmlVaisseauxRestants(depart, fin, libelle) {
+    return Object.keys(depart).map(function (t) {
+      var d = depart[t][0], f = fin[t] ? fin[t][0] : 0;
+      return '<div class="vr-ligne"><span class="vr-nom" title="' + esc(t) + '">' + esc(t) + '</span><span class="vr-barre">' +
+        (f ? '<span class="vr-vivant" style="width:' + (100 * f / d) + '%;background:var(--camp0)"></span>' : '') +
+        (d - f ? '<span class="vr-perdu" style="width:' + (100 * (d - f) / d) + '%"></span>' : '') +
+        '</span><span class="vr-val">' + fmt(f, libelle ? 1 : 0) + ' / ' + d + '</span></div>';
+    }).join('');
+  }
+  function rendreUniqueP(res, cfg) {
+    var el = $('#pCarteUnique'); el.hidden = false;
+    var reel = attaqueReelle(), nomProprio = function (k) { return (cfg.proprios[k] || {}).nom || ''; };
+    var perdus = res.nbDepart - res.nbFin;
+    var html = '<h2>Combat unique <span class="muted" style="font-weight:400;font-size:13px">(graine ' + res.graine + ', ' + esc(M.DIRECTIVES[res.directive]) + ')</span></h2>' +
+      '<div class="tuiles"><div class="tuile"><div class="v">' + res.prises + ' / ' + res.ciblesPossibles + '</div><div class="l">planètes ' + (res.directive === 4 || res.directive === 6 ? 'pillées' : res.directive === 7 ? 'éradiquées' : 'prises') + '</div></div>' +
+      '<div class="tuile"><div class="v">' + res.tours + '</div><div class="l">tours de combat utilisés</div></div>' +
+      '<div class="tuile"><div class="v" style="font-size:16px;padding:4px 0">' + esc(ARRETS[res.arret || 'aucun']) + '</div><div class="l">fin de l\'attaque</div></div>' +
+      '<div class="tuile"><div class="v">' + perdus + '</div><div class="l">vaisseau(x) perdu(s) sur ' + res.nbDepart + '</div></div>' +
+      '<div class="tuile"><div class="v">' + fmt(res.puissanceFin) + '</div><div class="l">puissance restante (sur ' + fmt(res.puissanceDepart) + ')</div></div></div>';
+    html += '<div class="grid2"><div><h3>Vaisseaux restants</h3>' + htmlVaisseauxRestants(res.depart, res.survivants) +
+      (res.collisions && res.collisions.dommages > 0 ? '<div class="muted" style="font-size:12px">Collisions internes de fin de tour : ' + (res.collisions.nbDetruits ? '<b>' + res.collisions.nbDetruits + ' vaisseau(x) perdu(s)</b>, ' + res.nbApresCollisions + ' restent' : 'aucune perte') + '.</div>' : '') + '</div><div></div></div>';
+    // planètes dans l'ordre de l'attaque
+    var attaquees = {};
+    res.planetes.forEach(function (p) { attaquees[p.index] = p; });
+    var lignes = res.planetes.map(function (p, k) {
+      var nd = 0, nf = 0;
+      Object.keys(p.batimentsDepart).forEach(function (c) { nd += p.batimentsDepart[c][0]; });
+      Object.keys(p.batimentsFin).forEach(function (c) { nf += p.batimentsFin[c][0]; });
+      var pd = 0, pf = 0;
+      Object.keys(p.vaisseauxDepart).forEach(function (t) { pd += p.vaisseauxDepart[t][0]; });
+      Object.keys(p.vaisseauxFin).forEach(function (t) { pf += p.vaisseauxFin[t][0]; });
+      var rc = reel && reel.combats[p.index], rfin = rc ? rc.tours[rc.tours.length - 1] : null;
+      var etatP = p.arret === 'puissance' ? '<span class="camp1">non attaquée : puissance sous 50</span>' : p.prise ? '<b class="camp0">' + esc(p.resultat) + '</b>' : '<span class="camp1">tient</span>' + (p.arret ? ' (' + esc(ARRETS[p.arret]) + ')' : '');
+      return '<tr><td class="n">' + (k + 1) + '</td><td>' + esc(p.nom) + '</td><td>' + esc(nomProprio(p.proprio)) + '</td>' +
+        '<td class="n">' + (p.tables.length ? (p.tourDebut + 1) + (p.tourFin > p.tourDebut + 1 ? '–' + p.tourFin : '') : '–') + '</td>' +
+        '<td class="n">' + fmt(p.miliceDepart) + ' → <b>' + fmt(p.miliceFin) + '</b></td>' +
+        (reel ? '<td class="n">' + (rfin ? fmt(rfin.milice) + (rfin.milice === 0 ? ' (prise)' : '') : '–') + '</td>' : '') +
+        '<td class="n">' + (nd ? (nd - nf) + ' / ' + nd : '–') + '</td><td class="n">' + fmt(p.populationPerdue || 0) + '</td>' +
+        '<td class="n">' + (pd - pf ? '<span class="camp1">' + (pd - pf) + '</span>' : '0') + '</td><td>' + etatP + '</td></tr>';
+    }).join('');
+    var restes = cfg.planetes.map(function (p, i) { return { p: p, i: i }; }).filter(function (x) { return !attaquees[x.i] && !(cfg.proprios[x.p.proprio] || {}).protege; });
+    html += '<h3>Planètes, dans l\'ordre de l\'attaque</h3><div class="tablewrap"><table><thead><tr><th class="n">#</th><th>Planète</th><th>Propriétaire</th><th class="n" title="Tours de combat (numérotés à la suite sur tout le système)">Tours</th><th class="n">Milice</th>' +
+      (reel ? '<th class="n">Milice réelle</th>' : '') + '<th class="n">Bâtiments détruits</th><th class="n" title="Population perdue : la milice tuée, au plus 10 % de la population">Population perdue</th><th class="n">Vaisseaux perdus</th><th>Résultat</th></tr></thead><tbody>' + lignes + '</tbody></table></div>' +
+      (restes.length ? '<div class="muted" style="font-size:12px;margin-top:4px">Non attaquées : ' + restes.map(function (x) { return esc(x.p.nom); }).join(', ') + ' (' + esc(ARRETS[res.arret || 'aucun']) + ').</div>' : '');
+    // tableaux de chaque tour
+    html += '<details style="margin-top:10px"><summary>Tableaux de chaque tour (comme le rapport du jeu)</summary>' + res.planetes.filter(function (p) { return p.tables.length; }).map(function (p) {
+      return '<h3>' + esc(p.nom) + ' — combativité ' + p.combativite + '</h3>' + p.tables.map(function (t) {
+        return '<div style="margin:4px 0 10px"><b>Tour ' + t.tour + '</b> <span class="muted" style="font-size:12px">(' + t.strato + ' en stratosphère, ' + t.sol + ' en air-sol' + (t.degatsBatteries ? ', batteries ' + t.degatsBatteries + ' dégâts' : '') + (t.degatsMilice ? ', milice ' + t.degatsMilice + ' dégâts' : '') + ')</span>' +
+          '<div class="grid2"><div class="tablewrap"><table><thead><tr><th>Vaisseau</th><th class="n">Nombre</th><th class="n">Dommages encaissés</th><th class="n">Dommages infligés</th></tr></thead><tbody>' +
+          t.flotte.map(function (l) { return '<tr><td>' + esc(l.type) + '</td><td class="n">' + l.nombre + (l.variation ? ' <span class="camp1">(' + l.variation + ')</span>' : '') + '</td><td class="n">' + l.encaisses + (l.variationEncaisses ? ' <span class="muted">(+' + l.variationEncaisses + ')</span>' : '') + '</td><td class="n">' + l.infliges + '</td></tr>'; }).join('') +
+          '</tbody></table></div><div class="tablewrap"><table><thead><tr><th>Planète</th><th class="n">Nombre</th><th class="n">Dommages</th></tr></thead><tbody>' +
+          '<tr><td>Milice</td><td class="n">' + fmt(t.milice) + (t.milice !== t.miliceAvant ? ' <span class="camp1">(' + (t.milice - t.miliceAvant) + ')</span>' : '') + '</td><td></td></tr>' +
+          t.batiments.map(function (l) { return '<tr><td>' + esc(l.nom) + '</td><td class="n">' + l.nombre + (l.variation ? ' <span class="camp1">(' + l.variation + ')</span>' : '') + '</td><td class="n">' + l.encaisses + (l.variationEncaisses ? ' <span class="muted">(+' + l.variationEncaisses + ')</span>' : '') + '</td></tr>'; }).join('') +
+          '</tbody></table></div></div></div>';
+      }).join('');
+    }).join('') + '</details>';
+    el.innerHTML = html;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Statistiques
+  function occupeP(oui) {
+    ['#pStats', '#pUnique'].forEach(function (s) { var b = $(s); if (b) b.disabled = oui; });
+    $('#pStop').disabled = !oui; $('#pBarre').hidden = !oui;
+  }
+  function lancerStatsP() {
+    var c = configPlanetaire();
+    if (c.erreurs.length) { message('err', 'Impossible de simuler : ' + c.erreurs.map(esc).join(', ') + '.'); return; }
+    var n = Math.max(1, +$('#pN').value || 1000), ctl = { arreter: false }, resultats = [], graine = (Math.random() * 4294967295) >>> 0, t0 = performance.now();
+    calcul = ctl;
+    occupeP(true);
+    (function tranche() {
+      var t1 = performance.now();
+      while (resultats.length < n && performance.now() - t1 < 40 && !ctl.arreter) {
+        var r = M.combattrePlanetes(c.cfg, (graine + resultats.length * 2654435761) >>> 0, { catalogue: CAT });
+        r.planetes.forEach(function (p) { delete p.tables; });
+        resultats.push(r);
+      }
+      $('#pBarre > div').style.width = (100 * resultats.length / n) + '%';
+      $('#pProgres').textContent = fmt(resultats.length) + ' / ' + fmt(n) + ' combats';
+      if (resultats.length < n && !ctl.arreter) { setTimeout(tranche, 0); return; }
+      occupeP(false);
+      $('#pProgres').textContent = fmt(resultats.length) + ' combats en ' + fmt((performance.now() - t0) / 1000, 1) + ' s' + (ctl.arreter && resultats.length < n ? ' (arrêté)' : '') + '.';
+      if (resultats.length) rendreStatsP(M.agregerPlanetes(resultats), resultats, c.cfg);
+    })();
+  }
+  function rendreStatsP(a, resultats, cfg) {
+    var el = $('#pCarteStats'); el.hidden = false;
+    var reel = attaqueReelle(), nbCibles = resultats[0].ciblesPossibles;
+    var verbe = cfg.directive === 4 || cfg.directive === 6 ? 'pillées' : cfg.directive === 7 ? 'éradiquées' : 'prises';
+    var toutes = (a.prises[nbCibles] || 0) / a.n;
+    var html = '<h2>Statistiques sur ' + fmt(a.n) + ' attaques</h2><div class="tuiles">' +
+      '<div class="tuile"><div class="v">' + fmt(a.nbPrises.moyenne, 1) + '</div><div class="l">planètes ' + verbe + ' en moyenne (sur ' + nbCibles + ')</div></div>' +
+      '<div class="tuile"><div class="v">' + pct(toutes) + '</div><div class="l">toutes ' + verbe + '</div></div>' +
+      Object.keys(a.arrets).sort(function (x, y) { return a.arrets[y] - a.arrets[x]; }).map(function (k) {
+        return '<div class="tuile"><div class="v">' + pct(a.arrets[k] / a.n) + '</div><div class="l">' + esc(ARRETS[k] || k) + '</div></div>';
+      }).join('') + '</div>';
+    var p0 = cfg.flotte.vaisseaux.reduce(function (t, v) { return t + v.nombre * v.plan.stats.puissance; }, 0);
+    var survMoy = {};
+    Object.keys(a.types).forEach(function (t) { survMoy[t] = [a.types[t].depart - a.types[t].moyenne]; });
+    var dep = {};
+    Object.keys(a.types).forEach(function (t) { dep[t] = [a.types[t].depart]; });
+    html += '<div class="grid2"><div><h3>Vaisseaux restants (moyenne)</h3>' + htmlVaisseauxRestants(dep, survMoy, true) +
+      '<div class="resume"><span>puissance restante <b>' + fmt(a.puissanceFin.moyenne) + '</b> sur ' + fmt(p0) + '</span><span>vaisseaux restants <b>' + fmt(a.survivants.moyenne, 1) + '</b> (' + fmt(a.survivants.q10) + ' à ' + fmt(a.survivants.q90) + ')</span>' +
+      (a.collisions.q90 > 0 ? '<span>puis perdus en collisions de fin de tour <b>' + fmt(a.collisions.moyenne, 1) + '</b></span>' : '') + '</div></div>';
+    // histogramme du nombre de planètes prises
+    var W = 420, H = 130, bw = Math.min(48, (W - 40) / (nbCibles + 1)), maxN = 0;
+    for (var k = 0; k <= nbCibles; k++) maxN = Math.max(maxN, a.prises[k] || 0);
+    html += '<div><h3>Nombre de planètes ' + verbe + '</h3><svg viewBox="0 0 ' + W + ' ' + (H + 24) + '" width="100%" style="max-width:460px" aria-label="Répartition du nombre de planètes ' + verbe + '"><line x1="30" y1="' + H + '" x2="' + W + '" y2="' + H + '" stroke="var(--border)"/>';
+    for (k = 0; k <= nbCibles; k++) {
+      var v = a.prises[k] || 0, hh = maxN ? (v / maxN) * (H - 16) : 0, x = 34 + k * bw;
+      if (hh > 0) html += '<path d="M' + (x + 1) + ',' + H + 'V' + (H - hh + 4) + 'q0,-4 4,-4h' + Math.max(0, bw - 10) + 'q4,0 4,4V' + H + 'z" fill="var(--accent)" data-tip="' + k + ' planète(s) : ' + pct(v / a.n) + ' (' + fmt(v) + ')"></path>';
+      html += '<text x="' + (x + bw / 2) + '" y="' + (H + 15) + '" text-anchor="middle">' + k + '</text>';
+    }
+    html += '</svg></div></div>';
+    // planètes
+    html += '<h3>Par planète</h3><div class="tablewrap"><table><thead><tr><th>Planète</th><th>Propriétaire</th><th class="n">Milice de départ</th><th class="n">Attaquée</th><th class="n">' + verbe.charAt(0).toUpperCase() + verbe.slice(1) + '</th><th class="n" title="Quand elle est attaquée : moyenne, 10 % et 90 %">Milice restante</th><th class="n">Bâtiments détruits</th><th class="n">Population perdue</th>' + (reel ? '<th class="n">Réel</th>' : '') + '</tr></thead><tbody>' +
+      cfg.planetes.map(function (p, i) {
+        var pr = cfg.proprios[p.proprio] || {}, s = a.planetes[i];
+        var rc = reel && reel.combats[i], rfin = rc ? rc.tours[rc.tours.length - 1] : null;
+        var verdict = '';
+        if (rfin && s) {
+          var tri = resultats.map(function (r) { var x = r.planetes.filter(function (y) { return y.index === i; })[0]; return x ? x.miliceFin : M.miliceDeDepart(p, pr); }).sort(function (x, y) { return x - y; });
+          var lo = tri[Math.floor(0.05 * tri.length)], hi = tri[Math.min(tri.length - 1, Math.floor(0.95 * tri.length))];
+          verdict = fmt(rfin.milice) + (rfin.milice === 0 ? ' (prise)' : '') + ' ' + (rfin.milice >= lo && rfin.milice <= hi ? '<span class="pastille" style="color:var(--ok)">dans la fourchette</span>' : '<span class="pastille manque">hors fourchette ' + fmt(lo) + '–' + fmt(hi) + '</span>');
+        }
+        if (pr.protege) return '<tr style="opacity:.55"><td>' + esc(p.nom) + '</td><td>' + esc(pr.nom) + '</td><td colspan="' + (reel ? 7 : 6) + '" class="muted">protégée</td></tr>';
+        return '<tr><td>' + esc(p.nom) + '</td><td>' + esc(pr.nom) + '</td><td class="n">' + fmt(M.miliceDeDepart(p, pr)) + '</td>' +
+          '<td class="n">' + (s ? pct(s.pAttaquee) : '0 %') + '</td><td class="n"><b>' + (s ? pct(s.pPrise) : '0 %') + '</b></td>' +
+          '<td class="n">' + (s ? fmt(s.miliceFin.moyenne) + ' <span class="muted">(' + fmt(s.miliceFin.q10) + '–' + fmt(s.miliceFin.q90) + ')</span>' : '–') + '</td>' +
+          '<td class="n">' + (s ? fmt(s.batimentsDetruits, 1) : '–') + '</td><td class="n">' + (s ? fmt(s.populationPerdue.moyenne) : '–') + '</td>' + (reel ? '<td class="n">' + verdict + '</td>' : '') + '</tr>';
+      }).join('') + '</tbody></table></div>';
+    // pertes par type
+    html += '<h3>Pertes de la flotte</h3><div class="tablewrap"><table><thead><tr><th>Type</th><th class="n">Départ</th><th class="n">Pertes moyennes</th><th class="n" title="10 % des attaques font moins de pertes, 10 % en font plus">Pertes 10 % · médiane · 90 %</th><th class="n">Tous perdus</th>' + (reel ? '<th class="n">Restants réels</th>' : '') + '</tr></thead><tbody>' +
+      Object.keys(a.types).map(function (t) {
+        var x = a.types[t], rv = '';
+        if (reel) {
+          var dern = reel.combats[reel.combats.length - 1], dt = dern.tours[dern.tours.length - 1];
+          var nr = (dt.vaisseaux.filter(function (v) { return v.nom === t; })[0] || { nombre: 0 }).nombre;
+          var tri = resultats.map(function (r) { return (r.survivants[t] || [0])[0]; }).sort(function (u, w) { return u - w; });
+          var lo = tri[Math.floor(0.05 * tri.length)], hi = tri[Math.min(tri.length - 1, Math.floor(0.95 * tri.length))];
+          rv = nr + ' ' + (nr >= lo && nr <= hi ? '<span class="pastille" style="color:var(--ok)">dans la fourchette</span>' : '<span class="pastille manque">simulé ' + lo + '–' + hi + '</span>');
+        }
+        return '<tr><td>' + esc(t) + '</td><td class="n">' + x.depart + '</td><td class="n">' + fmt(x.moyenne, 2) + '</td><td class="n">' + fmt(x.q10) + ' · ' + fmt(x.q50) + ' · ' + fmt(x.q90) + '</td><td class="n">' + pct(x.toutPerdu) + '</td>' + (reel ? '<td class="n">' + rv + '</td>' : '') + '</tr>';
+      }).join('') + '</tbody></table></div>';
+    if (reel) {
+      var reelPrises = reel.combats.filter(function (c) { return c.tours[c.tours.length - 1].milice === 0; }).length;
+      html += '<div class="msg ' + ((a.prises[reelPrises] || 0) / a.n >= 0.05 ? 'ok' : 'warn') + '">Réel : <b>' + reelPrises + '</b> planète(s) prise(s) en ' + reel.fin + ' tours ; ce nombre sort dans <b>' + pct((a.prises[reelPrises] || 0) / a.n) + '</b> des simulations.</div>';
+    }
+    el.innerHTML = html;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+
+  // ------------------------------------------------------------------ mines et débris
+  // Dégâts subis en début de tour par une flotte restée sur une case à débris ou à mines (M.simulerMines).
+  var ROMAINS10 = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+  function minesDefaut() {
+    var f = campDefaut('Ma flotte', 'Fregate standard', 20);
+    return { flotte: f, debris: 0, mines: 50000, tours: 3, collisionsInternes: false, n: 1000, graine: '',
+      calcLanceur: 0, calcNb: 10, calcTours: 1, calcCombat: 1000 };
+  }
+  if (!etat.mines) etat.mines = minesDefaut();
+  function vaisseauxMines() {
+    var vs = [], err = [];
+    etat.mines.flotte.lignes.forEach(function (l) {
+      if (!(+l.nombre > 0)) return;
+      var p = planCompile(l.plan);
+      if (!p) { err.push(l.plan); return; }
+      vs.push({ plan: p, nombre: +l.nombre, moral: +l.moral, experience: +l.experience, race: +l.race, dommages: +l.dommages || 0 });
+    });
+    return { vaisseaux: vs, erreurs: err };
+  }
+  function infoProtection() {
+    var vs = vaisseauxMines().vaisseaux, dragage = 0, lignes = [];
+    vs.forEach(function (v) {
+      var drag = 0, nbDrag = 0, det = 0;
+      v.plan.composants.forEach(function (c) {
+        if (c.caracs && c.caracs.dragueur) { drag += c.caracs.dragueur; nbDrag++; }
+        if (c.caracs && c.caracs.detectionMines) det += c.caracs.detectionMines;
+      });
+      dragage += drag * v.nombre;
+      var immunise = nbDrag >= Math.trunc(v.plan.composants.length / 2);
+      lignes.push({ nom: v.plan.nom, nombre: v.nombre, drag: drag, det: det, immunise: immunise, unSeul: immunise && !nbDrag });
+    });
+    return { dragage: dragage, lignes: lignes };
+  }
+  function rendreMines() {
+    var v = $('#vue-mines'); if (!v) return;
+    if (!$('#mConfig', v)) {
+      v.innerHTML = '<div id="mConfig"></div>' +
+        '<div class="card"><div class="ligne"><label>Graine <input id="mGraine" placeholder="au hasard" style="width:110px"></label>' +
+        '<button class="go" id="mUnique">▶ Un tirage</button><span style="width:20px"></span>' +
+        '<label>Nombre de tirages <input type="number" id="mN" min="10" step="100"></label>' +
+        '<button class="go" id="mStats">📊 Statistiques</button><button class="sec" id="mStop" disabled>■ Arrêter</button></div>' +
+        '<div class="barre" id="mBarre" hidden><div></div></div><div class="muted" id="mProgres"></div></div>' +
+        '<div class="card" id="mCarteUnique" hidden></div><div class="card" id="mCarteStats" hidden></div>';
+    }
+    var m = etat.mines;
+    $('#mGraine').value = m.graine || ''; $('#mN').value = m.n || 1000;
+    var lanceur = CAT.composants['lmine' + ROMAINS10[+m.calcLanceur || 0]];
+    var html = '<div class="card"><h2>Champ de mines et de débris</h2>' +
+      '<div class="ligne"><label title="Débris laissés par les combats de flottes (DEBRIS_RESTE_VAISSEAUX)">Débris de vaisseaux <input type="number" min="0" step="100" data-mchamp="debris" value="' + esc(m.debris) + '" style="width:110px"></label>' +
+      '<label title="Mines anti-matière posées par des lanceurs (DEBRIS_MINES_CLASSIQUES)">Mines <input type="number" min="0" step="1000" data-mchamp="mines" value="' + esc(m.mines) + '" style="width:110px"></label>' +
+      '<label title="Nombre de tours où la flotte reste sur la case (le champ n\'est réduit que par le dragage)">Tours sur la case <input type="number" min="1" max="50" class="court" data-mchamp="tours" value="' + esc(m.tours) + '"></label>' +
+      '<label><input type="checkbox" data-mchamp="collisionsInternes"' + (m.collisionsInternes ? ' checked' : '') + '> ajouter les collisions internes de fin de tour</label></div>' +
+      '<div class="ligne" style="font-size:13px"><span class="muted">Ajouter au champ :</span>' +
+      '<span><select data-mchamp="calcLanceur">' + ROMAINS10.map(function (r, k) { var c = CAT.composants['lmine' + r]; return '<option value="' + k + '"' + (k === (+m.calcLanceur || 0) ? ' selected' : '') + '>' + esc(c.nom) + ' (' + fmt(c.caracs.mines) + ' mines)</option>'; }).join('') + '</select>' +
+      ' × <input type="number" min="1" class="court" data-mchamp="calcNb" value="' + esc(m.calcNb) + '"> lanceurs × <input type="number" min="1" class="court" data-mchamp="calcTours" value="' + esc(m.calcTours) + '"> ordres = <b>' + fmt(lanceur.caracs.mines * (+m.calcNb || 0) * (+m.calcTours || 0)) + '</b> mines ' +
+      '<button class="mini" id="mAjoutMines">+ ajouter</button></span>' +
+      '<span>débris d\'un combat de <input type="number" min="0" step="100" data-mchamp="calcCombat" value="' + esc(m.calcCombat) + '" style="width:80px"> points de dégâts <button class="mini" id="mAjoutDebris">+ ajouter</button></span></div>' +
+      '<div class="muted" style="font-size:12px">Les champs s\'additionnent et ne disparaissent jamais d\'eux-mêmes : seul le dragage les réduit. Un combat de flottes n\'en laisse que si ses dégâts dépassent 200 au total. Les mines touchent tout le monde, y compris celui qui les a posées. Le jeu annonce « Évaluation du danger : N » (le risque devient important à partir de 500, selon le jeu).</div>' +
+      htmlAideDebris(m) + '</div>';
+    html += rendreCamp('m');
+    var pr = infoProtection();
+    html += '<div class="card"><h3 style="margin-top:0">Protection de la flotte</h3>' +
+      '<div>Capacité de dragage : <b>' + fmt(pr.dragage) + '</b> par tour' + (pr.dragage ? ' (retirée d\'abord des débris de vaisseaux, puis des mines ; le moteur ne la décompte pas, elle s\'applique en entier aux deux)' : ' — aucun dragueur de mines') + '.</div>' +
+      '<div class="tablewrap"><table style="margin-top:6px"><thead><tr><th>Plan</th><th class="n">Nombre</th><th class="n">Dragage</th><th class="n">Détection</th><th>Protégé ?</th></tr></thead><tbody>' +
+      pr.lignes.map(function (l) {
+        return '<tr><td>' + esc(l.nom) + '</td><td class="n">' + fmt(l.nombre) + '</td><td class="n">' + (l.drag ? fmt(l.drag) + ' × ' + fmt(l.nombre) : '') + '</td><td class="n">' + (l.det ? Math.min(100, l.det) + ' %' : '') + '</td>' +
+          '<td>' + (l.unSeul ? '<b>oui</b> : un seul composant (bizarrerie du moteur : dragueurs ≥ composants / 2 arrondi vers le bas)' : l.immunise ? '<b>oui</b> : au moins la moitié de ses composants sont des dragueurs' : l.det ? 'esquive ' + Math.min(100, l.det) + ' % des collisions (détecteur)' : 'non') + '</td></tr>';
+      }).join('') + '</tbody></table></div>' +
+      '<div class="muted" style="font-size:12px">Dragueurs : I à X = 1, 2, 4, 8, 16, 40, 80, 160, 320, 650 par tour. Détecteurs : 10 % par niveau, additionnés sur le vaisseau. Un dragueur endommagé ne drague plus.</div></div>';
+    $('#mConfig').innerHTML = html;
+  }
+  // Dégât moyen par vaisseau et par tour selon la taille, pour le champ saisi
+  function htmlAideDebris(m) {
+    var champs = [];
+    if (+m.debris > 0) champs.push(['débris', +m.debris]);
+    if (+m.mines > 0) champs.push(['mines', +m.mines]);
+    if (!champs.length) return '';
+    var tailles = [0, 1, 2, 3, 4, 5, 6, 8];
+    return '<div class="tablewrap" style="margin-top:8px"><table><thead><tr><th>Dégât par vaisseau exposé, par tour (avant dragage)</th>' + tailles.map(function (t) { return '<th class="n">taille ' + (t + 1) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      champs.map(function (c) {
+        return '<tr><td>' + fmt(c[1]) + ' ' + c[0] + ' : moyenne · part sans dégât</td>' + tailles.map(function (t) {
+          var d = M.distributionDegatDebris(c[1], t);
+          return '<td class="n">' + fmt(d.moyenne, d.moyenne < 10 ? 2 : 0) + ' · ' + fmt(100 * d.pZero, 0) + ' %</td>';
+        }).join('') + '</tr>';
+      }).join('') + '</tbody></table></div>' +
+      '<div class="muted" style="font-size:12px">Formule (Flotte.gererCollision) : aléa(max(1, (Q / (aléa(500) + 1)) / (11 − taille))) / 10, tirée à chaque tour pour chaque vaisseau exposé. Un vaisseau est détruit quand tous ses composants sont hors d\'usage (autant de points que de cases).</div>';
+  }
+  var vueM = $('#vue-mines');
+  vueM.addEventListener('change', function (e) {
+    var m = etat.mines;
+    if (changementCamp(e)) { memoriser(); rendreMines(); return; }
+    var t = e.target;
+    if (t.id === 'mGraine') { m.graine = t.value.trim(); memoriser(); return; }
+    if (t.id === 'mN') { m.n = Math.max(1, +t.value || 1000); memoriser(); return; }
+    if (t.dataset.mchamp) {
+      var k = t.dataset.mchamp;
+      m[k] = t.type === 'checkbox' ? t.checked : Math.max(0, +t.value || 0);
+      if (k === 'tours') m.tours = Math.max(1, Math.min(50, m.tours));
+      memoriser(); rendreMines();
+    }
+  });
+  vueM.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var m = etat.mines;
+    if (actionCamp(b)) { memoriser(); rendreMines(); return; }
+    if (b.id === 'mAjoutMines') { m.mines = (+m.mines || 0) + CAT.composants['lmine' + ROMAINS10[+m.calcLanceur || 0]].caracs.mines * (+m.calcNb || 0) * (+m.calcTours || 0); }
+    else if (b.id === 'mAjoutDebris') { if (+m.calcCombat > 200) m.debris = (+m.debris || 0) + (+m.calcCombat); else { message('warn', 'Un combat de 200 points de dégâts ou moins ne laisse pas de débris.'); return; } }
+    else if (b.id === 'mUnique') { minesUnique(); return; }
+    else if (b.id === 'mStats') { minesStats(); return; }
+    else if (b.id === 'mStop') { if (calculM) calculM.arreter = true; return; }
+    else return;
+    memoriser(); rendreMines();
+  });
+  function configMines() {
+    var m = etat.mines, v = vaisseauxMines();
+    if (!v.vaisseaux.length) v.erreurs.push('flotte vide');
+    return { cfg: { vaisseaux: v.vaisseaux, debris: +m.debris || 0, mines: +m.mines || 0, tours: +m.tours || 1,
+      collisionsInternes: !!m.collisionsInternes, militaire: +m.flotte.militaire || 0 }, erreurs: v.erreurs };
+  }
+  function minesUnique() {
+    var c = configMines();
+    if (c.erreurs.length) { message('err', 'Impossible de simuler : ' + c.erreurs.map(esc).join(', ') + '.'); return; }
+    var m = etat.mines, g = m.graine ? (parseInt(m.graine, 10) >>> 0) : ((Math.random() * 4294967295) >>> 0);
+    var r = M.simulerMines(c.cfg, g), el = $('#mCarteUnique');
+    el.hidden = false;
+    var parType = function (o) { var k = Object.keys(o); return k.length ? k.map(function (t) { return o[t] + ' ' + esc(t); }).join(', ') : '—'; };
+    el.innerHTML = '<h2>Un tirage</h2><div>Graine <b>' + g + '</b> · ' + r.tours.length + ' tour(s) · ' +
+      (r.flotteDetruite ? '<b style="color:var(--err)">flotte détruite</b>' : '<b>' + r.nbFin + '</b> vaisseaux sur ' + r.nbDepart + ' restent, puissance ' + fmt(r.puissanceFin) + ' / ' + fmt(r.puissanceDepart)) + '.</div>' +
+      '<div class="tablewrap"><table style="margin-top:8px"><thead><tr><th>Tour</th><th class="n">Débris avant → après dragage</th><th class="n">Mines avant → après dragage</th><th class="n">Dragage</th><th class="n">Dégâts débris</th><th class="n">Dégâts mines</th>' +
+      (c.cfg.collisionsInternes ? '<th class="n">Collisions internes</th>' : '') + '<th class="n">Vaisseaux touchés</th><th>Détruits</th><th class="n">Restants</th></tr></thead><tbody>' +
+      r.tours.map(function (t, k) {
+        return '<tr><td>' + (k + 1) + '</td><td class="n">' + fmt(t.champAvant.debris) + ' → ' + fmt(t.champApres.debris) + '</td><td class="n">' + fmt(t.champAvant.mines) + ' → ' + fmt(t.champApres.mines) + '</td>' +
+          '<td class="n">' + fmt(t.dragage) + '</td><td class="n">' + fmt(t.degats.debris) + '</td><td class="n">' + fmt(t.degats.mines) + '</td>' +
+          (c.cfg.collisionsInternes ? '<td class="n">' + fmt(t.interne) + '</td>' : '') + '<td class="n">' + fmt(t.touches) + '</td><td>' + parType(t.detruits) + '</td><td class="n">' + fmt(t.nbFin) + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+  }
+  var calculM = null;
+  function minesStats() {
+    var c = configMines();
+    if (c.erreurs.length) { message('err', 'Impossible de simuler : ' + c.erreurs.map(esc).join(', ') + '.'); return; }
+    var n = Math.max(1, +etat.mines.n || 1000), ctl = { arreter: false }, res = [], g0 = (Math.random() * 4294967295) >>> 0, t0 = performance.now();
+    calculM = ctl;
+    $('#mStats').disabled = true; $('#mUnique').disabled = true; $('#mStop').disabled = false; $('#mBarre').hidden = false;
+    (function tranche() {
+      var d = performance.now();
+      while (res.length < n && performance.now() - d < 40 && !ctl.arreter) res.push(M.simulerMines(c.cfg, (g0 + res.length * 2654435761) >>> 0));
+      $('#mBarre > div').style.width = (100 * res.length / n) + '%';
+      $('#mProgres').textContent = fmt(res.length) + ' / ' + fmt(n) + ' tirages';
+      if (res.length < n && !ctl.arreter) { setTimeout(tranche, 0); return; }
+      $('#mStats').disabled = false; $('#mUnique').disabled = false; $('#mStop').disabled = true; $('#mBarre').hidden = true;
+      $('#mProgres').textContent = fmt(res.length) + ' tirages en ' + fmt((performance.now() - t0) / 1000, 1) + ' s' + (ctl.arreter && res.length < n ? ' (arrêté)' : '') + '.';
+      if (res.length) rendreStatsMines(M.agregerMines(res, c.cfg.tours), c.cfg);
+    })();
+  }
+  function rendreStatsMines(a, cfg) {
+    var el = $('#mCarteStats'); el.hidden = false;
+    var dernier = a.tours[a.tours.length - 1];
+    var html = '<h2>Statistiques sur ' + fmt(a.n) + ' tirages, ' + cfg.tours + ' tour(s)</h2>' +
+      '<div class="tuiles"><div class="tuile"><div class="v">' + fmt(dernier.perdusCumul.moyenne, 1) + '</div><div class="l">vaisseaux perdus en moyenne (' + fmt(dernier.perdusCumul.q10) + ' à ' + fmt(dernier.perdusCumul.q90) + ') sur ' + fmt(a.nbDepart) + '</div></div>' +
+      '<div class="tuile"><div class="v">' + pct(a.detruite) + '</div><div class="l">flotte entièrement détruite</div></div>' +
+      '<div class="tuile"><div class="v">' + fmt(a.puissanceFin.moyenne) + '</div><div class="l">puissance restante moyenne, sur ' + fmt(a.puissanceDepart) + '</div></div></div>' +
+      '<div style="margin-bottom:12px"><div class="vr-ligne"><span class="vr-nom camp0">Vaisseaux</span><span class="vr-barre">' +
+      (function () { var pv = a.nbDepart ? 100 * (a.nbDepart - dernier.perdusCumul.moyenne) / a.nbDepart : 0; return '<span class="vr-vivant" style="width:' + pv + '%;background:var(--camp0)"></span>' + (pv < 100 ? '<span class="vr-perdu" style="width:' + (100 - pv) + '%"></span>' : ''); })() +
+      '</span><span class="vr-val">' + fmt(a.nbDepart - dernier.perdusCumul.moyenne, 1) + ' / ' + fmt(a.nbDepart) + '</span></div></div>' +
+      '<h3>Tour par tour (moyennes)</h3><div class="tablewrap"><table><thead><tr><th>Tour</th><th class="n">Débris après dragage</th><th class="n">Mines après dragage</th><th class="n">Dragage</th><th class="n">Dégâts</th>' +
+      (cfg.collisionsInternes ? '<th class="n">Collisions internes</th>' : '') + '<th class="n">Perdus depuis le début (10 % · médiane · 90 %)</th></tr></thead><tbody>' +
+      a.tours.map(function (t, k) {
+        return '<tr><td>' + (k + 1) + '</td><td class="n">' + fmt(t.champApres.debris) + '</td><td class="n">' + fmt(t.champApres.mines) + '</td><td class="n">' + fmt(t.dragage) + '</td><td class="n">' + fmt(t.degats, 1) + '</td>' +
+          (cfg.collisionsInternes ? '<td class="n">' + fmt(t.interne, 1) + '</td>' : '') +
+          '<td class="n">' + fmt(t.perdusCumul.moyenne, 2) + ' (' + fmt(t.perdusCumul.q10) + ' · ' + fmt(t.perdusCumul.q50) + ' · ' + fmt(t.perdusCumul.q90) + ')</td></tr>';
+      }).join('') + '</tbody></table></div>' +
+      '<h3>Pertes par type, à la fin</h3><div class="tablewrap"><table><thead><tr><th>Type</th><th class="n">Départ</th><th class="n">Pertes moyennes</th><th class="n">10 % · 90 %</th><th class="n">Tous perdus</th></tr></thead><tbody>' +
+      Object.keys(a.types).map(function (t) { var x = a.types[t]; return '<tr><td>' + esc(t) + '</td><td class="n">' + fmt(x.depart) + '</td><td class="n">' + fmt(x.moyenne, 2) + '</td><td class="n">' + fmt(x.q10) + ' · ' + fmt(x.q90) + '</td><td class="n">' + pct(x.toutPerdu) + '</td></tr>'; }).join('') +
+      '</tbody></table></div>';
+    el.innerHTML = html;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   // ------------------------------------------------------------------ démarrage
-  function tout() { rendreFlottes(); rendreResultats(); rendrePlans(); }
+  function tout() { rendreFlottes(); rendreResultats(); rendrePlans(); rendrePlanetaire(); rendreMines(); }
   $('#version').textContent = M.VERSION;
   tout();
   try { var o = localStorage.getItem('sheril-combat:onglet'); if (o && o !== 'resultats') montrer(o); } catch (e) { }

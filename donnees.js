@@ -4,7 +4,7 @@
   var CLE = 'sheril-combat:v1';
 
   function registreVide() {
-    return { version: 1, plans: {}, rencontres: {}, scenarios: {}, flottes: {}, flottesParTour: {}, combats: {}, brouillon: null };
+    return { version: 1, plans: {}, rencontres: {}, scenarios: {}, flottes: {}, flottesParTour: {}, combats: {}, attaquesPlanetes: {}, systemes: null, brouillon: null };
   }
 
   function charger() {
@@ -124,6 +124,60 @@
       cb.cle = 'T' + tour + '|' + cb.position + '|' + initial.map(function (f) { return f.proprio + ':' + f.numero; }).sort().join('-');
       res.combats.push(cb);
     });
+    // Attaques de planètes : une suite de combats FLOTTE_PLANETE par flotte, tours numérotés à la suite depuis 1
+    res.attaquesPlanetes = [];
+    var suite = null;
+    enfants(premier(cdt, 'combats'), 'c').forEach(function (c) {
+      if (c.getAttribute('type') !== 'FLOTTE_PLANETE') return;
+      function lireEtat(el) {
+        var fl = premier(el, 'flotte'), pl = premier(el, 'planete'), mi = premier(pl, 'milice');
+        return {
+          vaisseaux: enfants(fl, 'vaisseau').map(function (v) { return { nom: v.getAttribute('nom'), nombre: +v.getAttribute('nombre'), encaisses: +(v.getAttribute('encaisses') || 0), infliges: +(v.getAttribute('infliges') || 0) }; }),
+          planete: pl ? { nom: pl.getAttribute('nom'), numero: pl.getAttribute('numero'), proprio: pl.getAttribute('proprio') } : {},
+          milice: mi ? +mi.getAttribute('nombre') : 0,
+          batiments: enfants(pl, 'batiment').map(function (b) { return { nom: b.getAttribute('nom'), nombre: +b.getAttribute('nombre'), encaisses: +(b.getAttribute('encaisses') || 0) }; }),
+        };
+      }
+      var tours = enfants(c, 'tour').map(function (t) { var e = lireEtat(t); e.numero = +t.getAttribute('numero'); return e; });
+      if (!tours.length) return;
+      var debut = tours[0].numero - 1, pos = c.getAttribute('position'), att = c.getAttribute('attaquant');
+      if (!suite || debut === 0 || suite.position !== pos || suite.attaquant !== att || debut !== suite.fin) {
+        suite = { tour: tour, moi: res.commandant.numero, position: pos, attaquant: att, combats: [], fin: 0 };
+        res.attaquesPlanetes.push(suite);
+      }
+      suite.combats.push({ defenseur: c.getAttribute('defenseur'), initial: lireEtat(premier(c, 'initial')), tours: tours });
+      suite.fin = tours[tours.length - 1].numero;
+    });
+    res.attaquesPlanetes.forEach(function (s, k) { s.cle = 'T' + tour + '|' + s.position + '|' + s.attaquant + '|' + k; });
+    // Nos systèmes : planètes (propriétaire, population, stabilité, bâtiments), politique, Armement au poste, gouverneur
+    var postes = {};
+    enfants(premier(cdt, 'postes_commerciaux'), 'p').forEach(function (p) {
+      if (p.getAttribute('proprio') !== res.commandant.numero) return;
+      var arm = enfants(p, 'm').filter(function (m) { return m.getAttribute('code') === '9'; })[0];
+      postes[p.getAttribute('pos')] = arm ? +arm.getAttribute('nb') : 0;
+    });
+    var gouverneurs = {};
+    enfants(premier(cdt, 'lieutenants'), 'l').forEach(function (l) {
+      if (l.getAttribute('type') !== '1') return;
+      var comp = {};
+      enfants(l, 'competence').forEach(function (c) { comp[c.getAttribute('comp')] = Math.max(1, +c.getAttribute('val')); });
+      gouverneurs[l.getAttribute('pos')] = { nom: l.getAttribute('nom'), att: +l.getAttribute('att'), def: +l.getAttribute('def'),
+        mor: +l.getAttribute('mor'), vit: +l.getAttribute('vit'), race: +l.getAttribute('race'), competences: comp };
+    });
+    res.systemes = enfants(premier(cdt, 'systemes'), 's').map(function (s) {
+      var pos = s.getAttribute('pos');
+      return {
+        nom: s.getAttribute('nom'), pos: pos, politique: +s.getAttribute('politique'),
+        armement: postes[pos] || 0, gouverneur: gouverneurs[pos] || null,
+        planetes: enfants(premier(s, 'planetes'), 'p').map(function (p) {
+          var pop = 0;
+          enfants(p, 'population').forEach(function (x) { pop += +x.getAttribute('popAct'); });
+          return { num: +p.getAttribute('num'), proprio: p.getAttribute('prop'), stabilite: +p.getAttribute('stab'), population: pop,
+            revolte: p.getAttribute('revolt') === '1',
+            batiments: enfants(p, 'batiment').map(function (b) { return { code: b.getAttribute('code'), nombre: +b.getAttribute('nombre') }; }) };
+        }),
+      };
+    }).filter(function (s) { return s.planetes.length; });
     return res;
   }
 
@@ -205,6 +259,11 @@
       reg.flottesParTour[lu.tour] = lu.flottes;
       reg.combats = reg.combats || {};
       lu.combats.forEach(function (cb) { if (!reg.combats[cb.cle]) r.combats = (r.combats || 0) + 1; reg.combats[cb.cle] = cb; });
+      reg.attaquesPlanetes = reg.attaquesPlanetes || {};
+      (lu.attaquesPlanetes || []).forEach(function (s) { if (!reg.attaquesPlanetes[s.cle]) r.attaquesPlanetes = (r.attaquesPlanetes || 0) + 1; reg.attaquesPlanetes[s.cle] = s; });
+      // systèmes proposés à l'import : ceux du rapport le plus récent
+      if (lu.systemes && (!reg.systemes || !reg.systemes.tour || lu.tour >= reg.systemes.tour))
+        reg.systemes = { tour: lu.tour, commandant: lu.commandant, liste: lu.systemes };
     }
     if (lu.type === 'export') {
       var c = lu.contenu;
