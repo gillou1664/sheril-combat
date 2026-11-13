@@ -685,7 +685,7 @@
     res.cfg = c.cfg;
     dernierePuissance = '';
     anim = { res: res, tour: -1, t: 0, joue: true, vitesse: +($('#aVitesse') ? $('#aVitesse').value : 1), fini: false };
-    $('#carteUnique').hidden = false;
+    $('#carteUnique').hidden = false; $('#carteStats').hidden = true;   // un combat : la visualisation seule
     $('#aTour').innerHTML = '<option value="-1">Tour 0 (placement)</option>' + res.trace.tours.map(function (x, k) { return '<option value="' + k + '">Tour ' + (k + 1) + '</option>'; }).join('');
     var issue = res.vainqueur === 0 ? '<b class="camp0">victoire de l\'attaquant</b>' : res.vainqueur === 1 ? '<b class="camp1">victoire du défenseur</b>' : '<b>aucun vainqueur</b> (plus aucun vaisseau combatif)';
     $('#aResume').innerHTML = '<div>Graine <b>' + g + '</b> · ' + res.tours + ' tours · ' + issue + '</div>' +
@@ -935,6 +935,9 @@
     var c = construireConfig(etat.camps, etat.bugMiroir);
     if (c.erreurs.length) { message('err', 'Impossible de simuler : ' + c.erreurs.map(esc).join(', ') + '.'); return; }
     var n = Math.max(1, +$('#nbCombats').value || 1000);
+    // statistiques : on cache la visualisation du combat (et on arrête son animation)
+    if (anim) { anim.joue = false; majBoutonJouer(); }
+    $('#carteUnique').hidden = true;
     occupe(true);
     var t0 = performance.now();
     executer(c.cfg, n, progres).then(function (r) {
@@ -1597,7 +1600,7 @@
     }).join('');
   }
   function rendreUniqueP(res, cfg) {
-    var el = $('#pCarteUnique'); el.hidden = false;
+    var el = $('#pCarteUnique'); el.hidden = false; $('#pCarteStats').hidden = true;
     var reel = attaqueReelle(), nomProprio = function (k) { return (cfg.proprios[k] || {}).nom || ''; };
     var perdus = res.nbDepart - res.nbFin;
     var html = '<h2>Combat unique <span class="muted" style="font-weight:400;font-size:13px">(graine ' + res.graine + ', ' + esc(M.DIRECTIVES[res.directive]) + ')</span></h2>' +
@@ -1657,6 +1660,7 @@
     if (c.erreurs.length) { message('err', 'Impossible de simuler : ' + c.erreurs.map(esc).join(', ') + '.'); return; }
     var n = Math.max(1, +$('#pN').value || 1000), ctl = { arreter: false }, resultats = [], graine = (Math.random() * 4294967295) >>> 0, t0 = performance.now();
     calcul = ctl;
+    $('#pCarteUnique').hidden = true;
     occupeP(true);
     (function tranche() {
       var t1 = performance.now();
@@ -1876,7 +1880,7 @@
     if (c.erreurs.length) { message('err', 'Impossible de simuler : ' + c.erreurs.map(esc).join(', ') + '.'); return; }
     var m = etat.mines, g = m.graine ? (parseInt(m.graine, 10) >>> 0) : ((Math.random() * 4294967295) >>> 0);
     var r = M.simulerMines(c.cfg, g), el = $('#mCarteUnique');
-    el.hidden = false;
+    el.hidden = false; $('#mCarteStats').hidden = true;
     var parType = function (o) { var k = Object.keys(o); return k.length ? k.map(function (t) { return o[t] + ' ' + esc(t); }).join(', ') : '—'; };
     el.innerHTML = '<h2>Un tirage</h2><div>Graine <b>' + g + '</b> · ' + r.tours.length + ' tour(s) · ' +
       (r.flotteDetruite ? '<b style="color:var(--err)">flotte détruite</b>' : '<b>' + r.nbFin + '</b> vaisseaux sur ' + r.nbDepart + ' restent, puissance ' + fmt(r.puissanceFin) + ' / ' + fmt(r.puissanceDepart)) + '.</div>' +
@@ -1895,6 +1899,7 @@
     if (c.erreurs.length) { message('err', 'Impossible de simuler : ' + c.erreurs.map(esc).join(', ') + '.'); return; }
     var n = Math.max(1, +etat.mines.n || 1000), ctl = { arreter: false }, res = [], g0 = (Math.random() * 4294967295) >>> 0, t0 = performance.now();
     calculM = ctl;
+    $('#mCarteUnique').hidden = true;
     $('#mStats').disabled = true; $('#mUnique').disabled = true; $('#mStop').disabled = false; $('#mBarre').hidden = false;
     (function tranche() {
       var d = performance.now();
