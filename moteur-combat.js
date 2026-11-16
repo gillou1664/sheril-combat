@@ -4,7 +4,7 @@
 // Sans DOM : utilisable dans la page et sous Node (require).
 (function (racine) {
   'use strict';
-  var VERSION = '2.6';
+  var VERSION = '2.7';
 
   // ---------------------------------------------------------------- hasard
   // Générateur à graine (mulberry32). Les tirages suivent l'ordre du Java (Univers.getInt / getInd / getTest).
@@ -894,9 +894,10 @@
       depart: depart, survivants: survivants, pertes: pertes,
     };
     if (config.collisions !== false) {
-      var liste = f.map(function (v) { return { type: v.type, plan: v.plan, restant: v.plan.nbCases - pointsDeDommage(v) }; });
+      var liste = f.map(function (v) { return { type: v.type, plan: v.plan, restant: v.plan.nbCases - pointsDeDommage(v), puissance: puissanceVaisseau(v) }; });
       res.collisions = collisionsInternes(liste, fl.militaire || 0, H);
       res.nbApresCollisions = res.nbFin - res.collisions.nbDetruits;
+      res.puissanceApresCollisions = Math.max(0, res.puissanceFin - res.collisions.puissancePerdue);
     }
     return res;
   }
@@ -904,8 +905,8 @@
   // Agrège une liste de résultats de combattrePlanetes()
   function agregerPlanetes(resultats) {
     var n = resultats.length;
-    var a = { n: n, prises: {}, arrets: {}, planetes: {}, types: {}, puissanceFin: null, survivants: null, collisions: null, tours: {} };
-    var listes = { puissanceFin: [], survivants: [], collisions: [], nbPrises: [] };
+    var a = { n: n, prises: {}, arrets: {}, planetes: {}, types: {}, puissanceFin: null, survivants: null, collisions: null, tours: {}, typesCollisions: {} };
+    var listes = { puissanceFin: [], survivants: [], collisions: [], nbPrises: [], puissanceFinale: [] };
     resultats.forEach(function (r) {
       a.prises[r.prises] = (a.prises[r.prises] || 0) + 1;
       var ar = r.arret || 'aucun';
@@ -913,6 +914,8 @@
       a.tours[r.tours] = (a.tours[r.tours] || 0) + 1;
       listes.puissanceFin.push(r.puissanceFin); listes.survivants.push(r.nbFin); listes.nbPrises.push(r.prises);
       listes.collisions.push(r.collisions ? r.collisions.nbDetruits : 0);
+      listes.puissanceFinale.push(r.puissanceApresCollisions != null ? r.puissanceApresCollisions : r.puissanceFin);
+      if (r.collisions) Object.keys(r.collisions.detruits).forEach(function (t) { a.typesCollisions[t] = (a.typesCollisions[t] || 0) + r.collisions.detruits[t] / n; });
       r.planetes.forEach(function (pl) {
         var e = a.planetes[pl.index] || (a.planetes[pl.index] = { nom: pl.nom, attaquee: 0, prise: 0, milice: [], population: [], batimentsDetruits: 0, rang: 0 });
         e.attaquee++; if (pl.prise) e.prise++;

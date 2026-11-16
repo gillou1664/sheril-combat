@@ -1614,26 +1614,33 @@
     var pl = etat.planetaire;
     return pl.reel && reg.attaquesPlanetes ? reg.attaquesPlanetes[pl.reel.cle] || null : null;
   }
-  function htmlVaisseauxRestants(depart, fin, libelle) {
+  // Une barre par type : restants (bleu), perdus pendant l'attaque (hachures grises), perdus en collisions
+  // de fin de tour (hachures violettes). coll : { type: nombre détruit en collision } (moyenne pour les statistiques).
+  function htmlVaisseauxRestants(depart, fin, libelle, coll) {
+    coll = coll || {};
+    var avecColl = Object.keys(coll).some(function (t) { return coll[t] > 0; });
     return Object.keys(depart).map(function (t) {
-      var d = depart[t][0], f = fin[t] ? fin[t][0] : 0;
-      return '<div class="vr-ligne"><span class="vr-nom" title="' + esc(t) + '">' + esc(t) + '</span><span class="vr-barre">' +
-        (f ? '<span class="vr-vivant" style="width:' + (100 * f / d) + '%;background:var(--camp0)"></span>' : '') +
-        (d - f ? '<span class="vr-perdu" style="width:' + (100 * (d - f) / d) + '%"></span>' : '') +
-        '</span><span class="vr-val">' + fmt(f, libelle ? 1 : 0) + ' / ' + d + '</span></div>';
-    }).join('');
+      var d = depart[t][0], f = fin[t] ? fin[t][0] : 0, c = Math.min(f, coll[t] || 0), r = f - c, dec = libelle ? 1 : 0;
+      return '<div class="vr-ligne" title="' + esc(t) + ' : ' + fmt(r, dec) + ' restants sur ' + d + ' ; perdus pendant l\'attaque ' + fmt(d - f, dec) + (c ? ', en collisions ' + fmt(c, dec) : '') + '"><span class="vr-nom">' + esc(t) + '</span><span class="vr-barre">' +
+        (r > 0 ? '<span class="vr-vivant" style="width:' + (100 * r / d) + '%;background:var(--camp0)"></span>' : '') +
+        (d - f > 0 ? '<span class="vr-perdu" style="width:' + (100 * (d - f) / d) + '%"></span>' : '') +
+        (c > 0 ? '<span class="vr-coll" style="width:' + (100 * c / d) + '%"></span>' : '') +
+        '</span><span class="vr-val">' + fmt(r, dec) + ' / ' + d + (c > 0 ? ' <span style="color:var(--collision)">(−' + fmt(c, dec) + ' coll.)</span>' : '') + '</span></div>';
+    }).join('') + '<div class="vr-legende muted"><span><i style="background:var(--camp0)"></i>restants</span><span><i class="vr-perdu"></i>perdus pendant l\'attaque</span>' +
+      (avecColl ? '<span><i class="vr-coll"></i>perdus en collisions de fin de tour</span>' : '') + '</div>';
   }
   function rendreUniqueP(res, cfg) {
     var el = $('#pCarteUnique'); el.hidden = false; $('#pCarteStats').hidden = true;
     var reel = attaqueReelle(), nomProprio = function (k) { return (cfg.proprios[k] || {}).nom || ''; };
     var perdus = res.nbDepart - res.nbFin;
+    var nbColl = res.collisions ? res.collisions.nbDetruits : 0, pFinale = res.puissanceApresCollisions != null ? res.puissanceApresCollisions : res.puissanceFin;
     var html = '<h2>Combat unique <span class="muted" style="font-weight:400;font-size:13px">(graine ' + res.graine + ', ' + esc(M.DIRECTIVES[res.directive]) + ')</span></h2>' +
       '<div class="tuiles"><div class="tuile"><div class="v">' + res.prises + ' / ' + res.ciblesPossibles + '</div><div class="l">planètes ' + (res.directive === 4 || res.directive === 6 ? 'pillées' : res.directive === 7 ? 'éradiquées' : 'prises') + '</div></div>' +
       '<div class="tuile"><div class="v">' + res.tours + '</div><div class="l">tours de combat utilisés</div></div>' +
       '<div class="tuile"><div class="v" style="font-size:16px;padding:4px 0">' + esc(ARRETS[res.arret || 'aucun']) + '</div><div class="l">fin de l\'attaque</div></div>' +
-      '<div class="tuile"><div class="v">' + perdus + '</div><div class="l">vaisseau(x) perdu(s) sur ' + res.nbDepart + '</div></div>' +
-      '<div class="tuile"><div class="v">' + fmt(res.puissanceFin) + '</div><div class="l">puissance restante (sur ' + fmt(res.puissanceDepart) + ')</div></div></div>';
-    html += '<div class="grid2"><div><h3>Vaisseaux restants</h3>' + htmlVaisseauxRestants(res.depart, res.survivants) +
+      '<div class="tuile"><div class="v">' + (perdus + nbColl) + '</div><div class="l">vaisseau(x) perdu(s) sur ' + res.nbDepart + (nbColl ? ', dont ' + nbColl + ' en collisions de fin de tour' : '') + '</div></div>' +
+      '<div class="tuile"><div class="v">' + fmt(pFinale) + '</div><div class="l">puissance restante' + (nbColl ? ' après collisions' : '') + ' (sur ' + fmt(res.puissanceDepart) + ')</div></div></div>';
+    html += '<div class="grid2"><div><h3>Vaisseaux restants' + (nbColl ? ' (après les collisions de fin de tour)' : '') + '</h3>' + htmlVaisseauxRestants(res.depart, res.survivants, false, res.collisions ? res.collisions.detruits : null) +
       (res.collisions && res.collisions.dommages > 0 ? '<div class="muted" style="font-size:12px">Collisions internes de fin de tour : ' + (res.collisions.nbDetruits ? '<b>' + res.collisions.nbDetruits + ' vaisseau(x) perdu(s)</b>, ' + res.nbApresCollisions + ' restent' : 'aucune perte') + '.</div>' : '') + '</div><div></div></div>';
     // planètes dans l'ordre de l'attaque
     var attaquees = {};
@@ -1717,8 +1724,9 @@
     Object.keys(a.types).forEach(function (t) { survMoy[t] = [a.types[t].depart - a.types[t].moyenne]; });
     var dep = {};
     Object.keys(a.types).forEach(function (t) { dep[t] = [a.types[t].depart]; });
-    html += '<div class="grid2"><div><h3>Vaisseaux restants (moyenne)</h3>' + htmlVaisseauxRestants(dep, survMoy, true) +
-      '<div class="resume"><span>puissance restante <b>' + fmt(a.puissanceFin.moyenne) + '</b> sur ' + fmt(p0) + '</span><span>vaisseaux restants <b>' + fmt(a.survivants.moyenne, 1) + '</b> (' + fmt(a.survivants.q10) + ' à ' + fmt(a.survivants.q90) + ')</span>' +
+    var collP = a.collisions.moyenne > 0;
+    html += '<div class="grid2"><div><h3>Vaisseaux restants (moyenne' + (collP ? ', après les collisions de fin de tour' : '') + ')</h3>' + htmlVaisseauxRestants(dep, survMoy, true, a.typesCollisions) +
+      '<div class="resume"><span>puissance restante' + (collP ? ' après collisions' : '') + ' <b>' + fmt(a.puissanceFinale.moyenne) + '</b> sur ' + fmt(p0) + '</span><span>vaisseaux restants après l\'attaque <b>' + fmt(a.survivants.moyenne, 1) + '</b> (' + fmt(a.survivants.q10) + ' à ' + fmt(a.survivants.q90) + ')</span>' +
       (a.collisions.q90 > 0 ? '<span>puis perdus en collisions de fin de tour <b>' + fmt(a.collisions.moyenne, 1) + '</b></span>' : '') + '</div></div>';
     // histogramme du nombre de planètes prises
     var W = 420, H = 130, bw = Math.min(48, (W - 40) / (nbCibles + 1)), maxN = 0;
