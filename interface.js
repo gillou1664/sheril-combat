@@ -789,6 +789,23 @@
   // Barre « puissance restante » du tour affiché : avant la fin des tirs du tour, celle du tour précédent
   // (ou de départ) ; une fois les tirs joués, celle de la fin du tour.
   var dernierePuissance = '';
+  // Barre de vaisseaux d'un camp : restants (couleur du camp), perdus au combat (hachures grises),
+  // perdus en collisions de fin de tour (hachures violettes). dec : décimales (moyennes des statistiques).
+  function htmlLigneVaisseaux(i, dep, restants, perdusCombat, perdusColl, dec) {
+    var pc = function (x) { return dep ? 100 * x / dep : 0; };
+    return '<div class="vr-ligne" title="' + esc(etat.camps[i].nom) + ' : ' + fmt(restants, dec) + ' vaisseaux sur ' + fmt(dep) + ' ; perdus au combat ' + fmt(perdusCombat, dec) + (perdusColl ? ', en collisions ' + fmt(perdusColl, dec) : '') + '">' +
+      '<span class="vr-nom camp' + i + '">' + esc(etat.camps[i].nom) + '</span>' +
+      '<span class="vr-barre">' + (restants > 0 ? '<span class="vr-vivant" style="width:' + pc(restants) + '%;background:var(--camp' + i + ')"></span>' : '') +
+      (perdusCombat > 0 ? '<span class="vr-perdu" style="width:' + pc(perdusCombat) + '%"></span>' : '') +
+      (perdusColl > 0 ? '<span class="vr-coll" style="width:' + pc(perdusColl) + '%"></span>' : '') + '</span>' +
+      '<span class="vr-val"><b class="camp' + i + '">' + fmt(restants, dec) + '</b> / ' + fmt(dep) +
+      (perdusCombat > 0 ? ' <span class="muted">(−' + fmt(perdusCombat, dec) + ')</span>' : '') +
+      (perdusColl > 0 ? ' <span style="color:var(--collision)">(−' + fmt(perdusColl, dec) + ' coll.)</span>' : '') + '</span></div>';
+  }
+  function htmlLegendeVaisseaux(avecColl) {
+    return '<div class="vr-legende muted"><span><i style="background:var(--camp0)"></i>restants</span><span><i class="vr-perdu"></i>perdus au combat</span>' +
+      (avecColl ? '<span><i class="vr-coll"></i>perdus en collisions de fin de tour</span>' : '') + '</div>';
+  }
   function majPuissance(st) {
     var el = $('#aPuissance'); if (!el || !anim.res) return;
     var tours = anim.res.trace.tours, k = anim.tour, val, nb, quand;
@@ -796,21 +813,20 @@
     if (k < 0 || (k === 0 && !fini)) { val = anim.res.puissanceDepart; nb = anim.res.nbDepart; quand = 'avant le combat'; }
     else if (fini) { val = tours[k].puissance; nb = tours[k].nombre; quand = 'fin du tour ' + (k + 1); }
     else { val = tours[k - 1].puissance; nb = tours[k - 1].nombre; quand = 'fin du tour ' + k; }
-    var cle = quand + val.join('/') + nb.join('/');
+    // fin du dernier tour : on ajoute les collisions de fin de tour (résultat final)
+    var coll = fini && k === tours.length - 1 && anim.res.collisions ? anim.res.collisions.map(function (c) { return c.nbDetruits; }) : [0, 0];
+    var avecColl = coll[0] + coll[1] > 0;
+    if (avecColl) quand = 'fin du combat, puis collisions';
+    var cle = quand + val.join('/') + nb.join('/') + coll.join('/');
     if (cle === dernierePuissance) return;
     dernierePuissance = cle;
     var dep = anim.res.nbDepart;
     var perdus = [0, 1].map(function (i) { return dep[i] - nb[i]; });
+    if (avecColl) val = anim.res.puissanceApresCollisions;
     el.innerHTML = htmlBarresPuissance(anim.res.puissanceDepart, val, true, false, 'Puissance restante (' + quand + ')') +
       '<div class="vaisseauxRestants"><div class="muted" style="font-size:12px;margin:6px 0 2px">Vaisseaux restants (' + quand + ')</div>' +
-      [0, 1].map(function (i) {
-        var pv = dep[i] ? 100 * nb[i] / dep[i] : 0;
-        return '<div class="vr-ligne" title="' + esc(etat.camps[i].nom) + ' : ' + fmt(nb[i]) + ' vaisseaux sur ' + fmt(dep[i]) + ', ' + fmt(perdus[i]) + ' perdus">' +
-          '<span class="vr-nom camp' + i + '">' + esc(etat.camps[i].nom) + '</span>' +
-          '<span class="vr-barre">' + (nb[i] ? '<span class="vr-vivant" style="width:' + pv + '%;background:var(--camp' + i + ')"></span>' : '') +
-          (perdus[i] ? '<span class="vr-perdu" style="width:' + (100 - pv) + '%"></span>' : '') + '</span>' +
-          '<span class="vr-val"><b class="camp' + i + '">' + fmt(nb[i]) + '</b> / ' + fmt(dep[i]) + (perdus[i] ? ' <span class="muted">(−' + fmt(perdus[i]) + ')</span>' : '') + '</span></div>';
-      }).join('') + '</div>';
+      [0, 1].map(function (i) { return htmlLigneVaisseaux(i, dep[i], nb[i] - coll[i], perdus[i], coll[i], 0); }).join('') +
+      htmlLegendeVaisseaux(avecColl) + '</div>';
   }
   function dessiner() {
     var cv = $('#arene'); if (!cv || !anim.res || !cv.width) return;
@@ -969,7 +985,13 @@
       '<div class="tuile"><div class="v">' + pct(a.garde[0] / a.n) + '</div><div class="l">l\'attaquant garde sa directive</div></div>' +
       '<div class="tuile"><div class="v">' + med + '</div><div class="l">tours de combat (médiane)</div></div></div>';
     var dep = [0, 1].map(function (i) { return cfg.camps[i].vaisseaux.reduce(function (t, v) { return t + v.nombre * v.plan.stats.puissance; }, 0); });
-    html += '<div style="margin-bottom:12px">' + htmlBarresPuissance(dep, [a.camps[0].puissanceFin.moyenne, a.camps[1].puissanceFin.moyenne], false, true) + '</div>';
+    var collStats = a.camps[0].collisions.moyenne + a.camps[1].collisions.moyenne > 0;
+    var nbDep = [0, 1].map(function (i) { return cfg.camps[i].vaisseaux.reduce(function (t, v) { return t + v.nombre; }, 0); });
+    html += '<div style="margin-bottom:12px">' +
+      htmlBarresPuissance(dep, [a.camps[0].puissanceFinale.moyenne, a.camps[1].puissanceFinale.moyenne], false, true, collStats ? 'Puissance restante après collisions (moyenne)' : null) +
+      '<div class="vaisseauxRestants"><div class="muted" style="font-size:12px;margin:6px 0 2px">Vaisseaux restants (moyenne' + (collStats ? ', après les collisions de fin de tour' : '') + ')</div>' +
+      [0, 1].map(function (i) { var c = a.camps[i]; return htmlLigneVaisseaux(i, nbDep[i], c.survivants.moyenne - c.collisions.moyenne, nbDep[i] - c.survivants.moyenne, c.collisions.moyenne, 1); }).join('') +
+      htmlLegendeVaisseaux(collStats) + '</div></div>';
     // barre d'issue (3 segments, 2px d'écart)
     html += '<svg width="100%" height="18" viewBox="0 0 1000 18" preserveAspectRatio="none" style="display:block;margin-bottom:12px" aria-label="Répartition des issues">' +
       (function () {

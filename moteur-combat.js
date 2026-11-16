@@ -4,7 +4,7 @@
 // Sans DOM : utilisable dans la page et sous Node (require).
 (function (racine) {
   'use strict';
-  var VERSION = '2.5';
+  var VERSION = '2.6';
 
   // ---------------------------------------------------------------- hasard
   // Générateur à graine (mulberry32). Les tirages suivent l'ordre du Java (Univers.getInt / getInd / getTest).
@@ -569,10 +569,12 @@
     // Collisions internes de fin de tour sur les survivants (config.camps[i].militaire = niveau de maîtrise militaire)
     if (config.collisions !== false) {
       res.collisions = [f1, f2].map(function (f, i) {
-        var liste = f.map(function (v) { return { type: v.type, plan: v.plan, restant: v.plan.nbCases - pointsDeDommage(v) }; });
+        var liste = f.map(function (v) { return { type: v.type, plan: v.plan, restant: v.plan.nbCases - pointsDeDommage(v), puissance: puissanceVaisseau(v) }; });
         return collisionsInternes(liste, config.camps[i].militaire || 0, H);
       });
       res.nbApresCollisions = [0, 1].map(function (i) { return res.nbFin[i] - res.collisions[i].nbDetruits; });
+      // puissance des vaisseaux détruits en collision retirée (les vaisseaux seulement endommagés gardent la leur)
+      res.puissanceApresCollisions = [0, 1].map(function (i) { return Math.max(0, res.puissanceFin[i] - res.collisions[i].puissancePerdue); });
     }
     if (trace) res.trace = trace;
     return res;
@@ -965,7 +967,7 @@
     return plan._protection;
   }
   function collisionsInternes(liste, militaire, H) {
-    var r = { force: 0, detruits: {}, nbDetruits: 0, endommages: 0, dommages: 0 };
+    var r = { force: 0, detruits: {}, nbDetruits: 0, endommages: 0, dommages: 0, puissancePerdue: 0 };
     var n = liste.length;
     if (!n) return r;
     var diviseur = 45 + 5 * H.getInt(5);
@@ -981,7 +983,7 @@
       if (pr.immunise) vulnerable = false;
       if (!vulnerable) continue;
       var dg = H.getInt(Math.max(1, trunc(D / (v.plan.taille + 1))));
-      if (dg >= v.restant) { r.detruits[v.type] = (r.detruits[v.type] || 0) + 1; r.nbDetruits++; dg = v.restant; }
+      if (dg >= v.restant) { r.detruits[v.type] = (r.detruits[v.type] || 0) + 1; r.nbDetruits++; r.puissancePerdue += v.puissance || 0; dg = v.restant; }
       else if (dg > 0) r.endommages++;
       // nouvel algo : un vaisseau détruit n'absorbe pas l'excédent, qui reste dans la réserve
       r.dommages += dg;
@@ -1190,7 +1192,7 @@
           (types[t] = types[t] || { depart: r.depart[c][t][0], pertes: [] }).pertes.push(r.pertes[c][t]);
         });
       });
-      var res = { types: {}, encaisses: [], puissanceFin: [], survivants: [] };
+      var res = { types: {}, encaisses: [], puissanceFin: [], survivants: [], puissanceFinale: [] };
       Object.keys(types).forEach(function (t) {
         var l = types[t].pertes.slice().sort(function (x, y) { return x - y; });
         var s = 0; l.forEach(function (x) { s += x; });
@@ -1201,10 +1203,11 @@
         res.encaisses.push(r.dommagesEncaisses[c]); res.puissanceFin.push(r.puissanceFin[c]); res.survivants.push(r.nbFin[c]);
         var co = r.collisions ? r.collisions[c] : null;
         res.collisions.push(co ? co.nbDetruits : 0);
+        res.puissanceFinale.push(r.puissanceApresCollisions ? r.puissanceApresCollisions[c] : r.puissanceFin[c]);
         if (co) Object.keys(co.detruits).forEach(function (t) { res.typesCollisions[t] = (res.typesCollisions[t] || 0) + co.detruits[t]; });
       });
       Object.keys(res.typesCollisions).forEach(function (t) { res.typesCollisions[t] /= n; });
-      ['encaisses', 'puissanceFin', 'survivants', 'collisions'].forEach(function (k) {
+      ['encaisses', 'puissanceFin', 'survivants', 'collisions', 'puissanceFinale'].forEach(function (k) {
         var l = res[k].slice().sort(function (x, y) { return x - y; }), s = 0;
         l.forEach(function (x) { s += x; });
         res[k] = { moyenne: n ? s / n : 0, q10: quantile(l, 0.1), q50: quantile(l, 0.5), q90: quantile(l, 0.9) };
