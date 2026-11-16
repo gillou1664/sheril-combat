@@ -612,7 +612,7 @@
   // ------------------------------------------------------------------ configuration du moteur
   function construireConfig(camps, bugMiroir) {
     var erreurs = [];
-    var cfg = { bugMiroir: bugMiroir !== false, camps: camps.map(function (c, i) {
+    var cfg = { bugMiroir: bugMiroir !== false, reciblage: !!etat.reciblage, camps: camps.map(function (c, i) {
       var vs = [];
       c.lignes.forEach(function (l) {
         if (!(+l.nombre > 0)) return;
@@ -637,6 +637,7 @@
       '<button class="go" id="btnUnique">▶ Un combat</button>' +
       '<span style="width:20px"></span><label>Nombre de combats <input type="number" id="nbCombats" min="10" step="100" value="' + esc(etat.n || 1000) + '"></label>' +
       '<button class="go" id="btnStats">📊 Statistiques</button><button class="sec" id="btnStop" disabled>■ Arrêter</button></div>' +
+      '<div class="ligne"><label title="Absent du moteur actuel (boucle des tirs multiples commentée dans Combat.java) : à activer pour tester l\'effet de la règle"><input type="checkbox" id="reciblage"' + (etat.reciblage ? ' checked' : '') + '> Reciblage : un vaisseau qui détruit sa cible en choisit une autre et tire avec ses armes restantes (jusqu\'à 3, 7, 15… cibles de plus selon sa taille)</label></div>' +
       '<div class="barre" id="barre" hidden><div></div></div><div class="muted" id="progres"></div></div>' +
       '<div class="card" id="carteReel"' + (etat.combatReel ? '' : ' hidden') + '></div>' +
       '<div class="card" id="carteUnique" hidden><h2>Combat unique</h2>' +
@@ -659,6 +660,7 @@
   vueR.addEventListener('change', function (e) {
     if (e.target.id === 'graine') { etat.graine = e.target.value.trim(); memoriser(); }
     if (e.target.id === 'nbCombats') { etat.n = Math.max(1, +e.target.value || 1000); memoriser(); }
+    if (e.target.id === 'reciblage') { etat.reciblage = e.target.checked; memoriser(); }
     if (e.target.id === 'aTour') { anim.tour = +e.target.value; anim.t = 0; anim.joue = false; majBoutonJouer(); dessiner(); majJournal(); }
     if (e.target.id === 'aVitesse') anim.vitesse = +e.target.value;
   });

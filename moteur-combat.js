@@ -4,7 +4,7 @@
 // Sans DOM : utilisable dans la page et sous Node (require).
 (function (racine) {
   'use strict';
-  var VERSION = '2.4';
+  var VERSION = '2.5';
 
   // ---------------------------------------------------------------- hasard
   // Générateur à graine (mulberry32). Les tirages suivent l'ordre du Java (Univers.getInt / getInd / getTest).
@@ -443,7 +443,11 @@
     options = options || {};
     var H = creerHasard(graine == null ? (Math.random() * 4294967296) >>> 0 : graine);
     var NB_CIBLES = [0, 3, 7, 15, 31, 63, 127, 255, 511, 2000];
-    var opts = { bugMiroir: config.bugMiroir !== false };
+    // reciblage (option, désactivée par défaut, absente du moteur actuel : la boucle des tirs multiples de
+    // Combat.java l.964 est commentée « i <= 0 ») : un vaisseau qui détruit sa cible choisit une nouvelle cible
+    // (même règle que determinationCible, parmi les vaisseaux encore vivants) et tire avec ses armes restantes,
+    // au plus NB_CIBLES[taille] fois de plus par tour (limite numTir <= nbCibleMax de Combat.tirVaisseau).
+    var opts = { bugMiroir: config.bugMiroir !== false, reciblage: !!config.reciblage };
     var trace = options.trace ? { tours: [], positionsInitiales: null } : null;
     var maxTours = options.maxTours || 200;
 
@@ -508,12 +512,19 @@
         if (c2 === -1) p1 = true;
         else if (c1 !== -1 && ht1[c1].t > ht2[c2].t) p1 = true;
         var v, hA, hD;
-        if (p1) { v = ht1[c1--].v; hA = h1; hD = h2; } else { v = ht2[c2--].v; hA = h2; hD = h1; }
-        if (v.combativite > 0 && !v.detruit && v.cible && !v.cible.detruit) {
+        var sA, fD;
+        if (p1) { v = ht1[c1--].v; hA = h1; hD = h2; sA = strats[0]; fD = f2; } else { v = ht2[c2--].v; hA = h2; hD = h1; sA = strats[1]; fD = f1; }
+        var numTir = 0;
+        while (v.combativite > 0 && !v.detruit && v.cible && !v.cible.detruit) {
           var d = distance(v.pos, v.cible.pos);
           var j = tTour ? [] : null;
           tir(v, v.cible, d, hA, hD, H, NB_CIBLES, j);
           if (tTour && j.length) tTour.tirs.push([v.camp, v.id, v.cible.id, d, j, v.cible.detruit ? 1 : 0]);
+          if (!opts.reciblage || !v.cible.detruit || !v.armes.length || ++numTir > NB_CIBLES[v.plan.taille]) break;
+          var vivants = fD.filter(function (c) { return !c.detruit; });
+          if (!vivants.length) break;
+          determinationCible([v], sA, vivants, H);
+          if (tTour) tTour.reciblages = (tTour.reciblages || 0) + 1;
         }
       }
       nbDommages[0] += dommagesTotaux(f1) - avant[0];
@@ -970,8 +981,9 @@
       if (pr.immunise) vulnerable = false;
       if (!vulnerable) continue;
       var dg = H.getInt(Math.max(1, trunc(D / (v.plan.taille + 1))));
-      if (dg >= v.restant) { r.detruits[v.type] = (r.detruits[v.type] || 0) + 1; r.nbDetruits++; }
+      if (dg >= v.restant) { r.detruits[v.type] = (r.detruits[v.type] || 0) + 1; r.nbDetruits++; dg = v.restant; }
       else if (dg > 0) r.endommages++;
+      // nouvel algo : un vaisseau détruit n'absorbe pas l'excédent, qui reste dans la réserve
       r.dommages += dg;
       reserve -= dg;
       if (reserve <= 0) break;
@@ -1059,7 +1071,9 @@
       if (protectionCollision(v.plan).immunise) vulnerable = false;
       if (!vulnerable) continue;
       var dg = H.getInt(Math.max(1, trunc(D / (v.plan.taille + 1))));
+      var avantDg = pointsDeDommage(v);
       if (!ajouterDommagesAuHasard(v, dg, H, true)) v.detruit = true;
+      dg = pointsDeDommage(v) - avantDg;   // dégâts réellement subis (nouvel algo)
       r.dommages += dg;
       reserve -= dg;
       if (reserve <= 0) break;
