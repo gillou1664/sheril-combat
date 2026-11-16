@@ -637,7 +637,7 @@
       '<button class="go" id="btnUnique">▶ Un combat</button>' +
       '<span style="width:20px"></span><label>Nombre de combats <input type="number" id="nbCombats" min="10" step="100" value="' + esc(etat.n || 1000) + '"></label>' +
       '<button class="go" id="btnStats">📊 Statistiques</button><button class="sec" id="btnStop" disabled>■ Arrêter</button></div>' +
-      '<div class="ligne"><label title="Absent du moteur actuel (boucle des tirs multiples commentée dans Combat.java) : à activer pour tester l\'effet de la règle"><input type="checkbox" id="reciblage"' + (etat.reciblage ? ' checked' : '') + '> Reciblage : un vaisseau qui détruit sa cible en choisit une autre et tire avec ses armes restantes (jusqu\'à 3, 7, 15… cibles de plus selon sa taille)</label></div>' +
+      '<div class="ligne"><label title="Absent du moteur actuel (boucle des tirs multiples commentée dans Combat.java) : à activer pour tester l\'effet de la règle"><input type="checkbox" id="reciblage"' + (etat.reciblage ? ' checked' : '') + '> Reciblage : après la première salve, chaque vaisseau qui a encore des armes choisit une autre cible et tire à nouveau (jusqu\'à 3, 7, 15… cibles de plus selon sa taille)</label></div>' +
       '<div class="barre" id="barre" hidden><div></div></div><div class="muted" id="progres"></div></div>' +
       '<div class="card" id="carteReel"' + (etat.combatReel ? '' : ' hidden') + '></div>' +
       '<div class="card" id="carteUnique" hidden><h2>Combat unique</h2>' +

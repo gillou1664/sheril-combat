@@ -4,7 +4,7 @@
 // Sans DOM : utilisable dans la page et sous Node (require).
 (function (racine) {
   'use strict';
-  var VERSION = '2.7';
+  var VERSION = '2.8';
 
   // ---------------------------------------------------------------- hasard
   // Générateur à graine (mulberry32). Les tirages suivent l'ordre du Java (Univers.getInt / getInd / getTest).
@@ -299,15 +299,19 @@
     return r;
   }
 
-  // Combat.determinationCible (numTir = 0)
-  function determinationCible(f1, s1, f2, H) {
+  // Combat.determinationCible : numTir = 0 en début de round (v.cible), numTir > 0 pour les tirs multiples
+  // (v.cibles[numTir], cibleNonDejaChoisie : une cible déjà choisie ce round par ce vaisseau est exclue).
+  function determinationCible(f1, s1, f2, H, numTir, NB_CIBLES) {
+    numTir = numTir || 0;
     f1.forEach(function (v) {
+      if (numTir > 0 && NB_CIBLES[v.plan.taille] + 1 <= numTir) return;   // inter.length > numTir
       var choix1 = listeDeType(f2, s1.typeCible);
       var o = s1.cibles && s1.cibles[v.type];
       var choix2 = null, j;
+      var deja = numTir > 0 ? v.cibles.slice(0, numTir) : null;
       function filtre(depart, j) {
         var t = o ? o[j] - 1 : 10 - j - 1;
-        return depart.filter(function (c) { return c.plan.taille === t; });
+        return depart.filter(function (c) { return c.plan.taille === t && (!deja || deja.indexOf(c) === -1); });
       }
       while (choix2 === null)
         for (j = 0; j < 10; j++) {
@@ -323,15 +327,16 @@
         }
         tours++;
       }
-      if (choix2.length === 0) v.cible = null;
-      else {
-        var min = Infinity, best = null;
+      var best = null;
+      if (choix2.length > 0) {
+        var min = Infinity;
         for (var k = 0; k < choix2.length; k++) {
           var d = distance(v.pos, choix2[k].pos);
           if (d < min) { min = d; best = choix2[k]; }
         }
-        v.cible = best;
       }
+      if (numTir === 0) { v.cible = best; v.cibles = [best]; }
+      else v.cibles[numTir] = best;
     });
   }
 
@@ -444,9 +449,10 @@
     var H = creerHasard(graine == null ? (Math.random() * 4294967296) >>> 0 : graine);
     var NB_CIBLES = [0, 3, 7, 15, 31, 63, 127, 255, 511, 2000];
     // reciblage (option, désactivée par défaut, absente du moteur actuel : la boucle des tirs multiples de
-    // Combat.java l.964 est commentée « i <= 0 ») : un vaisseau qui détruit sa cible choisit une nouvelle cible
-    // (même règle que determinationCible, parmi les vaisseaux encore vivants) et tire avec ses armes restantes,
-    // au plus NB_CIBLES[taille] fois de plus par tour (limite numTir <= nbCibleMax de Combat.tirVaisseau).
+    // Combat.java l.1001 est bridée par « i <= 0 ») : après la première salve, chaque flotte rechoisit pour tous
+    // ses vaisseaux une nouvelle cible, différente de celles déjà choisies ce round, puis tire une nouvelle salve
+    // avec les armes restantes ; jusqu'à NB_CIBLES[tailleMax] salves de plus, chaque vaisseau s'arrêtant à
+    // NB_CIBLES[sa taille] (limite numTir <= nbCibleMax de Combat.tirVaisseau).
     var opts = { bugMiroir: config.bugMiroir !== false, reciblage: !!config.reciblage };
     var trace = options.trace ? { tours: [], positionsInitiales: null } : null;
     var maxTours = options.maxTours || 200;
@@ -504,27 +510,39 @@
       }
       if (tTour) tTour.apres = [f1, f2].map(function (f) { return f.map(function (v) { return [v.id, v.pos[0], v.pos[1], v.pos[2], v.fuit ? 1 : 0]; }); });
 
-      // tirs : tempo décroissant, le camp 1 d'abord si sa clé est strictement plus grande
+      // tirs (Combat.combat) : tempo décroissant, le camp 1 d'abord si sa clé est strictement plus grande
       var avant = [dommagesTotaux(f1), dommagesTotaux(f2)];
-      c1 = ht1.length - 1; c2 = ht2.length - 1;
-      while (c1 > -1 || c2 > -1) {
-        var p1 = false;
-        if (c2 === -1) p1 = true;
-        else if (c1 !== -1 && ht1[c1].t > ht2[c2].t) p1 = true;
-        var v, hA, hD;
-        var sA, fD;
-        if (p1) { v = ht1[c1--].v; hA = h1; hD = h2; sA = strats[0]; fD = f2; } else { v = ht2[c2--].v; hA = h2; hD = h1; sA = strats[1]; fD = f1; }
-        var numTir = 0;
-        while (v.combativite > 0 && !v.detruit && v.cible && !v.cible.detruit) {
-          var d = distance(v.pos, v.cible.pos);
+      var salve = function (numTir) {
+        var c1 = ht1.length - 1, c2 = ht2.length - 1;
+        while (c1 > -1 || c2 > -1) {
+          var p1 = false;
+          if (c2 === -1) p1 = true;
+          else if (c1 !== -1 && ht1[c1].t > ht2[c2].t) p1 = true;
+          var v, hA, hD;
+          if (p1) { v = ht1[c1--].v; hA = h1; hD = h2; } else { v = ht2[c2--].v; hA = h2; hD = h1; }
+          // Combat.tirVaisseau : numTir <= nbCibleMax, vaisseau combatif et vivant, cible choisie et pas encore détruite
+          if (numTir > NB_CIBLES[v.plan.taille] || v.combativite <= 0 || v.detruit) continue;
+          var c = v.cibles[numTir];
+          if (!c || c.detruit) continue;
+          var d = distance(v.pos, c.pos);
           var j = tTour ? [] : null;
-          tir(v, v.cible, d, hA, hD, H, NB_CIBLES, j);
-          if (tTour && j.length) tTour.tirs.push([v.camp, v.id, v.cible.id, d, j, v.cible.detruit ? 1 : 0]);
-          if (!opts.reciblage || !v.cible.detruit || !v.armes.length || ++numTir > NB_CIBLES[v.plan.taille]) break;
-          var vivants = fD.filter(function (c) { return !c.detruit; });
-          if (!vivants.length) break;
-          determinationCible([v], sA, vivants, H);
-          if (tTour) tTour.reciblages = (tTour.reciblages || 0) + 1;
+          tir(v, c, d, hA, hD, H, NB_CIBLES, j);
+          if (tTour && j.length) { tTour.tirs.push([v.camp, v.id, c.id, d, j, c.detruit ? 1 : 0]); if (numTir > 0) tTour.reciblages = (tTour.reciblages || 0) + 1; }
+        }
+      };
+      salve(0);
+      if (opts.reciblage) {
+        // boucle désactivée dans le jeu (Combat.java l.1001, « i <= 0 ») : pour numTir de 1 à NB_CIBLES[tailleMax],
+        // chaque flotte rechoisit une cible (différente des précédentes) pour chacun de ses vaisseaux, puis nouvelle salve.
+        var tailleMax = 0;
+        f1.concat(f2).forEach(function (v) { if (v.plan.taille > tailleMax) tailleMax = v.plan.taille; });
+        var peutTirer = function (v) { return !v.detruit && v.combativite > 0 && v.armes.length > 0; };
+        for (var numTir = 1; numTir <= NB_CIBLES[tailleMax]; numTir++) {
+          // raccourci : plus aucun vaisseau ne peut tirer, les tours suivants ne changeraient rien au combat
+          if (!f1.some(peutTirer) && !f2.some(peutTirer)) break;
+          determinationCible(f1, strats[0], f2, H, numTir, NB_CIBLES);
+          determinationCible(f2, strats[1], f1, H, numTir, NB_CIBLES);
+          salve(numTir);
         }
       }
       nbDommages[0] += dommagesTotaux(f1) - avant[0];
