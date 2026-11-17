@@ -4,7 +4,7 @@
 // Sans DOM : utilisable dans la page et sous Node (require).
 (function (racine) {
   'use strict';
-  var VERSION = '2.8';
+  var VERSION = '2.9';
 
   // ---------------------------------------------------------------- hasard
   // Générateur à graine (mulberry32). Les tirages suivent l'ordre du Java (Univers.getInt / getInd / getTest).
@@ -242,7 +242,7 @@
   }
 
   // Vaisseau.tir + effectuerDommages
-  function tir(v, cible, distance, h1, h2, H, NB_CIBLES, journal) {
+  function tir(v, cible, distance, h1, h2, H, NB_CIBLES, journal, fiabilite) {
     // initialiserAbsorbeur : meilleure absorption parmi les composants valides de la cible
     var abs = 0;
     for (var k = 0; k < cible.valides.length; k++) {
@@ -257,7 +257,10 @@
       var chance = chanceDeToucher(arme, cible.plan.taille, distance);
       if (chance === 0) { compteur++; continue; }
       var res = 'rate', degats = 0;
-      if (reussiteTir(chance, v, cible, h1, h2, H)) {
+      // fiabilité (option, absente du Java : Arme.getFiabilite renvoie 100 et n'est pas utilisée en combat spatial) :
+      // reprise du simulateur du développeur, l'arme s'enraye avec la probabilité de sa fiabilité et est perdue pour le round
+      if (fiabilite && H.getTest(arme.arme.fiabilite || 0)) res = 'enraye';
+      else if (reussiteTir(chance, v, cible, h1, h2, H)) {
         var b = bouclierValide(cible);
         if (b !== -1) {
           cible.boucliers[b] += arme.arme.degatBouclier;
@@ -376,7 +379,8 @@
           // retrouve la position non retournée (option bugMiroir, active par défaut).
           var retourne = true;
           if (opts.bugMiroir) { miroirs[v.type] = !miroirs[v.type]; retourne = miroirs[v.type]; }
-          if (retourne) inter = [30 - inter[0], 20 - inter[1], 0];
+          // moteur actuel : y = 20 - y (0 = sur la ligne de front) ; PR #106 (defenseurZone) : y = 30 - y (0 = tout à l'arrière)
+          if (retourne) inter = [30 - inter[0], (opts.defenseurZone ? 30 : 20) - inter[1], 0];
         }
       }
       v.pos = auHasard(inter, h.savoir, H);
@@ -453,7 +457,9 @@
     // ses vaisseaux une nouvelle cible, différente de celles déjà choisies ce round, puis tire une nouvelle salve
     // avec les armes restantes ; jusqu'à NB_CIBLES[tailleMax] salves de plus, chaque vaisseau s'arrêtant à
     // NB_CIBLES[sa taille] (limite numTir <= nbCibleMax de Combat.tirVaisseau).
-    var opts = { bugMiroir: config.bugMiroir !== false, reciblage: !!config.reciblage };
+    // defenseurZone, fiabilite : voir positionnement et tir ; collisionsReelles : voir collisionsInternes.
+    var opts = { bugMiroir: config.bugMiroir !== false, reciblage: !!config.reciblage,
+      defenseurZone: !!config.defenseurZone, fiabilite: !!config.fiabilite };
     var trace = options.trace ? { tours: [], positionsInitiales: null } : null;
     var maxTours = options.maxTours || 200;
 
@@ -526,7 +532,7 @@
           if (!c || c.detruit) continue;
           var d = distance(v.pos, c.pos);
           var j = tTour ? [] : null;
-          tir(v, c, d, hA, hD, H, NB_CIBLES, j);
+          tir(v, c, d, hA, hD, H, NB_CIBLES, j, opts.fiabilite);
           if (tTour && j.length) { tTour.tirs.push([v.camp, v.id, c.id, d, j, c.detruit ? 1 : 0]); if (numTir > 0) tTour.reciblages = (tTour.reciblages || 0) + 1; }
         }
       };
@@ -588,7 +594,7 @@
     if (config.collisions !== false) {
       res.collisions = [f1, f2].map(function (f, i) {
         var liste = f.map(function (v) { return { type: v.type, plan: v.plan, restant: v.plan.nbCases - pointsDeDommage(v), puissance: puissanceVaisseau(v) }; });
-        return collisionsInternes(liste, config.camps[i].militaire || 0, H);
+        return collisionsInternes(liste, config.camps[i].militaire || 0, H, config.collisionsReelles);
       });
       res.nbApresCollisions = [0, 1].map(function (i) { return res.nbFin[i] - res.collisions[i].nbDetruits; });
       // puissance des vaisseaux détruits en collision retirée (les vaisseaux seulement endommagés gardent la leur)
@@ -913,7 +919,7 @@
     };
     if (config.collisions !== false) {
       var liste = f.map(function (v) { return { type: v.type, plan: v.plan, restant: v.plan.nbCases - pointsDeDommage(v), puissance: puissanceVaisseau(v) }; });
-      res.collisions = collisionsInternes(liste, fl.militaire || 0, H);
+      res.collisions = collisionsInternes(liste, fl.militaire || 0, H, config.collisionsReelles);
       res.nbApresCollisions = res.nbFin - res.collisions.nbDetruits;
       res.puissanceApresCollisions = Math.max(0, res.puissanceFin - res.collisions.puissancePerdue);
     }
@@ -987,7 +993,9 @@
     plan._protection = { detection: det, immunise: drag >= trunc(plan.composants.length / 2) };
     return plan._protection;
   }
-  function collisionsInternes(liste, militaire, H) {
+  // reelles (PR #106, commit « corrections des collisions ») : la réserve ne baisse que des dégâts réellement subis ;
+  // sinon (moteur actuel, branche develop) : du dégât tiré entier, même au-delà des cases restantes du vaisseau.
+  function collisionsInternes(liste, militaire, H, reelles) {
     var r = { force: 0, detruits: {}, nbDetruits: 0, endommages: 0, dommages: 0, puissancePerdue: 0 };
     var n = liste.length;
     if (!n) return r;
@@ -1004,9 +1012,11 @@
       if (pr.immunise) vulnerable = false;
       if (!vulnerable) continue;
       var dg = H.getInt(Math.max(1, trunc(D / (v.plan.taille + 1))));
+      var tire = dg;
       if (dg >= v.restant) { r.detruits[v.type] = (r.detruits[v.type] || 0) + 1; r.nbDetruits++; r.puissancePerdue += v.puissance || 0; dg = v.restant; }
       else if (dg > 0) r.endommages++;
       // nouvel algo : un vaisseau détruit n'absorbe pas l'excédent, qui reste dans la réserve
+      if (!reelles) dg = tire;
       r.dommages += dg;
       reserve -= dg;
       if (reserve <= 0) break;
@@ -1023,9 +1033,9 @@
     return l;
   }
   // Estimation sans combat : n tirages
-  function estimerCollisions(camp, militaire, n, graine) {
+  function estimerCollisions(camp, militaire, n, graine, reelles) {
     var H = creerHasard(graine || 12345), liste = listeCollisionCamp(camp), res = [];
-    for (var k = 0; k < (n || 300); k++) res.push(collisionsInternes(liste, militaire, H));
+    for (var k = 0; k < (n || 300); k++) res.push(collisionsInternes(liste, militaire, H, reelles));
     var pertes = res.map(function (r) { return r.nbDetruits; }).sort(function (a, b) { return a - b; });
     var types = {};
     res.forEach(function (r) { Object.keys(r.detruits).forEach(function (t) { types[t] = (types[t] || 0) + r.detruits[t]; }); });
@@ -1080,7 +1090,7 @@
     return total;
   }
   // Collisions internes appliquées aux vaisseaux (fin de tour), pour les simulations sur plusieurs tours
-  function collisionsInternesFlotte(f, militaire, H) {
+  function collisionsInternesFlotte(f, militaire, H, reelles) {
     var r = { force: 0, dommages: 0 };
     var n = f.length; if (!n) return r;
     var force = Math.ceil(n / (45 + 5 * H.getInt(5))) - 2 * (militaire || 0);
@@ -1096,7 +1106,7 @@
       var dg = H.getInt(Math.max(1, trunc(D / (v.plan.taille + 1))));
       var avantDg = pointsDeDommage(v);
       if (!ajouterDommagesAuHasard(v, dg, H, true)) v.detruit = true;
-      dg = pointsDeDommage(v) - avantDg;   // dégâts réellement subis (nouvel algo)
+      if (reelles) dg = pointsDeDommage(v) - avantDg;   // dégâts réellement subis (nouvel algo)
       r.dommages += dg;
       reserve -= dg;
       if (reserve <= 0) break;
@@ -1133,7 +1143,7 @@
       var avantInterne = f.filter(function (v) { return v.detruit; }).length;
       if (config.collisionsInternes) {
         var vivants = f.filter(function (v) { return !v.detruit; });
-        tr.interne = collisionsInternesFlotte(vivants, config.militaire || 0, H).dommages;
+        tr.interne = collisionsInternesFlotte(vivants, config.militaire || 0, H, config.collisionsReelles).dommages;
       }
       f.forEach(function (v) {
         if (v.detruit) { tr.detruits[v.type] = (tr.detruits[v.type] || 0) + 1; tr.nbDetruits++; }

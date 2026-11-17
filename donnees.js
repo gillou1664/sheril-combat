@@ -4,7 +4,7 @@
   var CLE = 'sheril-combat:v1';
 
   function registreVide() {
-    return { version: 1, plans: {}, rencontres: {}, scenarios: {}, flottes: {}, flottesParTour: {}, combats: {}, attaquesPlanetes: {}, systemes: null, systemesConnus: {}, brouillon: null };
+    return { version: 1, plans: {}, rencontres: {}, scenarios: {}, flottes: {}, flottesParTour: {}, combats: {}, attaquesPlanetes: {}, systemes: null, systemesConnus: {}, brouillon: null, regles: null };
   }
 
   function charger() {

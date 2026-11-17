@@ -50,6 +50,53 @@
   var etat = reg.brouillon && reg.brouillon.camps ? reg.brouillon : etatDefaut();
   function memoriser() { reg.brouillon = etat; D.sauver(reg); }
 
+  // ------------------------------------------------------------------ règles du moteur (actuel ou futur)
+  // Le développeur a annoncé une nouvelle version du moteur (PR #106 de sheril-old-java, pas encore appliquée).
+  // Chaque règle est commutable ; les préréglages les cochent d'un coup. Valable pour tous les onglets.
+  var REGLES = [
+    ['reciblage', 'Multi-cible', 'Après la première salve, chaque vaisseau qui a encore des armes choisit une autre cible et tire à nouveau (jusqu\'à 3, 7, 15… cibles de plus selon sa taille). Moteur actuel : une seule cible par vaisseau et par tour.'],
+    ['symetrie', 'Symétrie du défenseur corrigée', 'Tous les défenseurs d\'un type à position imposée sont retournés. Moteur actuel : le Java modifie la stratégie en place, si bien qu\'un défenseur sur deux du même type garde la position non retournée.'],
+    ['defenseurZone', 'Défenseur placé dans sa zone', 'Position imposée du défenseur : y = 30 − y (0 = tout à l\'arrière, 10 = à l\'avant). Moteur actuel : y = 20 − y (0 = sur sa ligne de front, 10 = au milieu du terrain).'],
+    ['collisionsReelles', 'Collisions internes : dégâts réellement subis', 'En fin de tour, la réserve de collisions ne baisse que des dégâts réellement subis (un vaisseau détruit n\'absorbe pas l\'excédent) : la surconcentration devient très meurtrière. Moteur actuel : le dégât tiré entier est retiré.'],
+    ['fiabilite', 'Fiabilité des armes', 'Chaque arme s\'enraye avec la probabilité de sa fiabilité (laser et plasma 20 %, torpille 25 %, missile 30 %, moins 1 point par niveau) et est perdue pour le round. Présente dans le simulateur du développeur, mais pas dans le code Java de la PR #106.']
+  ];
+  var PRESETS = {
+    actuel: { nom: 'Moteur actuel (en jeu)', r: {} },
+    futur: { nom: 'Futur moteur (code Java de la PR #106)', r: { reciblage: 1, symetrie: 1, defenseurZone: 1, collisionsReelles: 1 } },
+    futurFiab: { nom: 'Futur moteur + fiabilité (simulateur du développeur)', r: { reciblage: 1, symetrie: 1, defenseurZone: 1, collisionsReelles: 1, fiabilite: 1 } }
+  };
+  if (!reg.regles) {
+    // reprise des anciennes options (reciblage dans les résultats, bizarrerie du miroir dans la stratégie du défenseur)
+    reg.regles = { reciblage: !!etat.reciblage, symetrie: etat.bugMiroir === false };
+  }
+  function presetCourant() {
+    for (var k in PRESETS) {
+      var ok = REGLES.every(function (r) { return !!PRESETS[k].r[r[0]] === !!reg.regles[r[0]]; });
+      if (ok) return k;
+    }
+    return '';
+  }
+  function texteRegles() { var k = presetCourant(); return k ? PRESETS[k].nom : 'règles personnalisées : ' + (REGLES.filter(function (r) { return reg.regles[r[0]]; }).map(function (r) { return r[1].toLowerCase(); }).join(', ') || 'aucune'); }
+  function rendreRegles() {
+    var k = presetCourant();
+    $('#regles').innerHTML = '<div class="ligne"><b>Moteur</b>' +
+      Object.keys(PRESETS).map(function (p) { return '<label><input type="radio" name="preset" value="' + p + '"' + (k === p ? ' checked' : '') + '> ' + esc(PRESETS[p].nom) + '</label>'; }).join('') +
+      (k ? '' : '<span class="muted">(personnalisé)</span>') + '</div>' +
+      '<details' + (k ? '' : ' open') + '><summary>Détail des règles</summary>' +
+      REGLES.map(function (r) {
+        return '<label class="regle"><input type="checkbox" data-regle="' + r[0] + '"' + (reg.regles[r[0]] ? ' checked' : '') + '> <span><b>' + esc(r[1]) + '</b><br><span class="muted">' + esc(r[2]) + '</span></span></label>';
+      }).join('') + '</details>';
+  }
+  function reglesChangees() {
+    D.sauver(reg); rendreRegles(); rendreFlottes(); rendrePlanetaire();
+    message('ok', 'Règles : ' + esc(texteRegles()) + '. Relancez les simulations pour en voir l\'effet.', 4000);
+  }
+  $('#regles').addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.name === 'preset') { var r = PRESETS[t.value].r; reg.regles = {}; REGLES.forEach(function (x) { reg.regles[x[0]] = !!r[x[0]]; }); reglesChangees(); }
+    else if (t.dataset.regle) { reg.regles[t.dataset.regle] = t.checked; reglesChangees(); }
+  });
+
   // ------------------------------------------------------------------ messages
   function message(type, html, duree) {
     var d = document.createElement('div');
@@ -138,8 +185,8 @@
     var vs = [];
     camp.lignes.forEach(function (l) { var p = planCompile(l.plan); if (p && +l.nombre > 0) vs.push({ plan: p, nombre: +l.nombre, dommages: +l.dommages || 0 }); });
     if (!vs.length) return null;
-    var cle = (+camp.militaire || 0) + '|' + vs.map(function (v) { return v.plan.nom + ':' + v.plan.nbCases + ':' + v.nombre + ':' + v.dommages; }).join(',');
-    if (!cacheCollisions[cle]) cacheCollisions[cle] = M.estimerCollisions({ vaisseaux: vs }, +camp.militaire || 0, 300, 4242);
+    var cle = (+camp.militaire || 0) + '|' + (reg.regles.collisionsReelles ? 'r' : 'a') + '|' + vs.map(function (v) { return v.plan.nom + ':' + v.plan.nbCases + ':' + v.nombre + ':' + v.dommages; }).join(',');
+    if (!cacheCollisions[cle]) cacheCollisions[cle] = M.estimerCollisions({ vaisseaux: vs }, +camp.militaire || 0, 300, 4242, !!reg.regles.collisionsReelles);
     return cacheCollisions[cle];
   }
   function resumeCamp(i) {
@@ -272,7 +319,7 @@
           '<td><input type="number" class="court" min="0" max="10" data-pos="1" value="' + esc(p[1]) + '"></td>' +
           '<td><input data-cibles placeholder="10 9 8 7 6 5 4 3 2 1" value="' + esc(ci ? ci.join(' ') : '') + '" style="width:190px"></td></tr>';
       }).join('') + '</tbody></table>' +
-      (i === 1 ? '<label style="display:block;margin-top:6px"><input type="checkbox" data-action="bugMiroir"' + (etat.bugMiroir === false ? '' : ' checked') + '> Bizarrerie du moteur : un vaisseau défenseur sur deux d\'un même type garde la position non retournée (le Java modifie la stratégie en place)</label>' : '') +
+      (i === 1 ? '<div class="muted" style="margin-top:6px;font-size:12px">Position du défenseur : ' + (reg.regles.defenseurZone ? 'y = 30 − y (0 = tout à l\'arrière)' : 'y = 20 − y (0 = sur sa ligne de front)') + (reg.regles.symetrie ? '' : ' ; un défenseur sur deux du même type garde la position non retournée (moteur actuel)') + '. Voir « Moteur » en haut de la page.</div>' : '') +
       '</details>';
     }
     var r = resumeCamp(i);
@@ -345,7 +392,7 @@
       }
     } else if (t.dataset.action === 'heros') {
       c.heros = t.checked ? { nom: '', att: 0, def: 0, mor: 0, vit: 0, race: 0, competences: {} } : null; restructure = true;
-    } else if (t.dataset.action === 'bugMiroir') etat.bugMiroir = t.checked;
+    }
     return { restructure: restructure, cle: carte.dataset.camp };
   }
   function majResumes() {
@@ -401,12 +448,12 @@
       var nom = $('#scNom').value.trim();
       if (!nom) { message('warn', 'Donnez un nom au scénario.'); return; }
       etat.nomScenario = nom;
-      reg.scenarios[nom] = JSON.parse(JSON.stringify({ camps: etat.camps, bugMiroir: etat.bugMiroir }));
+      reg.scenarios[nom] = JSON.parse(JSON.stringify({ camps: etat.camps }));
       message('ok', 'Scénario « ' + esc(nom) + ' » enregistré.', 4000);
     }
     else if (a === 'scCharger' || a === 'scSuppr') {
       var n2 = $('#scListe').value; if (!n2) return;
-      if (a === 'scCharger') { var sc = JSON.parse(JSON.stringify(reg.scenarios[n2])); etat.camps = sc.camps; etat.bugMiroir = sc.bugMiroir; etat.nomScenario = n2; etat.combatReel = null; }
+      if (a === 'scCharger') { var sc = JSON.parse(JSON.stringify(reg.scenarios[n2])); etat.camps = sc.camps; etat.nomScenario = n2; etat.combatReel = null; }
       else if (confirm('Supprimer le scénario « ' + n2 + ' » ?')) delete reg.scenarios[n2];
     }
     else if (a === 'inverser') { etat.camps.reverse(); if (etat.combatReel) etat.combatReel.inverse = !etat.combatReel.inverse; }
@@ -610,9 +657,10 @@
   }
 
   // ------------------------------------------------------------------ configuration du moteur
-  function construireConfig(camps, bugMiroir) {
-    var erreurs = [];
-    var cfg = { bugMiroir: bugMiroir !== false, reciblage: !!etat.reciblage, camps: camps.map(function (c, i) {
+  function construireConfig(camps) {
+    var erreurs = [], R = reg.regles;
+    var cfg = { bugMiroir: !R.symetrie, reciblage: !!R.reciblage, defenseurZone: !!R.defenseurZone, fiabilite: !!R.fiabilite,
+      collisionsReelles: !!R.collisionsReelles, regles: texteRegles(), camps: camps.map(function (c, i) {
       var vs = [];
       c.lignes.forEach(function (l) {
         if (!(+l.nombre > 0)) return;
@@ -637,7 +685,6 @@
       '<button class="go" id="btnUnique">▶ Un combat</button>' +
       '<span style="width:20px"></span><label>Nombre de combats <input type="number" id="nbCombats" min="10" step="100" value="' + esc(etat.n || 1000) + '"></label>' +
       '<button class="go" id="btnStats">📊 Statistiques</button><button class="sec" id="btnStop" disabled>■ Arrêter</button></div>' +
-      '<div class="ligne"><label title="Absent du moteur actuel (boucle des tirs multiples commentée dans Combat.java) : à activer pour tester l\'effet de la règle"><input type="checkbox" id="reciblage"' + (etat.reciblage ? ' checked' : '') + '> Reciblage : après la première salve, chaque vaisseau qui a encore des armes choisit une autre cible et tire à nouveau (jusqu\'à 3, 7, 15… cibles de plus selon sa taille)</label></div>' +
       '<div class="barre" id="barre" hidden><div></div></div><div class="muted" id="progres"></div></div>' +
       '<div class="card" id="carteReel"' + (etat.combatReel ? '' : ' hidden') + '></div>' +
       '<div class="card" id="carteUnique" hidden><h2>Combat unique</h2>' +
@@ -660,7 +707,6 @@
   vueR.addEventListener('change', function (e) {
     if (e.target.id === 'graine') { etat.graine = e.target.value.trim(); memoriser(); }
     if (e.target.id === 'nbCombats') { etat.n = Math.max(1, +e.target.value || 1000); memoriser(); }
-    if (e.target.id === 'reciblage') { etat.reciblage = e.target.checked; memoriser(); }
     if (e.target.id === 'aTour') { anim.tour = +e.target.value; anim.t = 0; anim.joue = false; majBoutonJouer(); dessiner(); majJournal(); }
     if (e.target.id === 'aVitesse') anim.vitesse = +e.target.value;
   });
@@ -680,7 +726,7 @@
   // ---------------------------------------------------------------- combat unique
   var anim = { res: null, tour: 0, t: 0, joue: false, vitesse: 1, fini: false };
   function lancerUnique() {
-    var c = construireConfig(etat.camps, etat.bugMiroir);
+    var c = construireConfig(etat.camps);
     if (c.erreurs.length) { message('err', 'Impossible de simuler : ' + c.erreurs.map(esc).join(', ') + '.'); return; }
     var g = etat.graine ? (parseInt(etat.graine, 10) >>> 0) : ((Math.random() * 4294967295) >>> 0);
     var res = M.combattre(c.cfg, g, { trace: true });
@@ -717,17 +763,17 @@
       return;
     }
     var tr = anim.res.trace.tours[anim.tour];
-    var cnt = [{ tirs: 0, coque: 0, bouclier: 0, rate: 0, degats: 0 }, { tirs: 0, coque: 0, bouclier: 0, rate: 0, degats: 0 }];
+    var cnt = [{ tirs: 0, coque: 0, bouclier: 0, rate: 0, enraye: 0, degats: 0 }, { tirs: 0, coque: 0, bouclier: 0, rate: 0, enraye: 0, degats: 0 }];
     tr.tirs.forEach(function (t) {
       var c = cnt[t[0]], j = t[4];
-      for (var k = 0; k < j.length; k += 2) { c.tirs++; if (j[k] === 'coque') { c.coque++; c.degats += j[k + 1]; } else if (j[k] === 'bouclier') c.bouclier++; else c.rate++; }
+      for (var k = 0; k < j.length; k += 2) { c.tirs++; if (j[k] === 'coque') { c.coque++; c.degats += j[k + 1]; } else if (j[k] === 'bouclier') c.bouclier++; else if (j[k] === 'enraye') c.enraye++; else c.rate++; }
     });
     var types = [anim.res.trace.vaisseaux[0], anim.res.trace.vaisseaux[1]];
     $('#aJournal').innerHTML = '<b>Tour ' + (anim.tour + 1) + '</b><br>' + [0, 1].map(function (i) {
       var c = cnt[i], det = tr.detruits[1 - i].map(function (id) { return types[1 - i][id].type; });
       var parType = {}; det.forEach(function (t) { parType[t] = (parType[t] || 0) + 1; });
       var fuit = tr.apres[i].filter(function (p) { return p[4]; }).length;
-      return '<span class="camp' + i + '">' + esc(etat.camps[i].nom) + '</span> : ' + c.tirs + ' tirs, ' + c.coque + ' à la coque (' + c.degats + ' dégâts), ' + c.bouclier + ' sur bouclier, ' + c.rate + ' ratés' +
+      return '<span class="camp' + i + '">' + esc(etat.camps[i].nom) + '</span> : ' + c.tirs + ' tirs, ' + c.coque + ' à la coque (' + c.degats + ' dégâts), ' + c.bouclier + ' sur bouclier, ' + c.rate + ' ratés' + (c.enraye ? ', ' + c.enraye + ' enrayés' : '') +
         (det.length ? ' ; détruit ' + Object.keys(parType).map(function (t) { return parType[t] + ' ' + esc(t); }).join(', ') : '') + (fuit ? ' ; ' + fuit + ' vaisseau(x) s\'éloigne(nt)' : '');
     }).join('<br>');
   }
@@ -909,9 +955,9 @@
     var recu = tr.tirs.filter(function (t) { return t[0] !== best.c && t[2] === best.id; });
     var desc = '<b class="camp' + best.c + '">' + esc(info.type) + '</b> n°' + (best.id + 1) + '<br>taille ' + (info.taille + 1) + ' · position ' + Math.round(best.p[0]) + ', ' + Math.round(best.p[1]) + ', z ' + best.p[2] + (best.p[3] ? ' · <i>s\'éloigne</i>' : '');
     if (tire) {
-      var j = tire[4], c = { coque: 0, bouclier: 0, rate: 0, absorbe: 0 };
+      var j = tire[4], c = { coque: 0, bouclier: 0, rate: 0, absorbe: 0, enraye: 0 };
       for (var k = 0; k < j.length; k += 2) c[j[k]]++;
-      desc += '<br>tire sur ' + esc(anim.res.trace.vaisseaux[1 - best.c][tire[2]].type) + ' n°' + (tire[2] + 1) + ' à distance ' + tire[3] + ' : ' + (j.length / 2) + ' armes, ' + c.coque + ' coque, ' + c.bouclier + ' bouclier, ' + (c.rate + c.absorbe) + ' raté(s)' + (tire[5] ? ', <b>détruit</b>' : '');
+      desc += '<br>tire sur ' + esc(anim.res.trace.vaisseaux[1 - best.c][tire[2]].type) + ' n°' + (tire[2] + 1) + ' à distance ' + tire[3] + ' : ' + (j.length / 2) + ' armes, ' + c.coque + ' coque, ' + c.bouclier + ' bouclier, ' + (c.rate + c.absorbe) + ' raté(s)' + (c.enraye ? ', ' + c.enraye + ' enrayée(s)' : '') + (tire[5] ? ', <b>détruit</b>' : '');
     } else if (anim.tour >= 0) desc += '<br>ne tire pas ce tour (hors de portée, sans cible ou plus combatif)';
     if (recu.length) desc += '<br>pris pour cible par ' + recu.length + ' vaisseau(x)' + (tr.detruits[best.c].indexOf(best.id) >= 0 ? ', <b>détruit</b>' : '');
     ib.innerHTML = desc; ib.style.display = 'block';
@@ -950,7 +996,7 @@
     $('#progres').textContent = (libelle ? libelle + ' : ' : '') + fmt(k) + ' / ' + fmt(n) + ' combats';
   }
   function lancerStats() {
-    var c = construireConfig(etat.camps, etat.bugMiroir);
+    var c = construireConfig(etat.camps);
     if (c.erreurs.length) { message('err', 'Impossible de simuler : ' + c.erreurs.map(esc).join(', ') + '.'); return; }
     var n = Math.max(1, +$('#nbCombats').value || 1000);
     // statistiques : on cache la visualisation du combat (et on arrête son animation)
@@ -977,7 +1023,7 @@
     var pv = [a.victoires[0] / a.n, a.nuls / a.n, a.victoires[1] / a.n];
     var tours = Object.keys(a.tours).map(Number).sort(function (x, y) { return x - y; });
     var med = (function () { var s = 0; for (var i = 0; i < tours.length; i++) { s += a.tours[tours[i]]; if (s >= a.n / 2) return tours[i]; } return 0; })();
-    var html = '<h2>Statistiques sur ' + fmt(a.n) + ' combats</h2>' +
+    var html = '<h2>Statistiques sur ' + fmt(a.n) + ' combats</h2><div class="muted">' + esc(cfg.regles || '') + '</div>' +
       '<div class="tuiles">' +
       '<div class="tuile"><div class="v camp0">' + pct(pv[0]) + '</div><div class="l">victoire de ' + esc(noms[0]) + '</div></div>' +
       '<div class="tuile"><div class="v">' + pct(pv[1]) + '</div><div class="l">aucun vainqueur</div></div>' +
@@ -1042,15 +1088,15 @@
   function lancerComparaison() {
     var noms = $$('[data-comparer]').filter(function (x) { return x.checked; }).map(function (x) { return x.dataset.comparer; });
     var liste = [];
-    if ($('#compCourant').checked) liste.push({ nom: 'flottes en cours', camps: etat.camps, bugMiroir: etat.bugMiroir });
-    noms.forEach(function (n) { liste.push({ nom: n, camps: reg.scenarios[n].camps, bugMiroir: reg.scenarios[n].bugMiroir }); });
+    if ($('#compCourant').checked) liste.push({ nom: 'flottes en cours', camps: etat.camps });
+    noms.forEach(function (n) { liste.push({ nom: n, camps: reg.scenarios[n].camps }); });
     if (!liste.length) { message('warn', 'Cochez au moins un scénario.'); return; }
     var n = Math.max(1, +$('#nbCombats').value || 1000), lignes = [];
     occupe(true);
     var i = 0;
     (function suivant() {
       if (i >= liste.length || (calcul && calcul.arreter && i)) { occupe(false); $('#progres').textContent = 'Comparaison terminée.'; afficher(); return; }
-      var sc = liste[i], c = construireConfig(sc.camps, sc.bugMiroir);
+      var sc = liste[i], c = construireConfig(sc.camps);
       if (c.erreurs.length) { lignes.push({ nom: sc.nom, erreur: c.erreurs.join(', ') }); i++; suivant(); return; }
       executer(c.cfg, n, function (k, tot) { progres(k, tot, sc.nom + ' (' + (i + 1) + '/' + liste.length + ')'); }).then(function (r) {
         var a = M.agreger(r.resultats);
@@ -1385,7 +1431,7 @@
   // Configuration du moteur depuis l'état de l'onglet
   function configPlanetaire() {
     var pl = etat.planetaire, c = construireConfig([pl.flotte]);
-    var cfg = { flotte: c.cfg.camps[0], directive: pl.directive, cible: +pl.cible || 0, ordre: pl.ordre,
+    var cfg = { flotte: c.cfg.camps[0], collisionsReelles: c.cfg.collisionsReelles, regles: c.cfg.regles, directive: pl.directive, cible: +pl.cible || 0, ordre: pl.ordre,
       proprios: pl.proprios.map(function (p) { return { nom: p.nom, protege: p.protege, defense: p.defense, armement: p.armement, gouverneur: p.gouverneur }; }),
       planetes: pl.planetes.map(function (p) {
         return { nom: p.nom, proprio: +p.proprio || 0, population: +p.population || 0, stabilite: +p.stabilite || 0, milice: p.milice === '' || p.milice == null ? undefined : +p.milice,
@@ -1713,7 +1759,7 @@
     var reel = attaqueReelle(), nbCibles = resultats[0].ciblesPossibles;
     var verbe = cfg.directive === 4 || cfg.directive === 6 ? 'pillées' : cfg.directive === 7 ? 'éradiquées' : 'prises';
     var toutes = (a.prises[nbCibles] || 0) / a.n;
-    var html = '<h2>Statistiques sur ' + fmt(a.n) + ' attaques</h2><div class="tuiles">' +
+    var html = '<h2>Statistiques sur ' + fmt(a.n) + ' attaques</h2><div class="muted">' + esc(cfg.regles || '') + '</div><div class="tuiles">' +
       '<div class="tuile"><div class="v">' + fmt(a.nbPrises.moyenne, 1) + '</div><div class="l">planètes ' + verbe + ' en moyenne (sur ' + nbCibles + ')</div></div>' +
       '<div class="tuile"><div class="v">' + pct(toutes) + '</div><div class="l">toutes ' + verbe + '</div></div>' +
       Object.keys(a.arrets).sort(function (x, y) { return a.arrets[y] - a.arrets[x]; }).map(function (k) {
@@ -1894,7 +1940,7 @@
     var m = etat.mines, v = vaisseauxMines();
     if (!v.vaisseaux.length) v.erreurs.push('flotte vide');
     return { cfg: { vaisseaux: v.vaisseaux, debris: +m.debris || 0, mines: +m.mines || 0, tours: +m.tours || 1,
-      collisionsInternes: !!m.collisionsInternes, militaire: +m.flotte.militaire || 0 }, erreurs: v.erreurs };
+      collisionsInternes: !!m.collisionsInternes, collisionsReelles: !!reg.regles.collisionsReelles, militaire: +m.flotte.militaire || 0 }, erreurs: v.erreurs };
   }
   // Barres « restant / perdu » (vaisseaux et puissance), avec le pourcentage de pertes, comme après un combat
   function htmlBarresPertes(nbDep, nbFin, pDep, pFin, dec) {
@@ -1967,7 +2013,7 @@
   }
 
   // ------------------------------------------------------------------ démarrage
-  function tout() { rendreFlottes(); rendreResultats(); rendrePlans(); rendrePlanetaire(); rendreMines(); }
+  function tout() { rendreRegles(); rendreFlottes(); rendreResultats(); rendrePlans(); rendrePlanetaire(); rendreMines(); }
   $('#version').textContent = M.VERSION;
   tout();
   try { var o = localStorage.getItem('sheril-combat:onglet'); if (o && o !== 'resultats') montrer(o); } catch (e) { }

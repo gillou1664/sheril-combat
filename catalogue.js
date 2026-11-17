@@ -96,7 +96,8 @@
     "degatBouclier": 2,
     "degatCoque": 1,
     "degatSol": 1,
-    "portee": 8
+    "portee": 8,
+    "fiabilite": 20
    },
    "toucher": [
     50,
@@ -126,7 +127,8 @@
     "degatBouclier": 2,
     "degatCoque": 1,
     "degatSol": 1,
-    "portee": 9
+    "portee": 9,
+    "fiabilite": 19
    },
    "toucher": [
     55,
@@ -156,7 +158,8 @@
     "degatBouclier": 2,
     "degatCoque": 1,
     "degatSol": 1,
-    "portee": 10
+    "portee": 10,
+    "fiabilite": 18
    },
    "toucher": [
     60,
@@ -186,7 +189,8 @@
     "degatBouclier": 3,
     "degatCoque": 1,
     "degatSol": 1,
-    "portee": 11
+    "portee": 11,
+    "fiabilite": 17
    },
    "toucher": [
     65,
@@ -216,7 +220,8 @@
     "degatBouclier": 3,
     "degatCoque": 2,
     "degatSol": 1,
-    "portee": 12
+    "portee": 12,
+    "fiabilite": 16
    },
    "toucher": [
     70,
@@ -246,7 +251,8 @@
     "degatBouclier": 3,
     "degatCoque": 2,
     "degatSol": 1,
-    "portee": 13
+    "portee": 13,
+    "fiabilite": 15
    },
    "toucher": [
     75,
@@ -276,7 +282,8 @@
     "degatBouclier": 3,
     "degatCoque": 2,
     "degatSol": 1,
-    "portee": 14
+    "portee": 14,
+    "fiabilite": 14
    },
    "toucher": [
     80,
@@ -306,7 +313,8 @@
     "degatBouclier": 4,
     "degatCoque": 2,
     "degatSol": 1,
-    "portee": 15
+    "portee": 15,
+    "fiabilite": 13
    },
    "toucher": [
     85,
@@ -336,7 +344,8 @@
     "degatBouclier": 4,
     "degatCoque": 3,
     "degatSol": 1,
-    "portee": 16
+    "portee": 16,
+    "fiabilite": 12
    },
    "toucher": [
     90,
@@ -366,7 +375,8 @@
     "degatBouclier": 5,
     "degatCoque": 4,
     "degatSol": 1,
-    "portee": 17
+    "portee": 17,
+    "fiabilite": 11
    },
    "toucher": [
     95,
@@ -396,7 +406,8 @@
     "degatBouclier": 1,
     "degatCoque": 1,
     "degatSol": 1,
-    "portee": 12
+    "portee": 12,
+    "fiabilite": 20
    },
    "toucher": [
     20,
@@ -426,7 +437,8 @@
     "degatBouclier": 1,
     "degatCoque": 1,
     "degatSol": 1,
-    "portee": 13
+    "portee": 13,
+    "fiabilite": 19
    },
    "toucher": [
     22,
@@ -456,7 +468,8 @@
     "degatBouclier": 1,
     "degatCoque": 1,
     "degatSol": 1,
-    "portee": 14
+    "portee": 14,
+    "fiabilite": 18
    },
    "toucher": [
     24,
@@ -486,7 +499,8 @@
     "degatBouclier": 2,
     "degatCoque": 1,
     "degatSol": 1,
-    "portee": 15
+    "portee": 15,
+    "fiabilite": 17
    },
    "toucher": [
     26,
@@ -516,7 +530,8 @@
     "degatBouclier": 2,
     "degatCoque": 2,
     "degatSol": 1,
-    "portee": 16
+    "portee": 16,
+    "fiabilite": 16
    },
    "toucher": [
     28,
@@ -546,7 +561,8 @@
     "degatBouclier": 2,
     "degatCoque": 2,
     "degatSol": 1,
-    "portee": 17
+    "portee": 17,
+    "fiabilite": 15
    },
    "toucher": [
     30,
@@ -576,7 +592,8 @@
     "degatBouclier": 2,
     "degatCoque": 2,
     "degatSol": 1,
-    "portee": 18
+    "portee": 18,
+    "fiabilite": 14
    },
    "toucher": [
     32,
@@ -606,7 +623,8 @@
     "degatBouclier": 3,
     "degatCoque": 2,
     "degatSol": 1,
-    "portee": 19
+    "portee": 19,
+    "fiabilite": 13
    },
    "toucher": [
     34,
@@ -636,7 +654,8 @@
     "degatBouclier": 3,
     "degatCoque": 3,
     "degatSol": 1,
-    "portee": 20
+    "portee": 20,
+    "fiabilite": 12
    },
    "toucher": [
     36,
@@ -666,7 +685,8 @@
     "degatBouclier": 4,
     "degatCoque": 4,
     "degatSol": 1,
-    "portee": 21
+    "portee": 21,
+    "fiabilite": 11
    },
    "toucher": [
     38,
@@ -696,7 +716,8 @@
     "degatBouclier": 1,
     "degatCoque": 2,
     "degatSol": 2,
-    "portee": 20
+    "portee": 20,
+    "fiabilite": 25
    },
    "toucher": [
     1,
@@ -726,7 +747,8 @@
     "degatBouclier": 1,
     "degatCoque": 2,
     "degatSol": 2,
-    "portee": 21
+    "portee": 21,
+    "fiabilite": 24
    },
    "toucher": [
     2,
@@ -756,7 +778,8 @@
     "degatBouclier": 1,
     "degatCoque": 2,
     "degatSol": 2,
-    "portee": 22
+    "portee": 22,
+    "fiabilite": 23
    },
    "toucher": [
     3,
@@ -786,7 +809,8 @@
     "degatBouclier": 2,
     "degatCoque": 2,
     "degatSol": 2,
-    "portee": 23
+    "portee": 23,
+    "fiabilite": 22
    },
    "toucher": [
     4,
@@ -816,7 +840,8 @@
     "degatBouclier": 2,
     "degatCoque": 3,
     "degatSol": 2,
-    "portee": 24
+    "portee": 24,
+    "fiabilite": 21
    },
    "toucher": [
     5,
@@ -846,7 +871,8 @@
     "degatBouclier": 2,
     "degatCoque": 3,
     "degatSol": 2,
-    "portee": 25
+    "portee": 25,
+    "fiabilite": 20
    },
    "toucher": [
     6,
@@ -876,7 +902,8 @@
     "degatBouclier": 2,
     "degatCoque": 3,
     "degatSol": 2,
-    "portee": 26
+    "portee": 26,
+    "fiabilite": 19
    },
    "toucher": [
     7,
@@ -906,7 +933,8 @@
     "degatBouclier": 3,
     "degatCoque": 3,
     "degatSol": 2,
-    "portee": 27
+    "portee": 27,
+    "fiabilite": 18
    },
    "toucher": [
     8,
@@ -936,7 +964,8 @@
     "degatBouclier": 3,
     "degatCoque": 4,
     "degatSol": 2,
-    "portee": 28
+    "portee": 28,
+    "fiabilite": 17
    },
    "toucher": [
     9,
@@ -966,7 +995,8 @@
     "degatBouclier": 4,
     "degatCoque": 5,
     "degatSol": 2,
-    "portee": 29
+    "portee": 29,
+    "fiabilite": 16
    },
    "toucher": [
     10,
@@ -996,7 +1026,8 @@
     "degatBouclier": 0,
     "degatCoque": 1,
     "degatSol": 1,
-    "portee": 15
+    "portee": 15,
+    "fiabilite": 30
    },
    "toucher": [
     30,
@@ -1026,7 +1057,8 @@
     "degatBouclier": 0,
     "degatCoque": 1,
     "degatSol": 1,
-    "portee": 16
+    "portee": 16,
+    "fiabilite": 29
    },
    "toucher": [
     33,
@@ -1056,7 +1088,8 @@
     "degatBouclier": 0,
     "degatCoque": 1,
     "degatSol": 1,
-    "portee": 17
+    "portee": 17,
+    "fiabilite": 28
    },
    "toucher": [
     36,
@@ -1086,7 +1119,8 @@
     "degatBouclier": 1,
     "degatCoque": 1,
     "degatSol": 1,
-    "portee": 18
+    "portee": 18,
+    "fiabilite": 27
    },
    "toucher": [
     39,
@@ -1116,7 +1150,8 @@
     "degatBouclier": 1,
     "degatCoque": 2,
     "degatSol": 1,
-    "portee": 19
+    "portee": 19,
+    "fiabilite": 26
    },
    "toucher": [
     42,
@@ -1146,7 +1181,8 @@
     "degatBouclier": 1,
     "degatCoque": 2,
     "degatSol": 1,
-    "portee": 20
+    "portee": 20,
+    "fiabilite": 25
    },
    "toucher": [
     45,
@@ -1176,7 +1212,8 @@
     "degatBouclier": 1,
     "degatCoque": 2,
     "degatSol": 1,
-    "portee": 21
+    "portee": 21,
+    "fiabilite": 24
    },
    "toucher": [
     48,
@@ -1206,7 +1243,8 @@
     "degatBouclier": 2,
     "degatCoque": 2,
     "degatSol": 1,
-    "portee": 22
+    "portee": 22,
+    "fiabilite": 23
    },
    "toucher": [
     51,
@@ -1236,7 +1274,8 @@
     "degatBouclier": 2,
     "degatCoque": 3,
     "degatSol": 1,
-    "portee": 23
+    "portee": 23,
+    "fiabilite": 22
    },
    "toucher": [
     54,
@@ -1266,7 +1305,8 @@
     "degatBouclier": 3,
     "degatCoque": 4,
     "degatSol": 1,
-    "portee": 24
+    "portee": 24,
+    "fiabilite": 21
    },
    "toucher": [
     57,
@@ -1476,7 +1516,8 @@
     "degatBouclier": 0,
     "degatCoque": 0,
     "degatSol": 5,
-    "portee": 0
+    "portee": 0,
+    "fiabilite": 20
    },
    "toucher": [
     0,
@@ -1506,7 +1547,8 @@
     "degatBouclier": 0,
     "degatCoque": 0,
     "degatSol": 6,
-    "portee": 0
+    "portee": 0,
+    "fiabilite": 19
    },
    "toucher": [
     0,
@@ -1536,7 +1578,8 @@
     "degatBouclier": 0,
     "degatCoque": 0,
     "degatSol": 7,
-    "portee": 0
+    "portee": 0,
+    "fiabilite": 18
    },
    "toucher": [
     0,
@@ -1566,7 +1609,8 @@
     "degatBouclier": 0,
     "degatCoque": 0,
     "degatSol": 8,
-    "portee": 0
+    "portee": 0,
+    "fiabilite": 17
    },
    "toucher": [
     0,
@@ -1596,7 +1640,8 @@
     "degatBouclier": 0,
     "degatCoque": 0,
     "degatSol": 9,
-    "portee": 0
+    "portee": 0,
+    "fiabilite": 16
    },
    "toucher": [
     0,
@@ -1626,7 +1671,8 @@
     "degatBouclier": 0,
     "degatCoque": 0,
     "degatSol": 10,
-    "portee": 0
+    "portee": 0,
+    "fiabilite": 15
    },
    "toucher": [
     0,
@@ -1656,7 +1702,8 @@
     "degatBouclier": 0,
     "degatCoque": 0,
     "degatSol": 11,
-    "portee": 0
+    "portee": 0,
+    "fiabilite": 14
    },
    "toucher": [
     0,
@@ -1686,7 +1733,8 @@
     "degatBouclier": 0,
     "degatCoque": 0,
     "degatSol": 12,
-    "portee": 0
+    "portee": 0,
+    "fiabilite": 13
    },
    "toucher": [
     0,
@@ -1716,7 +1764,8 @@
     "degatBouclier": 0,
     "degatCoque": 0,
     "degatSol": 13,
-    "portee": 0
+    "portee": 0,
+    "fiabilite": 12
    },
    "toucher": [
     0,
@@ -1746,7 +1795,8 @@
     "degatBouclier": 0,
     "degatCoque": 0,
     "degatSol": 14,
-    "portee": 0
+    "portee": 0,
+    "fiabilite": 11
    },
    "toucher": [
     0,

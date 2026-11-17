@@ -92,6 +92,8 @@ tr.sel td { background: var(--surface-2); }
 .msg.err { background: var(--err-bg); border-color: var(--err); } .msg.warn { background: var(--warn-bg); border-color: var(--warn); }
 .msg.ok { background: var(--ok-bg); border-color: var(--ok); }
 .muted { color: var(--muted); }
+#regles { padding: 8px 16px; } #regles .ligne { margin: 2px 0; }
+.regle { display: flex; gap: 8px; align-items: flex-start; margin: 6px 0; font-size: 13px; } .regle input { margin-top: 3px; }
 .camp0 { color: var(--camp0); } .camp1 { color: var(--camp1); }
 .titreCamp { display: flex; align-items: center; gap: 8px; }
 .titreCamp .puce { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
@@ -134,6 +136,7 @@ svg text { fill: var(--muted); font-size: 11px; }
     </div>
   </div>
   <div id="messages"></div>
+  <div class="card" id="regles"></div>
 
   <nav class="onglets" id="onglets">
     <button data-vue="flottes" class="actif">⚔️ Flottes</button>
