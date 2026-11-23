@@ -1,0 +1,5916 @@
+{
+ "_note": "Conditions du banc du développeur (branche bench-combat, benchmarks/matrice) : T3 à T9, réacteur le plus petit pour une vitesse de 8, 4 armes V avec ou sans Boucliers V (nombre fixe par taille), budget égal en minerai avec 20 vaisseaux pour le camp le plus cher (x20), agressivité rage des deux côtés, un seul combat sans collisions, 50 combats. A lancer avec --sans-actuel.",
+ "ressource": "minerai",
+ "budgets": [
+  "x20"
+ ],
+ "n": 50,
+ "toursJeu": 1,
+ "plans": {
+  "T3 laser": "moteurI + 16 laserV",
+  "T3 laser+B": "moteurI + 1 bouclierV + 12 laserV",
+  "T3 plasma": "moteurI + 16 plasmaV",
+  "T3 plasma+B": "moteurI + 1 bouclierV + 12 plasmaV",
+  "T3 torp": "moteurI + 16 torpV",
+  "T3 torp+B": "moteurI + 1 bouclierV + 12 torpV",
+  "T3 miss": "moteurI + 16 missV",
+  "T3 miss+B": "moteurI + 1 bouclierV + 12 missV",
+  "T4 laser": "moteurII + 29 laserV",
+  "T4 laser+B": "moteurII + 2 bouclierV + 21 laserV",
+  "T4 plasma": "moteurII + 29 plasmaV",
+  "T4 plasma+B": "moteurII + 2 bouclierV + 21 plasmaV",
+  "T4 torp": "moteurII + 29 torpV",
+  "T4 torp+B": "moteurII + 2 bouclierV + 21 torpV",
+  "T4 miss": "moteurII + 29 missV",
+  "T4 miss+B": "moteurII + 2 bouclierV + 21 missV",
+  "T5 laser": "moteurIII + 57 laserV",
+  "T5 laser+B": "moteurIII + 3 bouclierV + 45 laserV",
+  "T5 plasma": "moteurIII + 57 plasmaV",
+  "T5 plasma+B": "moteurIII + 3 bouclierV + 45 plasmaV",
+  "T5 torp": "moteurIII + 57 torpV",
+  "T5 torp+B": "moteurIII + 3 bouclierV + 45 torpV",
+  "T5 miss": "moteurIII + 57 missV",
+  "T5 miss+B": "moteurIII + 3 bouclierV + 45 missV",
+  "T6 laser": "moteurIV + 114 laserV",
+  "T6 laser+B": "moteurIV + 5 bouclierV + 94 laserV",
+  "T6 plasma": "moteurIV + 114 plasmaV",
+  "T6 plasma+B": "moteurIV + 5 bouclierV + 94 plasmaV",
+  "T6 torp": "moteurIV + 114 torpV",
+  "T6 torp+B": "moteurIV + 5 bouclierV + 94 torpV",
+  "T6 miss": "moteurIV + 114 missV",
+  "T6 miss+B": "moteurIV + 5 bouclierV + 94 missV",
+  "T7 laser": "moteurV + 227 laserV",
+  "T7 laser+B": "moteurV + 10 bouclierV + 187 laserV",
+  "T7 plasma": "moteurV + 227 plasmaV",
+  "T7 plasma+B": "moteurV + 10 bouclierV + 187 plasmaV",
+  "T7 torp": "moteurV + 227 torpV",
+  "T7 torp+B": "moteurV + 10 bouclierV + 187 torpV",
+  "T7 miss": "moteurV + 227 missV",
+  "T7 miss+B": "moteurV + 10 bouclierV + 187 missV",
+  "T8 laser": "moteurVI + 452 laserV",
+  "T8 laser+B": "moteurVI + 10 bouclierV + 412 laserV",
+  "T8 plasma": "moteurVI + 452 plasmaV",
+  "T8 plasma+B": "moteurVI + 10 bouclierV + 412 plasmaV",
+  "T8 torp": "moteurVI + 452 torpV",
+  "T8 torp+B": "moteurVI + 10 bouclierV + 412 torpV",
+  "T8 miss": "moteurVI + 452 missV",
+  "T8 miss+B": "moteurVI + 10 bouclierV + 412 missV",
+  "T9 laser": "moteurVII + 905 laserV",
+  "T9 laser+B": "moteurVII + 10 bouclierV + 865 laserV",
+  "T9 plasma": "moteurVII + 905 plasmaV",
+  "T9 plasma+B": "moteurVII + 10 bouclierV + 865 plasmaV",
+  "T9 torp": "moteurVII + 905 torpV",
+  "T9 torp+B": "moteurVII + 10 bouclierV + 865 torpV",
+  "T9 miss": "moteurVII + 905 missV",
+  "T9 miss+B": "moteurVII + 10 bouclierV + 865 missV"
+ },
+ "flottes": {
+  "T3 laser": {
+   "composition": {
+    "T3 laser": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T3 laser+B": {
+   "composition": {
+    "T3 laser+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T3 plasma": {
+   "composition": {
+    "T3 plasma": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T3 plasma+B": {
+   "composition": {
+    "T3 plasma+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T3 torp": {
+   "composition": {
+    "T3 torp": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T3 torp+B": {
+   "composition": {
+    "T3 torp+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T3 miss": {
+   "composition": {
+    "T3 miss": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T3 miss+B": {
+   "composition": {
+    "T3 miss+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T4 laser": {
+   "composition": {
+    "T4 laser": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T4 laser+B": {
+   "composition": {
+    "T4 laser+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T4 plasma": {
+   "composition": {
+    "T4 plasma": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T4 plasma+B": {
+   "composition": {
+    "T4 plasma+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T4 torp": {
+   "composition": {
+    "T4 torp": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T4 torp+B": {
+   "composition": {
+    "T4 torp+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T4 miss": {
+   "composition": {
+    "T4 miss": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T4 miss+B": {
+   "composition": {
+    "T4 miss+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T5 laser": {
+   "composition": {
+    "T5 laser": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T5 laser+B": {
+   "composition": {
+    "T5 laser+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T5 plasma": {
+   "composition": {
+    "T5 plasma": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T5 plasma+B": {
+   "composition": {
+    "T5 plasma+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T5 torp": {
+   "composition": {
+    "T5 torp": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T5 torp+B": {
+   "composition": {
+    "T5 torp+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T5 miss": {
+   "composition": {
+    "T5 miss": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T5 miss+B": {
+   "composition": {
+    "T5 miss+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T6 laser": {
+   "composition": {
+    "T6 laser": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T6 laser+B": {
+   "composition": {
+    "T6 laser+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T6 plasma": {
+   "composition": {
+    "T6 plasma": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T6 plasma+B": {
+   "composition": {
+    "T6 plasma+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T6 torp": {
+   "composition": {
+    "T6 torp": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T6 torp+B": {
+   "composition": {
+    "T6 torp+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T6 miss": {
+   "composition": {
+    "T6 miss": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T6 miss+B": {
+   "composition": {
+    "T6 miss+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T7 laser": {
+   "composition": {
+    "T7 laser": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T7 laser+B": {
+   "composition": {
+    "T7 laser+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T7 plasma": {
+   "composition": {
+    "T7 plasma": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T7 plasma+B": {
+   "composition": {
+    "T7 plasma+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T7 torp": {
+   "composition": {
+    "T7 torp": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T7 torp+B": {
+   "composition": {
+    "T7 torp+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T7 miss": {
+   "composition": {
+    "T7 miss": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T7 miss+B": {
+   "composition": {
+    "T7 miss+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T8 laser": {
+   "composition": {
+    "T8 laser": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T8 laser+B": {
+   "composition": {
+    "T8 laser+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T8 plasma": {
+   "composition": {
+    "T8 plasma": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T8 plasma+B": {
+   "composition": {
+    "T8 plasma+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T8 torp": {
+   "composition": {
+    "T8 torp": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T8 torp+B": {
+   "composition": {
+    "T8 torp+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T8 miss": {
+   "composition": {
+    "T8 miss": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T8 miss+B": {
+   "composition": {
+    "T8 miss+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T9 laser": {
+   "composition": {
+    "T9 laser": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T9 laser+B": {
+   "composition": {
+    "T9 laser+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T9 plasma": {
+   "composition": {
+    "T9 plasma": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T9 plasma+B": {
+   "composition": {
+    "T9 plasma+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T9 torp": {
+   "composition": {
+    "T9 torp": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T9 torp+B": {
+   "composition": {
+    "T9 torp+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T9 miss": {
+   "composition": {
+    "T9 miss": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  },
+  "T9 miss+B": {
+   "composition": {
+    "T9 miss+B": 1
+   },
+   "strategie": {
+    "agressivite": 5
+   }
+  }
+ },
+ "duels": [
+  [
+   "T3 laser",
+   "T4 laser"
+  ],
+  [
+   "T3 laser",
+   "T4 laser+B"
+  ],
+  [
+   "T3 laser",
+   "T4 plasma"
+  ],
+  [
+   "T3 laser",
+   "T4 plasma+B"
+  ],
+  [
+   "T3 laser",
+   "T4 torp"
+  ],
+  [
+   "T3 laser",
+   "T4 torp+B"
+  ],
+  [
+   "T3 laser",
+   "T4 miss"
+  ],
+  [
+   "T3 laser",
+   "T4 miss+B"
+  ],
+  [
+   "T3 laser+B",
+   "T4 laser"
+  ],
+  [
+   "T3 laser+B",
+   "T4 laser+B"
+  ],
+  [
+   "T3 laser+B",
+   "T4 plasma"
+  ],
+  [
+   "T3 laser+B",
+   "T4 plasma+B"
+  ],
+  [
+   "T3 laser+B",
+   "T4 torp"
+  ],
+  [
+   "T3 laser+B",
+   "T4 torp+B"
+  ],
+  [
+   "T3 laser+B",
+   "T4 miss"
+  ],
+  [
+   "T3 laser+B",
+   "T4 miss+B"
+  ],
+  [
+   "T3 plasma",
+   "T4 laser"
+  ],
+  [
+   "T3 plasma",
+   "T4 laser+B"
+  ],
+  [
+   "T3 plasma",
+   "T4 plasma"
+  ],
+  [
+   "T3 plasma",
+   "T4 plasma+B"
+  ],
+  [
+   "T3 plasma",
+   "T4 torp"
+  ],
+  [
+   "T3 plasma",
+   "T4 torp+B"
+  ],
+  [
+   "T3 plasma",
+   "T4 miss"
+  ],
+  [
+   "T3 plasma",
+   "T4 miss+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T4 laser"
+  ],
+  [
+   "T3 plasma+B",
+   "T4 laser+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T4 plasma"
+  ],
+  [
+   "T3 plasma+B",
+   "T4 plasma+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T4 torp"
+  ],
+  [
+   "T3 plasma+B",
+   "T4 torp+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T4 miss"
+  ],
+  [
+   "T3 plasma+B",
+   "T4 miss+B"
+  ],
+  [
+   "T3 torp",
+   "T4 laser"
+  ],
+  [
+   "T3 torp",
+   "T4 laser+B"
+  ],
+  [
+   "T3 torp",
+   "T4 plasma"
+  ],
+  [
+   "T3 torp",
+   "T4 plasma+B"
+  ],
+  [
+   "T3 torp",
+   "T4 torp"
+  ],
+  [
+   "T3 torp",
+   "T4 torp+B"
+  ],
+  [
+   "T3 torp",
+   "T4 miss"
+  ],
+  [
+   "T3 torp",
+   "T4 miss+B"
+  ],
+  [
+   "T3 torp+B",
+   "T4 laser"
+  ],
+  [
+   "T3 torp+B",
+   "T4 laser+B"
+  ],
+  [
+   "T3 torp+B",
+   "T4 plasma"
+  ],
+  [
+   "T3 torp+B",
+   "T4 plasma+B"
+  ],
+  [
+   "T3 torp+B",
+   "T4 torp"
+  ],
+  [
+   "T3 torp+B",
+   "T4 torp+B"
+  ],
+  [
+   "T3 torp+B",
+   "T4 miss"
+  ],
+  [
+   "T3 torp+B",
+   "T4 miss+B"
+  ],
+  [
+   "T3 miss",
+   "T4 laser"
+  ],
+  [
+   "T3 miss",
+   "T4 laser+B"
+  ],
+  [
+   "T3 miss",
+   "T4 plasma"
+  ],
+  [
+   "T3 miss",
+   "T4 plasma+B"
+  ],
+  [
+   "T3 miss",
+   "T4 torp"
+  ],
+  [
+   "T3 miss",
+   "T4 torp+B"
+  ],
+  [
+   "T3 miss",
+   "T4 miss"
+  ],
+  [
+   "T3 miss",
+   "T4 miss+B"
+  ],
+  [
+   "T3 miss+B",
+   "T4 laser"
+  ],
+  [
+   "T3 miss+B",
+   "T4 laser+B"
+  ],
+  [
+   "T3 miss+B",
+   "T4 plasma"
+  ],
+  [
+   "T3 miss+B",
+   "T4 plasma+B"
+  ],
+  [
+   "T3 miss+B",
+   "T4 torp"
+  ],
+  [
+   "T3 miss+B",
+   "T4 torp+B"
+  ],
+  [
+   "T3 miss+B",
+   "T4 miss"
+  ],
+  [
+   "T3 miss+B",
+   "T4 miss+B"
+  ],
+  [
+   "T3 laser",
+   "T5 laser"
+  ],
+  [
+   "T3 laser",
+   "T5 laser+B"
+  ],
+  [
+   "T3 laser",
+   "T5 plasma"
+  ],
+  [
+   "T3 laser",
+   "T5 plasma+B"
+  ],
+  [
+   "T3 laser",
+   "T5 torp"
+  ],
+  [
+   "T3 laser",
+   "T5 torp+B"
+  ],
+  [
+   "T3 laser",
+   "T5 miss"
+  ],
+  [
+   "T3 laser",
+   "T5 miss+B"
+  ],
+  [
+   "T3 laser+B",
+   "T5 laser"
+  ],
+  [
+   "T3 laser+B",
+   "T5 laser+B"
+  ],
+  [
+   "T3 laser+B",
+   "T5 plasma"
+  ],
+  [
+   "T3 laser+B",
+   "T5 plasma+B"
+  ],
+  [
+   "T3 laser+B",
+   "T5 torp"
+  ],
+  [
+   "T3 laser+B",
+   "T5 torp+B"
+  ],
+  [
+   "T3 laser+B",
+   "T5 miss"
+  ],
+  [
+   "T3 laser+B",
+   "T5 miss+B"
+  ],
+  [
+   "T3 plasma",
+   "T5 laser"
+  ],
+  [
+   "T3 plasma",
+   "T5 laser+B"
+  ],
+  [
+   "T3 plasma",
+   "T5 plasma"
+  ],
+  [
+   "T3 plasma",
+   "T5 plasma+B"
+  ],
+  [
+   "T3 plasma",
+   "T5 torp"
+  ],
+  [
+   "T3 plasma",
+   "T5 torp+B"
+  ],
+  [
+   "T3 plasma",
+   "T5 miss"
+  ],
+  [
+   "T3 plasma",
+   "T5 miss+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T5 laser"
+  ],
+  [
+   "T3 plasma+B",
+   "T5 laser+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T5 plasma"
+  ],
+  [
+   "T3 plasma+B",
+   "T5 plasma+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T5 torp"
+  ],
+  [
+   "T3 plasma+B",
+   "T5 torp+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T5 miss"
+  ],
+  [
+   "T3 plasma+B",
+   "T5 miss+B"
+  ],
+  [
+   "T3 torp",
+   "T5 laser"
+  ],
+  [
+   "T3 torp",
+   "T5 laser+B"
+  ],
+  [
+   "T3 torp",
+   "T5 plasma"
+  ],
+  [
+   "T3 torp",
+   "T5 plasma+B"
+  ],
+  [
+   "T3 torp",
+   "T5 torp"
+  ],
+  [
+   "T3 torp",
+   "T5 torp+B"
+  ],
+  [
+   "T3 torp",
+   "T5 miss"
+  ],
+  [
+   "T3 torp",
+   "T5 miss+B"
+  ],
+  [
+   "T3 torp+B",
+   "T5 laser"
+  ],
+  [
+   "T3 torp+B",
+   "T5 laser+B"
+  ],
+  [
+   "T3 torp+B",
+   "T5 plasma"
+  ],
+  [
+   "T3 torp+B",
+   "T5 plasma+B"
+  ],
+  [
+   "T3 torp+B",
+   "T5 torp"
+  ],
+  [
+   "T3 torp+B",
+   "T5 torp+B"
+  ],
+  [
+   "T3 torp+B",
+   "T5 miss"
+  ],
+  [
+   "T3 torp+B",
+   "T5 miss+B"
+  ],
+  [
+   "T3 miss",
+   "T5 laser"
+  ],
+  [
+   "T3 miss",
+   "T5 laser+B"
+  ],
+  [
+   "T3 miss",
+   "T5 plasma"
+  ],
+  [
+   "T3 miss",
+   "T5 plasma+B"
+  ],
+  [
+   "T3 miss",
+   "T5 torp"
+  ],
+  [
+   "T3 miss",
+   "T5 torp+B"
+  ],
+  [
+   "T3 miss",
+   "T5 miss"
+  ],
+  [
+   "T3 miss",
+   "T5 miss+B"
+  ],
+  [
+   "T3 miss+B",
+   "T5 laser"
+  ],
+  [
+   "T3 miss+B",
+   "T5 laser+B"
+  ],
+  [
+   "T3 miss+B",
+   "T5 plasma"
+  ],
+  [
+   "T3 miss+B",
+   "T5 plasma+B"
+  ],
+  [
+   "T3 miss+B",
+   "T5 torp"
+  ],
+  [
+   "T3 miss+B",
+   "T5 torp+B"
+  ],
+  [
+   "T3 miss+B",
+   "T5 miss"
+  ],
+  [
+   "T3 miss+B",
+   "T5 miss+B"
+  ],
+  [
+   "T3 laser",
+   "T6 laser"
+  ],
+  [
+   "T3 laser",
+   "T6 laser+B"
+  ],
+  [
+   "T3 laser",
+   "T6 plasma"
+  ],
+  [
+   "T3 laser",
+   "T6 plasma+B"
+  ],
+  [
+   "T3 laser",
+   "T6 torp"
+  ],
+  [
+   "T3 laser",
+   "T6 torp+B"
+  ],
+  [
+   "T3 laser",
+   "T6 miss"
+  ],
+  [
+   "T3 laser",
+   "T6 miss+B"
+  ],
+  [
+   "T3 laser+B",
+   "T6 laser"
+  ],
+  [
+   "T3 laser+B",
+   "T6 laser+B"
+  ],
+  [
+   "T3 laser+B",
+   "T6 plasma"
+  ],
+  [
+   "T3 laser+B",
+   "T6 plasma+B"
+  ],
+  [
+   "T3 laser+B",
+   "T6 torp"
+  ],
+  [
+   "T3 laser+B",
+   "T6 torp+B"
+  ],
+  [
+   "T3 laser+B",
+   "T6 miss"
+  ],
+  [
+   "T3 laser+B",
+   "T6 miss+B"
+  ],
+  [
+   "T3 plasma",
+   "T6 laser"
+  ],
+  [
+   "T3 plasma",
+   "T6 laser+B"
+  ],
+  [
+   "T3 plasma",
+   "T6 plasma"
+  ],
+  [
+   "T3 plasma",
+   "T6 plasma+B"
+  ],
+  [
+   "T3 plasma",
+   "T6 torp"
+  ],
+  [
+   "T3 plasma",
+   "T6 torp+B"
+  ],
+  [
+   "T3 plasma",
+   "T6 miss"
+  ],
+  [
+   "T3 plasma",
+   "T6 miss+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T6 laser"
+  ],
+  [
+   "T3 plasma+B",
+   "T6 laser+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T6 plasma"
+  ],
+  [
+   "T3 plasma+B",
+   "T6 plasma+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T6 torp"
+  ],
+  [
+   "T3 plasma+B",
+   "T6 torp+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T6 miss"
+  ],
+  [
+   "T3 plasma+B",
+   "T6 miss+B"
+  ],
+  [
+   "T3 torp",
+   "T6 laser"
+  ],
+  [
+   "T3 torp",
+   "T6 laser+B"
+  ],
+  [
+   "T3 torp",
+   "T6 plasma"
+  ],
+  [
+   "T3 torp",
+   "T6 plasma+B"
+  ],
+  [
+   "T3 torp",
+   "T6 torp"
+  ],
+  [
+   "T3 torp",
+   "T6 torp+B"
+  ],
+  [
+   "T3 torp",
+   "T6 miss"
+  ],
+  [
+   "T3 torp",
+   "T6 miss+B"
+  ],
+  [
+   "T3 torp+B",
+   "T6 laser"
+  ],
+  [
+   "T3 torp+B",
+   "T6 laser+B"
+  ],
+  [
+   "T3 torp+B",
+   "T6 plasma"
+  ],
+  [
+   "T3 torp+B",
+   "T6 plasma+B"
+  ],
+  [
+   "T3 torp+B",
+   "T6 torp"
+  ],
+  [
+   "T3 torp+B",
+   "T6 torp+B"
+  ],
+  [
+   "T3 torp+B",
+   "T6 miss"
+  ],
+  [
+   "T3 torp+B",
+   "T6 miss+B"
+  ],
+  [
+   "T3 miss",
+   "T6 laser"
+  ],
+  [
+   "T3 miss",
+   "T6 laser+B"
+  ],
+  [
+   "T3 miss",
+   "T6 plasma"
+  ],
+  [
+   "T3 miss",
+   "T6 plasma+B"
+  ],
+  [
+   "T3 miss",
+   "T6 torp"
+  ],
+  [
+   "T3 miss",
+   "T6 torp+B"
+  ],
+  [
+   "T3 miss",
+   "T6 miss"
+  ],
+  [
+   "T3 miss",
+   "T6 miss+B"
+  ],
+  [
+   "T3 miss+B",
+   "T6 laser"
+  ],
+  [
+   "T3 miss+B",
+   "T6 laser+B"
+  ],
+  [
+   "T3 miss+B",
+   "T6 plasma"
+  ],
+  [
+   "T3 miss+B",
+   "T6 plasma+B"
+  ],
+  [
+   "T3 miss+B",
+   "T6 torp"
+  ],
+  [
+   "T3 miss+B",
+   "T6 torp+B"
+  ],
+  [
+   "T3 miss+B",
+   "T6 miss"
+  ],
+  [
+   "T3 miss+B",
+   "T6 miss+B"
+  ],
+  [
+   "T3 laser",
+   "T7 laser"
+  ],
+  [
+   "T3 laser",
+   "T7 laser+B"
+  ],
+  [
+   "T3 laser",
+   "T7 plasma"
+  ],
+  [
+   "T3 laser",
+   "T7 plasma+B"
+  ],
+  [
+   "T3 laser",
+   "T7 torp"
+  ],
+  [
+   "T3 laser",
+   "T7 torp+B"
+  ],
+  [
+   "T3 laser",
+   "T7 miss"
+  ],
+  [
+   "T3 laser",
+   "T7 miss+B"
+  ],
+  [
+   "T3 laser+B",
+   "T7 laser"
+  ],
+  [
+   "T3 laser+B",
+   "T7 laser+B"
+  ],
+  [
+   "T3 laser+B",
+   "T7 plasma"
+  ],
+  [
+   "T3 laser+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T3 laser+B",
+   "T7 torp"
+  ],
+  [
+   "T3 laser+B",
+   "T7 torp+B"
+  ],
+  [
+   "T3 laser+B",
+   "T7 miss"
+  ],
+  [
+   "T3 laser+B",
+   "T7 miss+B"
+  ],
+  [
+   "T3 plasma",
+   "T7 laser"
+  ],
+  [
+   "T3 plasma",
+   "T7 laser+B"
+  ],
+  [
+   "T3 plasma",
+   "T7 plasma"
+  ],
+  [
+   "T3 plasma",
+   "T7 plasma+B"
+  ],
+  [
+   "T3 plasma",
+   "T7 torp"
+  ],
+  [
+   "T3 plasma",
+   "T7 torp+B"
+  ],
+  [
+   "T3 plasma",
+   "T7 miss"
+  ],
+  [
+   "T3 plasma",
+   "T7 miss+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T7 laser"
+  ],
+  [
+   "T3 plasma+B",
+   "T7 laser+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T7 plasma"
+  ],
+  [
+   "T3 plasma+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T7 torp"
+  ],
+  [
+   "T3 plasma+B",
+   "T7 torp+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T7 miss"
+  ],
+  [
+   "T3 plasma+B",
+   "T7 miss+B"
+  ],
+  [
+   "T3 torp",
+   "T7 laser"
+  ],
+  [
+   "T3 torp",
+   "T7 laser+B"
+  ],
+  [
+   "T3 torp",
+   "T7 plasma"
+  ],
+  [
+   "T3 torp",
+   "T7 plasma+B"
+  ],
+  [
+   "T3 torp",
+   "T7 torp"
+  ],
+  [
+   "T3 torp",
+   "T7 torp+B"
+  ],
+  [
+   "T3 torp",
+   "T7 miss"
+  ],
+  [
+   "T3 torp",
+   "T7 miss+B"
+  ],
+  [
+   "T3 torp+B",
+   "T7 laser"
+  ],
+  [
+   "T3 torp+B",
+   "T7 laser+B"
+  ],
+  [
+   "T3 torp+B",
+   "T7 plasma"
+  ],
+  [
+   "T3 torp+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T3 torp+B",
+   "T7 torp"
+  ],
+  [
+   "T3 torp+B",
+   "T7 torp+B"
+  ],
+  [
+   "T3 torp+B",
+   "T7 miss"
+  ],
+  [
+   "T3 torp+B",
+   "T7 miss+B"
+  ],
+  [
+   "T3 miss",
+   "T7 laser"
+  ],
+  [
+   "T3 miss",
+   "T7 laser+B"
+  ],
+  [
+   "T3 miss",
+   "T7 plasma"
+  ],
+  [
+   "T3 miss",
+   "T7 plasma+B"
+  ],
+  [
+   "T3 miss",
+   "T7 torp"
+  ],
+  [
+   "T3 miss",
+   "T7 torp+B"
+  ],
+  [
+   "T3 miss",
+   "T7 miss"
+  ],
+  [
+   "T3 miss",
+   "T7 miss+B"
+  ],
+  [
+   "T3 miss+B",
+   "T7 laser"
+  ],
+  [
+   "T3 miss+B",
+   "T7 laser+B"
+  ],
+  [
+   "T3 miss+B",
+   "T7 plasma"
+  ],
+  [
+   "T3 miss+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T3 miss+B",
+   "T7 torp"
+  ],
+  [
+   "T3 miss+B",
+   "T7 torp+B"
+  ],
+  [
+   "T3 miss+B",
+   "T7 miss"
+  ],
+  [
+   "T3 miss+B",
+   "T7 miss+B"
+  ],
+  [
+   "T3 laser",
+   "T8 laser"
+  ],
+  [
+   "T3 laser",
+   "T8 laser+B"
+  ],
+  [
+   "T3 laser",
+   "T8 plasma"
+  ],
+  [
+   "T3 laser",
+   "T8 plasma+B"
+  ],
+  [
+   "T3 laser",
+   "T8 torp"
+  ],
+  [
+   "T3 laser",
+   "T8 torp+B"
+  ],
+  [
+   "T3 laser",
+   "T8 miss"
+  ],
+  [
+   "T3 laser",
+   "T8 miss+B"
+  ],
+  [
+   "T3 laser+B",
+   "T8 laser"
+  ],
+  [
+   "T3 laser+B",
+   "T8 laser+B"
+  ],
+  [
+   "T3 laser+B",
+   "T8 plasma"
+  ],
+  [
+   "T3 laser+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T3 laser+B",
+   "T8 torp"
+  ],
+  [
+   "T3 laser+B",
+   "T8 torp+B"
+  ],
+  [
+   "T3 laser+B",
+   "T8 miss"
+  ],
+  [
+   "T3 laser+B",
+   "T8 miss+B"
+  ],
+  [
+   "T3 plasma",
+   "T8 laser"
+  ],
+  [
+   "T3 plasma",
+   "T8 laser+B"
+  ],
+  [
+   "T3 plasma",
+   "T8 plasma"
+  ],
+  [
+   "T3 plasma",
+   "T8 plasma+B"
+  ],
+  [
+   "T3 plasma",
+   "T8 torp"
+  ],
+  [
+   "T3 plasma",
+   "T8 torp+B"
+  ],
+  [
+   "T3 plasma",
+   "T8 miss"
+  ],
+  [
+   "T3 plasma",
+   "T8 miss+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T8 laser"
+  ],
+  [
+   "T3 plasma+B",
+   "T8 laser+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T8 plasma"
+  ],
+  [
+   "T3 plasma+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T8 torp"
+  ],
+  [
+   "T3 plasma+B",
+   "T8 torp+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T8 miss"
+  ],
+  [
+   "T3 plasma+B",
+   "T8 miss+B"
+  ],
+  [
+   "T3 torp",
+   "T8 laser"
+  ],
+  [
+   "T3 torp",
+   "T8 laser+B"
+  ],
+  [
+   "T3 torp",
+   "T8 plasma"
+  ],
+  [
+   "T3 torp",
+   "T8 plasma+B"
+  ],
+  [
+   "T3 torp",
+   "T8 torp"
+  ],
+  [
+   "T3 torp",
+   "T8 torp+B"
+  ],
+  [
+   "T3 torp",
+   "T8 miss"
+  ],
+  [
+   "T3 torp",
+   "T8 miss+B"
+  ],
+  [
+   "T3 torp+B",
+   "T8 laser"
+  ],
+  [
+   "T3 torp+B",
+   "T8 laser+B"
+  ],
+  [
+   "T3 torp+B",
+   "T8 plasma"
+  ],
+  [
+   "T3 torp+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T3 torp+B",
+   "T8 torp"
+  ],
+  [
+   "T3 torp+B",
+   "T8 torp+B"
+  ],
+  [
+   "T3 torp+B",
+   "T8 miss"
+  ],
+  [
+   "T3 torp+B",
+   "T8 miss+B"
+  ],
+  [
+   "T3 miss",
+   "T8 laser"
+  ],
+  [
+   "T3 miss",
+   "T8 laser+B"
+  ],
+  [
+   "T3 miss",
+   "T8 plasma"
+  ],
+  [
+   "T3 miss",
+   "T8 plasma+B"
+  ],
+  [
+   "T3 miss",
+   "T8 torp"
+  ],
+  [
+   "T3 miss",
+   "T8 torp+B"
+  ],
+  [
+   "T3 miss",
+   "T8 miss"
+  ],
+  [
+   "T3 miss",
+   "T8 miss+B"
+  ],
+  [
+   "T3 miss+B",
+   "T8 laser"
+  ],
+  [
+   "T3 miss+B",
+   "T8 laser+B"
+  ],
+  [
+   "T3 miss+B",
+   "T8 plasma"
+  ],
+  [
+   "T3 miss+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T3 miss+B",
+   "T8 torp"
+  ],
+  [
+   "T3 miss+B",
+   "T8 torp+B"
+  ],
+  [
+   "T3 miss+B",
+   "T8 miss"
+  ],
+  [
+   "T3 miss+B",
+   "T8 miss+B"
+  ],
+  [
+   "T3 laser",
+   "T9 laser"
+  ],
+  [
+   "T3 laser",
+   "T9 laser+B"
+  ],
+  [
+   "T3 laser",
+   "T9 plasma"
+  ],
+  [
+   "T3 laser",
+   "T9 plasma+B"
+  ],
+  [
+   "T3 laser",
+   "T9 torp"
+  ],
+  [
+   "T3 laser",
+   "T9 torp+B"
+  ],
+  [
+   "T3 laser",
+   "T9 miss"
+  ],
+  [
+   "T3 laser",
+   "T9 miss+B"
+  ],
+  [
+   "T3 laser+B",
+   "T9 laser"
+  ],
+  [
+   "T3 laser+B",
+   "T9 laser+B"
+  ],
+  [
+   "T3 laser+B",
+   "T9 plasma"
+  ],
+  [
+   "T3 laser+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T3 laser+B",
+   "T9 torp"
+  ],
+  [
+   "T3 laser+B",
+   "T9 torp+B"
+  ],
+  [
+   "T3 laser+B",
+   "T9 miss"
+  ],
+  [
+   "T3 laser+B",
+   "T9 miss+B"
+  ],
+  [
+   "T3 plasma",
+   "T9 laser"
+  ],
+  [
+   "T3 plasma",
+   "T9 laser+B"
+  ],
+  [
+   "T3 plasma",
+   "T9 plasma"
+  ],
+  [
+   "T3 plasma",
+   "T9 plasma+B"
+  ],
+  [
+   "T3 plasma",
+   "T9 torp"
+  ],
+  [
+   "T3 plasma",
+   "T9 torp+B"
+  ],
+  [
+   "T3 plasma",
+   "T9 miss"
+  ],
+  [
+   "T3 plasma",
+   "T9 miss+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T9 laser"
+  ],
+  [
+   "T3 plasma+B",
+   "T9 laser+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T9 plasma"
+  ],
+  [
+   "T3 plasma+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T9 torp"
+  ],
+  [
+   "T3 plasma+B",
+   "T9 torp+B"
+  ],
+  [
+   "T3 plasma+B",
+   "T9 miss"
+  ],
+  [
+   "T3 plasma+B",
+   "T9 miss+B"
+  ],
+  [
+   "T3 torp",
+   "T9 laser"
+  ],
+  [
+   "T3 torp",
+   "T9 laser+B"
+  ],
+  [
+   "T3 torp",
+   "T9 plasma"
+  ],
+  [
+   "T3 torp",
+   "T9 plasma+B"
+  ],
+  [
+   "T3 torp",
+   "T9 torp"
+  ],
+  [
+   "T3 torp",
+   "T9 torp+B"
+  ],
+  [
+   "T3 torp",
+   "T9 miss"
+  ],
+  [
+   "T3 torp",
+   "T9 miss+B"
+  ],
+  [
+   "T3 torp+B",
+   "T9 laser"
+  ],
+  [
+   "T3 torp+B",
+   "T9 laser+B"
+  ],
+  [
+   "T3 torp+B",
+   "T9 plasma"
+  ],
+  [
+   "T3 torp+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T3 torp+B",
+   "T9 torp"
+  ],
+  [
+   "T3 torp+B",
+   "T9 torp+B"
+  ],
+  [
+   "T3 torp+B",
+   "T9 miss"
+  ],
+  [
+   "T3 torp+B",
+   "T9 miss+B"
+  ],
+  [
+   "T3 miss",
+   "T9 laser"
+  ],
+  [
+   "T3 miss",
+   "T9 laser+B"
+  ],
+  [
+   "T3 miss",
+   "T9 plasma"
+  ],
+  [
+   "T3 miss",
+   "T9 plasma+B"
+  ],
+  [
+   "T3 miss",
+   "T9 torp"
+  ],
+  [
+   "T3 miss",
+   "T9 torp+B"
+  ],
+  [
+   "T3 miss",
+   "T9 miss"
+  ],
+  [
+   "T3 miss",
+   "T9 miss+B"
+  ],
+  [
+   "T3 miss+B",
+   "T9 laser"
+  ],
+  [
+   "T3 miss+B",
+   "T9 laser+B"
+  ],
+  [
+   "T3 miss+B",
+   "T9 plasma"
+  ],
+  [
+   "T3 miss+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T3 miss+B",
+   "T9 torp"
+  ],
+  [
+   "T3 miss+B",
+   "T9 torp+B"
+  ],
+  [
+   "T3 miss+B",
+   "T9 miss"
+  ],
+  [
+   "T3 miss+B",
+   "T9 miss+B"
+  ],
+  [
+   "T4 laser",
+   "T5 laser"
+  ],
+  [
+   "T4 laser",
+   "T5 laser+B"
+  ],
+  [
+   "T4 laser",
+   "T5 plasma"
+  ],
+  [
+   "T4 laser",
+   "T5 plasma+B"
+  ],
+  [
+   "T4 laser",
+   "T5 torp"
+  ],
+  [
+   "T4 laser",
+   "T5 torp+B"
+  ],
+  [
+   "T4 laser",
+   "T5 miss"
+  ],
+  [
+   "T4 laser",
+   "T5 miss+B"
+  ],
+  [
+   "T4 laser+B",
+   "T5 laser"
+  ],
+  [
+   "T4 laser+B",
+   "T5 laser+B"
+  ],
+  [
+   "T4 laser+B",
+   "T5 plasma"
+  ],
+  [
+   "T4 laser+B",
+   "T5 plasma+B"
+  ],
+  [
+   "T4 laser+B",
+   "T5 torp"
+  ],
+  [
+   "T4 laser+B",
+   "T5 torp+B"
+  ],
+  [
+   "T4 laser+B",
+   "T5 miss"
+  ],
+  [
+   "T4 laser+B",
+   "T5 miss+B"
+  ],
+  [
+   "T4 plasma",
+   "T5 laser"
+  ],
+  [
+   "T4 plasma",
+   "T5 laser+B"
+  ],
+  [
+   "T4 plasma",
+   "T5 plasma"
+  ],
+  [
+   "T4 plasma",
+   "T5 plasma+B"
+  ],
+  [
+   "T4 plasma",
+   "T5 torp"
+  ],
+  [
+   "T4 plasma",
+   "T5 torp+B"
+  ],
+  [
+   "T4 plasma",
+   "T5 miss"
+  ],
+  [
+   "T4 plasma",
+   "T5 miss+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T5 laser"
+  ],
+  [
+   "T4 plasma+B",
+   "T5 laser+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T5 plasma"
+  ],
+  [
+   "T4 plasma+B",
+   "T5 plasma+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T5 torp"
+  ],
+  [
+   "T4 plasma+B",
+   "T5 torp+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T5 miss"
+  ],
+  [
+   "T4 plasma+B",
+   "T5 miss+B"
+  ],
+  [
+   "T4 torp",
+   "T5 laser"
+  ],
+  [
+   "T4 torp",
+   "T5 laser+B"
+  ],
+  [
+   "T4 torp",
+   "T5 plasma"
+  ],
+  [
+   "T4 torp",
+   "T5 plasma+B"
+  ],
+  [
+   "T4 torp",
+   "T5 torp"
+  ],
+  [
+   "T4 torp",
+   "T5 torp+B"
+  ],
+  [
+   "T4 torp",
+   "T5 miss"
+  ],
+  [
+   "T4 torp",
+   "T5 miss+B"
+  ],
+  [
+   "T4 torp+B",
+   "T5 laser"
+  ],
+  [
+   "T4 torp+B",
+   "T5 laser+B"
+  ],
+  [
+   "T4 torp+B",
+   "T5 plasma"
+  ],
+  [
+   "T4 torp+B",
+   "T5 plasma+B"
+  ],
+  [
+   "T4 torp+B",
+   "T5 torp"
+  ],
+  [
+   "T4 torp+B",
+   "T5 torp+B"
+  ],
+  [
+   "T4 torp+B",
+   "T5 miss"
+  ],
+  [
+   "T4 torp+B",
+   "T5 miss+B"
+  ],
+  [
+   "T4 miss",
+   "T5 laser"
+  ],
+  [
+   "T4 miss",
+   "T5 laser+B"
+  ],
+  [
+   "T4 miss",
+   "T5 plasma"
+  ],
+  [
+   "T4 miss",
+   "T5 plasma+B"
+  ],
+  [
+   "T4 miss",
+   "T5 torp"
+  ],
+  [
+   "T4 miss",
+   "T5 torp+B"
+  ],
+  [
+   "T4 miss",
+   "T5 miss"
+  ],
+  [
+   "T4 miss",
+   "T5 miss+B"
+  ],
+  [
+   "T4 miss+B",
+   "T5 laser"
+  ],
+  [
+   "T4 miss+B",
+   "T5 laser+B"
+  ],
+  [
+   "T4 miss+B",
+   "T5 plasma"
+  ],
+  [
+   "T4 miss+B",
+   "T5 plasma+B"
+  ],
+  [
+   "T4 miss+B",
+   "T5 torp"
+  ],
+  [
+   "T4 miss+B",
+   "T5 torp+B"
+  ],
+  [
+   "T4 miss+B",
+   "T5 miss"
+  ],
+  [
+   "T4 miss+B",
+   "T5 miss+B"
+  ],
+  [
+   "T4 laser",
+   "T6 laser"
+  ],
+  [
+   "T4 laser",
+   "T6 laser+B"
+  ],
+  [
+   "T4 laser",
+   "T6 plasma"
+  ],
+  [
+   "T4 laser",
+   "T6 plasma+B"
+  ],
+  [
+   "T4 laser",
+   "T6 torp"
+  ],
+  [
+   "T4 laser",
+   "T6 torp+B"
+  ],
+  [
+   "T4 laser",
+   "T6 miss"
+  ],
+  [
+   "T4 laser",
+   "T6 miss+B"
+  ],
+  [
+   "T4 laser+B",
+   "T6 laser"
+  ],
+  [
+   "T4 laser+B",
+   "T6 laser+B"
+  ],
+  [
+   "T4 laser+B",
+   "T6 plasma"
+  ],
+  [
+   "T4 laser+B",
+   "T6 plasma+B"
+  ],
+  [
+   "T4 laser+B",
+   "T6 torp"
+  ],
+  [
+   "T4 laser+B",
+   "T6 torp+B"
+  ],
+  [
+   "T4 laser+B",
+   "T6 miss"
+  ],
+  [
+   "T4 laser+B",
+   "T6 miss+B"
+  ],
+  [
+   "T4 plasma",
+   "T6 laser"
+  ],
+  [
+   "T4 plasma",
+   "T6 laser+B"
+  ],
+  [
+   "T4 plasma",
+   "T6 plasma"
+  ],
+  [
+   "T4 plasma",
+   "T6 plasma+B"
+  ],
+  [
+   "T4 plasma",
+   "T6 torp"
+  ],
+  [
+   "T4 plasma",
+   "T6 torp+B"
+  ],
+  [
+   "T4 plasma",
+   "T6 miss"
+  ],
+  [
+   "T4 plasma",
+   "T6 miss+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T6 laser"
+  ],
+  [
+   "T4 plasma+B",
+   "T6 laser+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T6 plasma"
+  ],
+  [
+   "T4 plasma+B",
+   "T6 plasma+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T6 torp"
+  ],
+  [
+   "T4 plasma+B",
+   "T6 torp+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T6 miss"
+  ],
+  [
+   "T4 plasma+B",
+   "T6 miss+B"
+  ],
+  [
+   "T4 torp",
+   "T6 laser"
+  ],
+  [
+   "T4 torp",
+   "T6 laser+B"
+  ],
+  [
+   "T4 torp",
+   "T6 plasma"
+  ],
+  [
+   "T4 torp",
+   "T6 plasma+B"
+  ],
+  [
+   "T4 torp",
+   "T6 torp"
+  ],
+  [
+   "T4 torp",
+   "T6 torp+B"
+  ],
+  [
+   "T4 torp",
+   "T6 miss"
+  ],
+  [
+   "T4 torp",
+   "T6 miss+B"
+  ],
+  [
+   "T4 torp+B",
+   "T6 laser"
+  ],
+  [
+   "T4 torp+B",
+   "T6 laser+B"
+  ],
+  [
+   "T4 torp+B",
+   "T6 plasma"
+  ],
+  [
+   "T4 torp+B",
+   "T6 plasma+B"
+  ],
+  [
+   "T4 torp+B",
+   "T6 torp"
+  ],
+  [
+   "T4 torp+B",
+   "T6 torp+B"
+  ],
+  [
+   "T4 torp+B",
+   "T6 miss"
+  ],
+  [
+   "T4 torp+B",
+   "T6 miss+B"
+  ],
+  [
+   "T4 miss",
+   "T6 laser"
+  ],
+  [
+   "T4 miss",
+   "T6 laser+B"
+  ],
+  [
+   "T4 miss",
+   "T6 plasma"
+  ],
+  [
+   "T4 miss",
+   "T6 plasma+B"
+  ],
+  [
+   "T4 miss",
+   "T6 torp"
+  ],
+  [
+   "T4 miss",
+   "T6 torp+B"
+  ],
+  [
+   "T4 miss",
+   "T6 miss"
+  ],
+  [
+   "T4 miss",
+   "T6 miss+B"
+  ],
+  [
+   "T4 miss+B",
+   "T6 laser"
+  ],
+  [
+   "T4 miss+B",
+   "T6 laser+B"
+  ],
+  [
+   "T4 miss+B",
+   "T6 plasma"
+  ],
+  [
+   "T4 miss+B",
+   "T6 plasma+B"
+  ],
+  [
+   "T4 miss+B",
+   "T6 torp"
+  ],
+  [
+   "T4 miss+B",
+   "T6 torp+B"
+  ],
+  [
+   "T4 miss+B",
+   "T6 miss"
+  ],
+  [
+   "T4 miss+B",
+   "T6 miss+B"
+  ],
+  [
+   "T4 laser",
+   "T7 laser"
+  ],
+  [
+   "T4 laser",
+   "T7 laser+B"
+  ],
+  [
+   "T4 laser",
+   "T7 plasma"
+  ],
+  [
+   "T4 laser",
+   "T7 plasma+B"
+  ],
+  [
+   "T4 laser",
+   "T7 torp"
+  ],
+  [
+   "T4 laser",
+   "T7 torp+B"
+  ],
+  [
+   "T4 laser",
+   "T7 miss"
+  ],
+  [
+   "T4 laser",
+   "T7 miss+B"
+  ],
+  [
+   "T4 laser+B",
+   "T7 laser"
+  ],
+  [
+   "T4 laser+B",
+   "T7 laser+B"
+  ],
+  [
+   "T4 laser+B",
+   "T7 plasma"
+  ],
+  [
+   "T4 laser+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T4 laser+B",
+   "T7 torp"
+  ],
+  [
+   "T4 laser+B",
+   "T7 torp+B"
+  ],
+  [
+   "T4 laser+B",
+   "T7 miss"
+  ],
+  [
+   "T4 laser+B",
+   "T7 miss+B"
+  ],
+  [
+   "T4 plasma",
+   "T7 laser"
+  ],
+  [
+   "T4 plasma",
+   "T7 laser+B"
+  ],
+  [
+   "T4 plasma",
+   "T7 plasma"
+  ],
+  [
+   "T4 plasma",
+   "T7 plasma+B"
+  ],
+  [
+   "T4 plasma",
+   "T7 torp"
+  ],
+  [
+   "T4 plasma",
+   "T7 torp+B"
+  ],
+  [
+   "T4 plasma",
+   "T7 miss"
+  ],
+  [
+   "T4 plasma",
+   "T7 miss+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T7 laser"
+  ],
+  [
+   "T4 plasma+B",
+   "T7 laser+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T7 plasma"
+  ],
+  [
+   "T4 plasma+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T7 torp"
+  ],
+  [
+   "T4 plasma+B",
+   "T7 torp+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T7 miss"
+  ],
+  [
+   "T4 plasma+B",
+   "T7 miss+B"
+  ],
+  [
+   "T4 torp",
+   "T7 laser"
+  ],
+  [
+   "T4 torp",
+   "T7 laser+B"
+  ],
+  [
+   "T4 torp",
+   "T7 plasma"
+  ],
+  [
+   "T4 torp",
+   "T7 plasma+B"
+  ],
+  [
+   "T4 torp",
+   "T7 torp"
+  ],
+  [
+   "T4 torp",
+   "T7 torp+B"
+  ],
+  [
+   "T4 torp",
+   "T7 miss"
+  ],
+  [
+   "T4 torp",
+   "T7 miss+B"
+  ],
+  [
+   "T4 torp+B",
+   "T7 laser"
+  ],
+  [
+   "T4 torp+B",
+   "T7 laser+B"
+  ],
+  [
+   "T4 torp+B",
+   "T7 plasma"
+  ],
+  [
+   "T4 torp+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T4 torp+B",
+   "T7 torp"
+  ],
+  [
+   "T4 torp+B",
+   "T7 torp+B"
+  ],
+  [
+   "T4 torp+B",
+   "T7 miss"
+  ],
+  [
+   "T4 torp+B",
+   "T7 miss+B"
+  ],
+  [
+   "T4 miss",
+   "T7 laser"
+  ],
+  [
+   "T4 miss",
+   "T7 laser+B"
+  ],
+  [
+   "T4 miss",
+   "T7 plasma"
+  ],
+  [
+   "T4 miss",
+   "T7 plasma+B"
+  ],
+  [
+   "T4 miss",
+   "T7 torp"
+  ],
+  [
+   "T4 miss",
+   "T7 torp+B"
+  ],
+  [
+   "T4 miss",
+   "T7 miss"
+  ],
+  [
+   "T4 miss",
+   "T7 miss+B"
+  ],
+  [
+   "T4 miss+B",
+   "T7 laser"
+  ],
+  [
+   "T4 miss+B",
+   "T7 laser+B"
+  ],
+  [
+   "T4 miss+B",
+   "T7 plasma"
+  ],
+  [
+   "T4 miss+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T4 miss+B",
+   "T7 torp"
+  ],
+  [
+   "T4 miss+B",
+   "T7 torp+B"
+  ],
+  [
+   "T4 miss+B",
+   "T7 miss"
+  ],
+  [
+   "T4 miss+B",
+   "T7 miss+B"
+  ],
+  [
+   "T4 laser",
+   "T8 laser"
+  ],
+  [
+   "T4 laser",
+   "T8 laser+B"
+  ],
+  [
+   "T4 laser",
+   "T8 plasma"
+  ],
+  [
+   "T4 laser",
+   "T8 plasma+B"
+  ],
+  [
+   "T4 laser",
+   "T8 torp"
+  ],
+  [
+   "T4 laser",
+   "T8 torp+B"
+  ],
+  [
+   "T4 laser",
+   "T8 miss"
+  ],
+  [
+   "T4 laser",
+   "T8 miss+B"
+  ],
+  [
+   "T4 laser+B",
+   "T8 laser"
+  ],
+  [
+   "T4 laser+B",
+   "T8 laser+B"
+  ],
+  [
+   "T4 laser+B",
+   "T8 plasma"
+  ],
+  [
+   "T4 laser+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T4 laser+B",
+   "T8 torp"
+  ],
+  [
+   "T4 laser+B",
+   "T8 torp+B"
+  ],
+  [
+   "T4 laser+B",
+   "T8 miss"
+  ],
+  [
+   "T4 laser+B",
+   "T8 miss+B"
+  ],
+  [
+   "T4 plasma",
+   "T8 laser"
+  ],
+  [
+   "T4 plasma",
+   "T8 laser+B"
+  ],
+  [
+   "T4 plasma",
+   "T8 plasma"
+  ],
+  [
+   "T4 plasma",
+   "T8 plasma+B"
+  ],
+  [
+   "T4 plasma",
+   "T8 torp"
+  ],
+  [
+   "T4 plasma",
+   "T8 torp+B"
+  ],
+  [
+   "T4 plasma",
+   "T8 miss"
+  ],
+  [
+   "T4 plasma",
+   "T8 miss+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T8 laser"
+  ],
+  [
+   "T4 plasma+B",
+   "T8 laser+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T8 plasma"
+  ],
+  [
+   "T4 plasma+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T8 torp"
+  ],
+  [
+   "T4 plasma+B",
+   "T8 torp+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T8 miss"
+  ],
+  [
+   "T4 plasma+B",
+   "T8 miss+B"
+  ],
+  [
+   "T4 torp",
+   "T8 laser"
+  ],
+  [
+   "T4 torp",
+   "T8 laser+B"
+  ],
+  [
+   "T4 torp",
+   "T8 plasma"
+  ],
+  [
+   "T4 torp",
+   "T8 plasma+B"
+  ],
+  [
+   "T4 torp",
+   "T8 torp"
+  ],
+  [
+   "T4 torp",
+   "T8 torp+B"
+  ],
+  [
+   "T4 torp",
+   "T8 miss"
+  ],
+  [
+   "T4 torp",
+   "T8 miss+B"
+  ],
+  [
+   "T4 torp+B",
+   "T8 laser"
+  ],
+  [
+   "T4 torp+B",
+   "T8 laser+B"
+  ],
+  [
+   "T4 torp+B",
+   "T8 plasma"
+  ],
+  [
+   "T4 torp+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T4 torp+B",
+   "T8 torp"
+  ],
+  [
+   "T4 torp+B",
+   "T8 torp+B"
+  ],
+  [
+   "T4 torp+B",
+   "T8 miss"
+  ],
+  [
+   "T4 torp+B",
+   "T8 miss+B"
+  ],
+  [
+   "T4 miss",
+   "T8 laser"
+  ],
+  [
+   "T4 miss",
+   "T8 laser+B"
+  ],
+  [
+   "T4 miss",
+   "T8 plasma"
+  ],
+  [
+   "T4 miss",
+   "T8 plasma+B"
+  ],
+  [
+   "T4 miss",
+   "T8 torp"
+  ],
+  [
+   "T4 miss",
+   "T8 torp+B"
+  ],
+  [
+   "T4 miss",
+   "T8 miss"
+  ],
+  [
+   "T4 miss",
+   "T8 miss+B"
+  ],
+  [
+   "T4 miss+B",
+   "T8 laser"
+  ],
+  [
+   "T4 miss+B",
+   "T8 laser+B"
+  ],
+  [
+   "T4 miss+B",
+   "T8 plasma"
+  ],
+  [
+   "T4 miss+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T4 miss+B",
+   "T8 torp"
+  ],
+  [
+   "T4 miss+B",
+   "T8 torp+B"
+  ],
+  [
+   "T4 miss+B",
+   "T8 miss"
+  ],
+  [
+   "T4 miss+B",
+   "T8 miss+B"
+  ],
+  [
+   "T4 laser",
+   "T9 laser"
+  ],
+  [
+   "T4 laser",
+   "T9 laser+B"
+  ],
+  [
+   "T4 laser",
+   "T9 plasma"
+  ],
+  [
+   "T4 laser",
+   "T9 plasma+B"
+  ],
+  [
+   "T4 laser",
+   "T9 torp"
+  ],
+  [
+   "T4 laser",
+   "T9 torp+B"
+  ],
+  [
+   "T4 laser",
+   "T9 miss"
+  ],
+  [
+   "T4 laser",
+   "T9 miss+B"
+  ],
+  [
+   "T4 laser+B",
+   "T9 laser"
+  ],
+  [
+   "T4 laser+B",
+   "T9 laser+B"
+  ],
+  [
+   "T4 laser+B",
+   "T9 plasma"
+  ],
+  [
+   "T4 laser+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T4 laser+B",
+   "T9 torp"
+  ],
+  [
+   "T4 laser+B",
+   "T9 torp+B"
+  ],
+  [
+   "T4 laser+B",
+   "T9 miss"
+  ],
+  [
+   "T4 laser+B",
+   "T9 miss+B"
+  ],
+  [
+   "T4 plasma",
+   "T9 laser"
+  ],
+  [
+   "T4 plasma",
+   "T9 laser+B"
+  ],
+  [
+   "T4 plasma",
+   "T9 plasma"
+  ],
+  [
+   "T4 plasma",
+   "T9 plasma+B"
+  ],
+  [
+   "T4 plasma",
+   "T9 torp"
+  ],
+  [
+   "T4 plasma",
+   "T9 torp+B"
+  ],
+  [
+   "T4 plasma",
+   "T9 miss"
+  ],
+  [
+   "T4 plasma",
+   "T9 miss+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T9 laser"
+  ],
+  [
+   "T4 plasma+B",
+   "T9 laser+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T9 plasma"
+  ],
+  [
+   "T4 plasma+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T9 torp"
+  ],
+  [
+   "T4 plasma+B",
+   "T9 torp+B"
+  ],
+  [
+   "T4 plasma+B",
+   "T9 miss"
+  ],
+  [
+   "T4 plasma+B",
+   "T9 miss+B"
+  ],
+  [
+   "T4 torp",
+   "T9 laser"
+  ],
+  [
+   "T4 torp",
+   "T9 laser+B"
+  ],
+  [
+   "T4 torp",
+   "T9 plasma"
+  ],
+  [
+   "T4 torp",
+   "T9 plasma+B"
+  ],
+  [
+   "T4 torp",
+   "T9 torp"
+  ],
+  [
+   "T4 torp",
+   "T9 torp+B"
+  ],
+  [
+   "T4 torp",
+   "T9 miss"
+  ],
+  [
+   "T4 torp",
+   "T9 miss+B"
+  ],
+  [
+   "T4 torp+B",
+   "T9 laser"
+  ],
+  [
+   "T4 torp+B",
+   "T9 laser+B"
+  ],
+  [
+   "T4 torp+B",
+   "T9 plasma"
+  ],
+  [
+   "T4 torp+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T4 torp+B",
+   "T9 torp"
+  ],
+  [
+   "T4 torp+B",
+   "T9 torp+B"
+  ],
+  [
+   "T4 torp+B",
+   "T9 miss"
+  ],
+  [
+   "T4 torp+B",
+   "T9 miss+B"
+  ],
+  [
+   "T4 miss",
+   "T9 laser"
+  ],
+  [
+   "T4 miss",
+   "T9 laser+B"
+  ],
+  [
+   "T4 miss",
+   "T9 plasma"
+  ],
+  [
+   "T4 miss",
+   "T9 plasma+B"
+  ],
+  [
+   "T4 miss",
+   "T9 torp"
+  ],
+  [
+   "T4 miss",
+   "T9 torp+B"
+  ],
+  [
+   "T4 miss",
+   "T9 miss"
+  ],
+  [
+   "T4 miss",
+   "T9 miss+B"
+  ],
+  [
+   "T4 miss+B",
+   "T9 laser"
+  ],
+  [
+   "T4 miss+B",
+   "T9 laser+B"
+  ],
+  [
+   "T4 miss+B",
+   "T9 plasma"
+  ],
+  [
+   "T4 miss+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T4 miss+B",
+   "T9 torp"
+  ],
+  [
+   "T4 miss+B",
+   "T9 torp+B"
+  ],
+  [
+   "T4 miss+B",
+   "T9 miss"
+  ],
+  [
+   "T4 miss+B",
+   "T9 miss+B"
+  ],
+  [
+   "T5 laser",
+   "T6 laser"
+  ],
+  [
+   "T5 laser",
+   "T6 laser+B"
+  ],
+  [
+   "T5 laser",
+   "T6 plasma"
+  ],
+  [
+   "T5 laser",
+   "T6 plasma+B"
+  ],
+  [
+   "T5 laser",
+   "T6 torp"
+  ],
+  [
+   "T5 laser",
+   "T6 torp+B"
+  ],
+  [
+   "T5 laser",
+   "T6 miss"
+  ],
+  [
+   "T5 laser",
+   "T6 miss+B"
+  ],
+  [
+   "T5 laser+B",
+   "T6 laser"
+  ],
+  [
+   "T5 laser+B",
+   "T6 laser+B"
+  ],
+  [
+   "T5 laser+B",
+   "T6 plasma"
+  ],
+  [
+   "T5 laser+B",
+   "T6 plasma+B"
+  ],
+  [
+   "T5 laser+B",
+   "T6 torp"
+  ],
+  [
+   "T5 laser+B",
+   "T6 torp+B"
+  ],
+  [
+   "T5 laser+B",
+   "T6 miss"
+  ],
+  [
+   "T5 laser+B",
+   "T6 miss+B"
+  ],
+  [
+   "T5 plasma",
+   "T6 laser"
+  ],
+  [
+   "T5 plasma",
+   "T6 laser+B"
+  ],
+  [
+   "T5 plasma",
+   "T6 plasma"
+  ],
+  [
+   "T5 plasma",
+   "T6 plasma+B"
+  ],
+  [
+   "T5 plasma",
+   "T6 torp"
+  ],
+  [
+   "T5 plasma",
+   "T6 torp+B"
+  ],
+  [
+   "T5 plasma",
+   "T6 miss"
+  ],
+  [
+   "T5 plasma",
+   "T6 miss+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T6 laser"
+  ],
+  [
+   "T5 plasma+B",
+   "T6 laser+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T6 plasma"
+  ],
+  [
+   "T5 plasma+B",
+   "T6 plasma+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T6 torp"
+  ],
+  [
+   "T5 plasma+B",
+   "T6 torp+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T6 miss"
+  ],
+  [
+   "T5 plasma+B",
+   "T6 miss+B"
+  ],
+  [
+   "T5 torp",
+   "T6 laser"
+  ],
+  [
+   "T5 torp",
+   "T6 laser+B"
+  ],
+  [
+   "T5 torp",
+   "T6 plasma"
+  ],
+  [
+   "T5 torp",
+   "T6 plasma+B"
+  ],
+  [
+   "T5 torp",
+   "T6 torp"
+  ],
+  [
+   "T5 torp",
+   "T6 torp+B"
+  ],
+  [
+   "T5 torp",
+   "T6 miss"
+  ],
+  [
+   "T5 torp",
+   "T6 miss+B"
+  ],
+  [
+   "T5 torp+B",
+   "T6 laser"
+  ],
+  [
+   "T5 torp+B",
+   "T6 laser+B"
+  ],
+  [
+   "T5 torp+B",
+   "T6 plasma"
+  ],
+  [
+   "T5 torp+B",
+   "T6 plasma+B"
+  ],
+  [
+   "T5 torp+B",
+   "T6 torp"
+  ],
+  [
+   "T5 torp+B",
+   "T6 torp+B"
+  ],
+  [
+   "T5 torp+B",
+   "T6 miss"
+  ],
+  [
+   "T5 torp+B",
+   "T6 miss+B"
+  ],
+  [
+   "T5 miss",
+   "T6 laser"
+  ],
+  [
+   "T5 miss",
+   "T6 laser+B"
+  ],
+  [
+   "T5 miss",
+   "T6 plasma"
+  ],
+  [
+   "T5 miss",
+   "T6 plasma+B"
+  ],
+  [
+   "T5 miss",
+   "T6 torp"
+  ],
+  [
+   "T5 miss",
+   "T6 torp+B"
+  ],
+  [
+   "T5 miss",
+   "T6 miss"
+  ],
+  [
+   "T5 miss",
+   "T6 miss+B"
+  ],
+  [
+   "T5 miss+B",
+   "T6 laser"
+  ],
+  [
+   "T5 miss+B",
+   "T6 laser+B"
+  ],
+  [
+   "T5 miss+B",
+   "T6 plasma"
+  ],
+  [
+   "T5 miss+B",
+   "T6 plasma+B"
+  ],
+  [
+   "T5 miss+B",
+   "T6 torp"
+  ],
+  [
+   "T5 miss+B",
+   "T6 torp+B"
+  ],
+  [
+   "T5 miss+B",
+   "T6 miss"
+  ],
+  [
+   "T5 miss+B",
+   "T6 miss+B"
+  ],
+  [
+   "T5 laser",
+   "T7 laser"
+  ],
+  [
+   "T5 laser",
+   "T7 laser+B"
+  ],
+  [
+   "T5 laser",
+   "T7 plasma"
+  ],
+  [
+   "T5 laser",
+   "T7 plasma+B"
+  ],
+  [
+   "T5 laser",
+   "T7 torp"
+  ],
+  [
+   "T5 laser",
+   "T7 torp+B"
+  ],
+  [
+   "T5 laser",
+   "T7 miss"
+  ],
+  [
+   "T5 laser",
+   "T7 miss+B"
+  ],
+  [
+   "T5 laser+B",
+   "T7 laser"
+  ],
+  [
+   "T5 laser+B",
+   "T7 laser+B"
+  ],
+  [
+   "T5 laser+B",
+   "T7 plasma"
+  ],
+  [
+   "T5 laser+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T5 laser+B",
+   "T7 torp"
+  ],
+  [
+   "T5 laser+B",
+   "T7 torp+B"
+  ],
+  [
+   "T5 laser+B",
+   "T7 miss"
+  ],
+  [
+   "T5 laser+B",
+   "T7 miss+B"
+  ],
+  [
+   "T5 plasma",
+   "T7 laser"
+  ],
+  [
+   "T5 plasma",
+   "T7 laser+B"
+  ],
+  [
+   "T5 plasma",
+   "T7 plasma"
+  ],
+  [
+   "T5 plasma",
+   "T7 plasma+B"
+  ],
+  [
+   "T5 plasma",
+   "T7 torp"
+  ],
+  [
+   "T5 plasma",
+   "T7 torp+B"
+  ],
+  [
+   "T5 plasma",
+   "T7 miss"
+  ],
+  [
+   "T5 plasma",
+   "T7 miss+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T7 laser"
+  ],
+  [
+   "T5 plasma+B",
+   "T7 laser+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T7 plasma"
+  ],
+  [
+   "T5 plasma+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T7 torp"
+  ],
+  [
+   "T5 plasma+B",
+   "T7 torp+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T7 miss"
+  ],
+  [
+   "T5 plasma+B",
+   "T7 miss+B"
+  ],
+  [
+   "T5 torp",
+   "T7 laser"
+  ],
+  [
+   "T5 torp",
+   "T7 laser+B"
+  ],
+  [
+   "T5 torp",
+   "T7 plasma"
+  ],
+  [
+   "T5 torp",
+   "T7 plasma+B"
+  ],
+  [
+   "T5 torp",
+   "T7 torp"
+  ],
+  [
+   "T5 torp",
+   "T7 torp+B"
+  ],
+  [
+   "T5 torp",
+   "T7 miss"
+  ],
+  [
+   "T5 torp",
+   "T7 miss+B"
+  ],
+  [
+   "T5 torp+B",
+   "T7 laser"
+  ],
+  [
+   "T5 torp+B",
+   "T7 laser+B"
+  ],
+  [
+   "T5 torp+B",
+   "T7 plasma"
+  ],
+  [
+   "T5 torp+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T5 torp+B",
+   "T7 torp"
+  ],
+  [
+   "T5 torp+B",
+   "T7 torp+B"
+  ],
+  [
+   "T5 torp+B",
+   "T7 miss"
+  ],
+  [
+   "T5 torp+B",
+   "T7 miss+B"
+  ],
+  [
+   "T5 miss",
+   "T7 laser"
+  ],
+  [
+   "T5 miss",
+   "T7 laser+B"
+  ],
+  [
+   "T5 miss",
+   "T7 plasma"
+  ],
+  [
+   "T5 miss",
+   "T7 plasma+B"
+  ],
+  [
+   "T5 miss",
+   "T7 torp"
+  ],
+  [
+   "T5 miss",
+   "T7 torp+B"
+  ],
+  [
+   "T5 miss",
+   "T7 miss"
+  ],
+  [
+   "T5 miss",
+   "T7 miss+B"
+  ],
+  [
+   "T5 miss+B",
+   "T7 laser"
+  ],
+  [
+   "T5 miss+B",
+   "T7 laser+B"
+  ],
+  [
+   "T5 miss+B",
+   "T7 plasma"
+  ],
+  [
+   "T5 miss+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T5 miss+B",
+   "T7 torp"
+  ],
+  [
+   "T5 miss+B",
+   "T7 torp+B"
+  ],
+  [
+   "T5 miss+B",
+   "T7 miss"
+  ],
+  [
+   "T5 miss+B",
+   "T7 miss+B"
+  ],
+  [
+   "T5 laser",
+   "T8 laser"
+  ],
+  [
+   "T5 laser",
+   "T8 laser+B"
+  ],
+  [
+   "T5 laser",
+   "T8 plasma"
+  ],
+  [
+   "T5 laser",
+   "T8 plasma+B"
+  ],
+  [
+   "T5 laser",
+   "T8 torp"
+  ],
+  [
+   "T5 laser",
+   "T8 torp+B"
+  ],
+  [
+   "T5 laser",
+   "T8 miss"
+  ],
+  [
+   "T5 laser",
+   "T8 miss+B"
+  ],
+  [
+   "T5 laser+B",
+   "T8 laser"
+  ],
+  [
+   "T5 laser+B",
+   "T8 laser+B"
+  ],
+  [
+   "T5 laser+B",
+   "T8 plasma"
+  ],
+  [
+   "T5 laser+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T5 laser+B",
+   "T8 torp"
+  ],
+  [
+   "T5 laser+B",
+   "T8 torp+B"
+  ],
+  [
+   "T5 laser+B",
+   "T8 miss"
+  ],
+  [
+   "T5 laser+B",
+   "T8 miss+B"
+  ],
+  [
+   "T5 plasma",
+   "T8 laser"
+  ],
+  [
+   "T5 plasma",
+   "T8 laser+B"
+  ],
+  [
+   "T5 plasma",
+   "T8 plasma"
+  ],
+  [
+   "T5 plasma",
+   "T8 plasma+B"
+  ],
+  [
+   "T5 plasma",
+   "T8 torp"
+  ],
+  [
+   "T5 plasma",
+   "T8 torp+B"
+  ],
+  [
+   "T5 plasma",
+   "T8 miss"
+  ],
+  [
+   "T5 plasma",
+   "T8 miss+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T8 laser"
+  ],
+  [
+   "T5 plasma+B",
+   "T8 laser+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T8 plasma"
+  ],
+  [
+   "T5 plasma+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T8 torp"
+  ],
+  [
+   "T5 plasma+B",
+   "T8 torp+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T8 miss"
+  ],
+  [
+   "T5 plasma+B",
+   "T8 miss+B"
+  ],
+  [
+   "T5 torp",
+   "T8 laser"
+  ],
+  [
+   "T5 torp",
+   "T8 laser+B"
+  ],
+  [
+   "T5 torp",
+   "T8 plasma"
+  ],
+  [
+   "T5 torp",
+   "T8 plasma+B"
+  ],
+  [
+   "T5 torp",
+   "T8 torp"
+  ],
+  [
+   "T5 torp",
+   "T8 torp+B"
+  ],
+  [
+   "T5 torp",
+   "T8 miss"
+  ],
+  [
+   "T5 torp",
+   "T8 miss+B"
+  ],
+  [
+   "T5 torp+B",
+   "T8 laser"
+  ],
+  [
+   "T5 torp+B",
+   "T8 laser+B"
+  ],
+  [
+   "T5 torp+B",
+   "T8 plasma"
+  ],
+  [
+   "T5 torp+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T5 torp+B",
+   "T8 torp"
+  ],
+  [
+   "T5 torp+B",
+   "T8 torp+B"
+  ],
+  [
+   "T5 torp+B",
+   "T8 miss"
+  ],
+  [
+   "T5 torp+B",
+   "T8 miss+B"
+  ],
+  [
+   "T5 miss",
+   "T8 laser"
+  ],
+  [
+   "T5 miss",
+   "T8 laser+B"
+  ],
+  [
+   "T5 miss",
+   "T8 plasma"
+  ],
+  [
+   "T5 miss",
+   "T8 plasma+B"
+  ],
+  [
+   "T5 miss",
+   "T8 torp"
+  ],
+  [
+   "T5 miss",
+   "T8 torp+B"
+  ],
+  [
+   "T5 miss",
+   "T8 miss"
+  ],
+  [
+   "T5 miss",
+   "T8 miss+B"
+  ],
+  [
+   "T5 miss+B",
+   "T8 laser"
+  ],
+  [
+   "T5 miss+B",
+   "T8 laser+B"
+  ],
+  [
+   "T5 miss+B",
+   "T8 plasma"
+  ],
+  [
+   "T5 miss+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T5 miss+B",
+   "T8 torp"
+  ],
+  [
+   "T5 miss+B",
+   "T8 torp+B"
+  ],
+  [
+   "T5 miss+B",
+   "T8 miss"
+  ],
+  [
+   "T5 miss+B",
+   "T8 miss+B"
+  ],
+  [
+   "T5 laser",
+   "T9 laser"
+  ],
+  [
+   "T5 laser",
+   "T9 laser+B"
+  ],
+  [
+   "T5 laser",
+   "T9 plasma"
+  ],
+  [
+   "T5 laser",
+   "T9 plasma+B"
+  ],
+  [
+   "T5 laser",
+   "T9 torp"
+  ],
+  [
+   "T5 laser",
+   "T9 torp+B"
+  ],
+  [
+   "T5 laser",
+   "T9 miss"
+  ],
+  [
+   "T5 laser",
+   "T9 miss+B"
+  ],
+  [
+   "T5 laser+B",
+   "T9 laser"
+  ],
+  [
+   "T5 laser+B",
+   "T9 laser+B"
+  ],
+  [
+   "T5 laser+B",
+   "T9 plasma"
+  ],
+  [
+   "T5 laser+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T5 laser+B",
+   "T9 torp"
+  ],
+  [
+   "T5 laser+B",
+   "T9 torp+B"
+  ],
+  [
+   "T5 laser+B",
+   "T9 miss"
+  ],
+  [
+   "T5 laser+B",
+   "T9 miss+B"
+  ],
+  [
+   "T5 plasma",
+   "T9 laser"
+  ],
+  [
+   "T5 plasma",
+   "T9 laser+B"
+  ],
+  [
+   "T5 plasma",
+   "T9 plasma"
+  ],
+  [
+   "T5 plasma",
+   "T9 plasma+B"
+  ],
+  [
+   "T5 plasma",
+   "T9 torp"
+  ],
+  [
+   "T5 plasma",
+   "T9 torp+B"
+  ],
+  [
+   "T5 plasma",
+   "T9 miss"
+  ],
+  [
+   "T5 plasma",
+   "T9 miss+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T9 laser"
+  ],
+  [
+   "T5 plasma+B",
+   "T9 laser+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T9 plasma"
+  ],
+  [
+   "T5 plasma+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T9 torp"
+  ],
+  [
+   "T5 plasma+B",
+   "T9 torp+B"
+  ],
+  [
+   "T5 plasma+B",
+   "T9 miss"
+  ],
+  [
+   "T5 plasma+B",
+   "T9 miss+B"
+  ],
+  [
+   "T5 torp",
+   "T9 laser"
+  ],
+  [
+   "T5 torp",
+   "T9 laser+B"
+  ],
+  [
+   "T5 torp",
+   "T9 plasma"
+  ],
+  [
+   "T5 torp",
+   "T9 plasma+B"
+  ],
+  [
+   "T5 torp",
+   "T9 torp"
+  ],
+  [
+   "T5 torp",
+   "T9 torp+B"
+  ],
+  [
+   "T5 torp",
+   "T9 miss"
+  ],
+  [
+   "T5 torp",
+   "T9 miss+B"
+  ],
+  [
+   "T5 torp+B",
+   "T9 laser"
+  ],
+  [
+   "T5 torp+B",
+   "T9 laser+B"
+  ],
+  [
+   "T5 torp+B",
+   "T9 plasma"
+  ],
+  [
+   "T5 torp+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T5 torp+B",
+   "T9 torp"
+  ],
+  [
+   "T5 torp+B",
+   "T9 torp+B"
+  ],
+  [
+   "T5 torp+B",
+   "T9 miss"
+  ],
+  [
+   "T5 torp+B",
+   "T9 miss+B"
+  ],
+  [
+   "T5 miss",
+   "T9 laser"
+  ],
+  [
+   "T5 miss",
+   "T9 laser+B"
+  ],
+  [
+   "T5 miss",
+   "T9 plasma"
+  ],
+  [
+   "T5 miss",
+   "T9 plasma+B"
+  ],
+  [
+   "T5 miss",
+   "T9 torp"
+  ],
+  [
+   "T5 miss",
+   "T9 torp+B"
+  ],
+  [
+   "T5 miss",
+   "T9 miss"
+  ],
+  [
+   "T5 miss",
+   "T9 miss+B"
+  ],
+  [
+   "T5 miss+B",
+   "T9 laser"
+  ],
+  [
+   "T5 miss+B",
+   "T9 laser+B"
+  ],
+  [
+   "T5 miss+B",
+   "T9 plasma"
+  ],
+  [
+   "T5 miss+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T5 miss+B",
+   "T9 torp"
+  ],
+  [
+   "T5 miss+B",
+   "T9 torp+B"
+  ],
+  [
+   "T5 miss+B",
+   "T9 miss"
+  ],
+  [
+   "T5 miss+B",
+   "T9 miss+B"
+  ],
+  [
+   "T6 laser",
+   "T7 laser"
+  ],
+  [
+   "T6 laser",
+   "T7 laser+B"
+  ],
+  [
+   "T6 laser",
+   "T7 plasma"
+  ],
+  [
+   "T6 laser",
+   "T7 plasma+B"
+  ],
+  [
+   "T6 laser",
+   "T7 torp"
+  ],
+  [
+   "T6 laser",
+   "T7 torp+B"
+  ],
+  [
+   "T6 laser",
+   "T7 miss"
+  ],
+  [
+   "T6 laser",
+   "T7 miss+B"
+  ],
+  [
+   "T6 laser+B",
+   "T7 laser"
+  ],
+  [
+   "T6 laser+B",
+   "T7 laser+B"
+  ],
+  [
+   "T6 laser+B",
+   "T7 plasma"
+  ],
+  [
+   "T6 laser+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T6 laser+B",
+   "T7 torp"
+  ],
+  [
+   "T6 laser+B",
+   "T7 torp+B"
+  ],
+  [
+   "T6 laser+B",
+   "T7 miss"
+  ],
+  [
+   "T6 laser+B",
+   "T7 miss+B"
+  ],
+  [
+   "T6 plasma",
+   "T7 laser"
+  ],
+  [
+   "T6 plasma",
+   "T7 laser+B"
+  ],
+  [
+   "T6 plasma",
+   "T7 plasma"
+  ],
+  [
+   "T6 plasma",
+   "T7 plasma+B"
+  ],
+  [
+   "T6 plasma",
+   "T7 torp"
+  ],
+  [
+   "T6 plasma",
+   "T7 torp+B"
+  ],
+  [
+   "T6 plasma",
+   "T7 miss"
+  ],
+  [
+   "T6 plasma",
+   "T7 miss+B"
+  ],
+  [
+   "T6 plasma+B",
+   "T7 laser"
+  ],
+  [
+   "T6 plasma+B",
+   "T7 laser+B"
+  ],
+  [
+   "T6 plasma+B",
+   "T7 plasma"
+  ],
+  [
+   "T6 plasma+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T6 plasma+B",
+   "T7 torp"
+  ],
+  [
+   "T6 plasma+B",
+   "T7 torp+B"
+  ],
+  [
+   "T6 plasma+B",
+   "T7 miss"
+  ],
+  [
+   "T6 plasma+B",
+   "T7 miss+B"
+  ],
+  [
+   "T6 torp",
+   "T7 laser"
+  ],
+  [
+   "T6 torp",
+   "T7 laser+B"
+  ],
+  [
+   "T6 torp",
+   "T7 plasma"
+  ],
+  [
+   "T6 torp",
+   "T7 plasma+B"
+  ],
+  [
+   "T6 torp",
+   "T7 torp"
+  ],
+  [
+   "T6 torp",
+   "T7 torp+B"
+  ],
+  [
+   "T6 torp",
+   "T7 miss"
+  ],
+  [
+   "T6 torp",
+   "T7 miss+B"
+  ],
+  [
+   "T6 torp+B",
+   "T7 laser"
+  ],
+  [
+   "T6 torp+B",
+   "T7 laser+B"
+  ],
+  [
+   "T6 torp+B",
+   "T7 plasma"
+  ],
+  [
+   "T6 torp+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T6 torp+B",
+   "T7 torp"
+  ],
+  [
+   "T6 torp+B",
+   "T7 torp+B"
+  ],
+  [
+   "T6 torp+B",
+   "T7 miss"
+  ],
+  [
+   "T6 torp+B",
+   "T7 miss+B"
+  ],
+  [
+   "T6 miss",
+   "T7 laser"
+  ],
+  [
+   "T6 miss",
+   "T7 laser+B"
+  ],
+  [
+   "T6 miss",
+   "T7 plasma"
+  ],
+  [
+   "T6 miss",
+   "T7 plasma+B"
+  ],
+  [
+   "T6 miss",
+   "T7 torp"
+  ],
+  [
+   "T6 miss",
+   "T7 torp+B"
+  ],
+  [
+   "T6 miss",
+   "T7 miss"
+  ],
+  [
+   "T6 miss",
+   "T7 miss+B"
+  ],
+  [
+   "T6 miss+B",
+   "T7 laser"
+  ],
+  [
+   "T6 miss+B",
+   "T7 laser+B"
+  ],
+  [
+   "T6 miss+B",
+   "T7 plasma"
+  ],
+  [
+   "T6 miss+B",
+   "T7 plasma+B"
+  ],
+  [
+   "T6 miss+B",
+   "T7 torp"
+  ],
+  [
+   "T6 miss+B",
+   "T7 torp+B"
+  ],
+  [
+   "T6 miss+B",
+   "T7 miss"
+  ],
+  [
+   "T6 miss+B",
+   "T7 miss+B"
+  ],
+  [
+   "T6 laser",
+   "T8 laser"
+  ],
+  [
+   "T6 laser",
+   "T8 laser+B"
+  ],
+  [
+   "T6 laser",
+   "T8 plasma"
+  ],
+  [
+   "T6 laser",
+   "T8 plasma+B"
+  ],
+  [
+   "T6 laser",
+   "T8 torp"
+  ],
+  [
+   "T6 laser",
+   "T8 torp+B"
+  ],
+  [
+   "T6 laser",
+   "T8 miss"
+  ],
+  [
+   "T6 laser",
+   "T8 miss+B"
+  ],
+  [
+   "T6 laser+B",
+   "T8 laser"
+  ],
+  [
+   "T6 laser+B",
+   "T8 laser+B"
+  ],
+  [
+   "T6 laser+B",
+   "T8 plasma"
+  ],
+  [
+   "T6 laser+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T6 laser+B",
+   "T8 torp"
+  ],
+  [
+   "T6 laser+B",
+   "T8 torp+B"
+  ],
+  [
+   "T6 laser+B",
+   "T8 miss"
+  ],
+  [
+   "T6 laser+B",
+   "T8 miss+B"
+  ],
+  [
+   "T6 plasma",
+   "T8 laser"
+  ],
+  [
+   "T6 plasma",
+   "T8 laser+B"
+  ],
+  [
+   "T6 plasma",
+   "T8 plasma"
+  ],
+  [
+   "T6 plasma",
+   "T8 plasma+B"
+  ],
+  [
+   "T6 plasma",
+   "T8 torp"
+  ],
+  [
+   "T6 plasma",
+   "T8 torp+B"
+  ],
+  [
+   "T6 plasma",
+   "T8 miss"
+  ],
+  [
+   "T6 plasma",
+   "T8 miss+B"
+  ],
+  [
+   "T6 plasma+B",
+   "T8 laser"
+  ],
+  [
+   "T6 plasma+B",
+   "T8 laser+B"
+  ],
+  [
+   "T6 plasma+B",
+   "T8 plasma"
+  ],
+  [
+   "T6 plasma+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T6 plasma+B",
+   "T8 torp"
+  ],
+  [
+   "T6 plasma+B",
+   "T8 torp+B"
+  ],
+  [
+   "T6 plasma+B",
+   "T8 miss"
+  ],
+  [
+   "T6 plasma+B",
+   "T8 miss+B"
+  ],
+  [
+   "T6 torp",
+   "T8 laser"
+  ],
+  [
+   "T6 torp",
+   "T8 laser+B"
+  ],
+  [
+   "T6 torp",
+   "T8 plasma"
+  ],
+  [
+   "T6 torp",
+   "T8 plasma+B"
+  ],
+  [
+   "T6 torp",
+   "T8 torp"
+  ],
+  [
+   "T6 torp",
+   "T8 torp+B"
+  ],
+  [
+   "T6 torp",
+   "T8 miss"
+  ],
+  [
+   "T6 torp",
+   "T8 miss+B"
+  ],
+  [
+   "T6 torp+B",
+   "T8 laser"
+  ],
+  [
+   "T6 torp+B",
+   "T8 laser+B"
+  ],
+  [
+   "T6 torp+B",
+   "T8 plasma"
+  ],
+  [
+   "T6 torp+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T6 torp+B",
+   "T8 torp"
+  ],
+  [
+   "T6 torp+B",
+   "T8 torp+B"
+  ],
+  [
+   "T6 torp+B",
+   "T8 miss"
+  ],
+  [
+   "T6 torp+B",
+   "T8 miss+B"
+  ],
+  [
+   "T6 miss",
+   "T8 laser"
+  ],
+  [
+   "T6 miss",
+   "T8 laser+B"
+  ],
+  [
+   "T6 miss",
+   "T8 plasma"
+  ],
+  [
+   "T6 miss",
+   "T8 plasma+B"
+  ],
+  [
+   "T6 miss",
+   "T8 torp"
+  ],
+  [
+   "T6 miss",
+   "T8 torp+B"
+  ],
+  [
+   "T6 miss",
+   "T8 miss"
+  ],
+  [
+   "T6 miss",
+   "T8 miss+B"
+  ],
+  [
+   "T6 miss+B",
+   "T8 laser"
+  ],
+  [
+   "T6 miss+B",
+   "T8 laser+B"
+  ],
+  [
+   "T6 miss+B",
+   "T8 plasma"
+  ],
+  [
+   "T6 miss+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T6 miss+B",
+   "T8 torp"
+  ],
+  [
+   "T6 miss+B",
+   "T8 torp+B"
+  ],
+  [
+   "T6 miss+B",
+   "T8 miss"
+  ],
+  [
+   "T6 miss+B",
+   "T8 miss+B"
+  ],
+  [
+   "T6 laser",
+   "T9 laser"
+  ],
+  [
+   "T6 laser",
+   "T9 laser+B"
+  ],
+  [
+   "T6 laser",
+   "T9 plasma"
+  ],
+  [
+   "T6 laser",
+   "T9 plasma+B"
+  ],
+  [
+   "T6 laser",
+   "T9 torp"
+  ],
+  [
+   "T6 laser",
+   "T9 torp+B"
+  ],
+  [
+   "T6 laser",
+   "T9 miss"
+  ],
+  [
+   "T6 laser",
+   "T9 miss+B"
+  ],
+  [
+   "T6 laser+B",
+   "T9 laser"
+  ],
+  [
+   "T6 laser+B",
+   "T9 laser+B"
+  ],
+  [
+   "T6 laser+B",
+   "T9 plasma"
+  ],
+  [
+   "T6 laser+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T6 laser+B",
+   "T9 torp"
+  ],
+  [
+   "T6 laser+B",
+   "T9 torp+B"
+  ],
+  [
+   "T6 laser+B",
+   "T9 miss"
+  ],
+  [
+   "T6 laser+B",
+   "T9 miss+B"
+  ],
+  [
+   "T6 plasma",
+   "T9 laser"
+  ],
+  [
+   "T6 plasma",
+   "T9 laser+B"
+  ],
+  [
+   "T6 plasma",
+   "T9 plasma"
+  ],
+  [
+   "T6 plasma",
+   "T9 plasma+B"
+  ],
+  [
+   "T6 plasma",
+   "T9 torp"
+  ],
+  [
+   "T6 plasma",
+   "T9 torp+B"
+  ],
+  [
+   "T6 plasma",
+   "T9 miss"
+  ],
+  [
+   "T6 plasma",
+   "T9 miss+B"
+  ],
+  [
+   "T6 plasma+B",
+   "T9 laser"
+  ],
+  [
+   "T6 plasma+B",
+   "T9 laser+B"
+  ],
+  [
+   "T6 plasma+B",
+   "T9 plasma"
+  ],
+  [
+   "T6 plasma+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T6 plasma+B",
+   "T9 torp"
+  ],
+  [
+   "T6 plasma+B",
+   "T9 torp+B"
+  ],
+  [
+   "T6 plasma+B",
+   "T9 miss"
+  ],
+  [
+   "T6 plasma+B",
+   "T9 miss+B"
+  ],
+  [
+   "T6 torp",
+   "T9 laser"
+  ],
+  [
+   "T6 torp",
+   "T9 laser+B"
+  ],
+  [
+   "T6 torp",
+   "T9 plasma"
+  ],
+  [
+   "T6 torp",
+   "T9 plasma+B"
+  ],
+  [
+   "T6 torp",
+   "T9 torp"
+  ],
+  [
+   "T6 torp",
+   "T9 torp+B"
+  ],
+  [
+   "T6 torp",
+   "T9 miss"
+  ],
+  [
+   "T6 torp",
+   "T9 miss+B"
+  ],
+  [
+   "T6 torp+B",
+   "T9 laser"
+  ],
+  [
+   "T6 torp+B",
+   "T9 laser+B"
+  ],
+  [
+   "T6 torp+B",
+   "T9 plasma"
+  ],
+  [
+   "T6 torp+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T6 torp+B",
+   "T9 torp"
+  ],
+  [
+   "T6 torp+B",
+   "T9 torp+B"
+  ],
+  [
+   "T6 torp+B",
+   "T9 miss"
+  ],
+  [
+   "T6 torp+B",
+   "T9 miss+B"
+  ],
+  [
+   "T6 miss",
+   "T9 laser"
+  ],
+  [
+   "T6 miss",
+   "T9 laser+B"
+  ],
+  [
+   "T6 miss",
+   "T9 plasma"
+  ],
+  [
+   "T6 miss",
+   "T9 plasma+B"
+  ],
+  [
+   "T6 miss",
+   "T9 torp"
+  ],
+  [
+   "T6 miss",
+   "T9 torp+B"
+  ],
+  [
+   "T6 miss",
+   "T9 miss"
+  ],
+  [
+   "T6 miss",
+   "T9 miss+B"
+  ],
+  [
+   "T6 miss+B",
+   "T9 laser"
+  ],
+  [
+   "T6 miss+B",
+   "T9 laser+B"
+  ],
+  [
+   "T6 miss+B",
+   "T9 plasma"
+  ],
+  [
+   "T6 miss+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T6 miss+B",
+   "T9 torp"
+  ],
+  [
+   "T6 miss+B",
+   "T9 torp+B"
+  ],
+  [
+   "T6 miss+B",
+   "T9 miss"
+  ],
+  [
+   "T6 miss+B",
+   "T9 miss+B"
+  ],
+  [
+   "T7 laser",
+   "T8 laser"
+  ],
+  [
+   "T7 laser",
+   "T8 laser+B"
+  ],
+  [
+   "T7 laser",
+   "T8 plasma"
+  ],
+  [
+   "T7 laser",
+   "T8 plasma+B"
+  ],
+  [
+   "T7 laser",
+   "T8 torp"
+  ],
+  [
+   "T7 laser",
+   "T8 torp+B"
+  ],
+  [
+   "T7 laser",
+   "T8 miss"
+  ],
+  [
+   "T7 laser",
+   "T8 miss+B"
+  ],
+  [
+   "T7 laser+B",
+   "T8 laser"
+  ],
+  [
+   "T7 laser+B",
+   "T8 laser+B"
+  ],
+  [
+   "T7 laser+B",
+   "T8 plasma"
+  ],
+  [
+   "T7 laser+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T7 laser+B",
+   "T8 torp"
+  ],
+  [
+   "T7 laser+B",
+   "T8 torp+B"
+  ],
+  [
+   "T7 laser+B",
+   "T8 miss"
+  ],
+  [
+   "T7 laser+B",
+   "T8 miss+B"
+  ],
+  [
+   "T7 plasma",
+   "T8 laser"
+  ],
+  [
+   "T7 plasma",
+   "T8 laser+B"
+  ],
+  [
+   "T7 plasma",
+   "T8 plasma"
+  ],
+  [
+   "T7 plasma",
+   "T8 plasma+B"
+  ],
+  [
+   "T7 plasma",
+   "T8 torp"
+  ],
+  [
+   "T7 plasma",
+   "T8 torp+B"
+  ],
+  [
+   "T7 plasma",
+   "T8 miss"
+  ],
+  [
+   "T7 plasma",
+   "T8 miss+B"
+  ],
+  [
+   "T7 plasma+B",
+   "T8 laser"
+  ],
+  [
+   "T7 plasma+B",
+   "T8 laser+B"
+  ],
+  [
+   "T7 plasma+B",
+   "T8 plasma"
+  ],
+  [
+   "T7 plasma+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T7 plasma+B",
+   "T8 torp"
+  ],
+  [
+   "T7 plasma+B",
+   "T8 torp+B"
+  ],
+  [
+   "T7 plasma+B",
+   "T8 miss"
+  ],
+  [
+   "T7 plasma+B",
+   "T8 miss+B"
+  ],
+  [
+   "T7 torp",
+   "T8 laser"
+  ],
+  [
+   "T7 torp",
+   "T8 laser+B"
+  ],
+  [
+   "T7 torp",
+   "T8 plasma"
+  ],
+  [
+   "T7 torp",
+   "T8 plasma+B"
+  ],
+  [
+   "T7 torp",
+   "T8 torp"
+  ],
+  [
+   "T7 torp",
+   "T8 torp+B"
+  ],
+  [
+   "T7 torp",
+   "T8 miss"
+  ],
+  [
+   "T7 torp",
+   "T8 miss+B"
+  ],
+  [
+   "T7 torp+B",
+   "T8 laser"
+  ],
+  [
+   "T7 torp+B",
+   "T8 laser+B"
+  ],
+  [
+   "T7 torp+B",
+   "T8 plasma"
+  ],
+  [
+   "T7 torp+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T7 torp+B",
+   "T8 torp"
+  ],
+  [
+   "T7 torp+B",
+   "T8 torp+B"
+  ],
+  [
+   "T7 torp+B",
+   "T8 miss"
+  ],
+  [
+   "T7 torp+B",
+   "T8 miss+B"
+  ],
+  [
+   "T7 miss",
+   "T8 laser"
+  ],
+  [
+   "T7 miss",
+   "T8 laser+B"
+  ],
+  [
+   "T7 miss",
+   "T8 plasma"
+  ],
+  [
+   "T7 miss",
+   "T8 plasma+B"
+  ],
+  [
+   "T7 miss",
+   "T8 torp"
+  ],
+  [
+   "T7 miss",
+   "T8 torp+B"
+  ],
+  [
+   "T7 miss",
+   "T8 miss"
+  ],
+  [
+   "T7 miss",
+   "T8 miss+B"
+  ],
+  [
+   "T7 miss+B",
+   "T8 laser"
+  ],
+  [
+   "T7 miss+B",
+   "T8 laser+B"
+  ],
+  [
+   "T7 miss+B",
+   "T8 plasma"
+  ],
+  [
+   "T7 miss+B",
+   "T8 plasma+B"
+  ],
+  [
+   "T7 miss+B",
+   "T8 torp"
+  ],
+  [
+   "T7 miss+B",
+   "T8 torp+B"
+  ],
+  [
+   "T7 miss+B",
+   "T8 miss"
+  ],
+  [
+   "T7 miss+B",
+   "T8 miss+B"
+  ],
+  [
+   "T7 laser",
+   "T9 laser"
+  ],
+  [
+   "T7 laser",
+   "T9 laser+B"
+  ],
+  [
+   "T7 laser",
+   "T9 plasma"
+  ],
+  [
+   "T7 laser",
+   "T9 plasma+B"
+  ],
+  [
+   "T7 laser",
+   "T9 torp"
+  ],
+  [
+   "T7 laser",
+   "T9 torp+B"
+  ],
+  [
+   "T7 laser",
+   "T9 miss"
+  ],
+  [
+   "T7 laser",
+   "T9 miss+B"
+  ],
+  [
+   "T7 laser+B",
+   "T9 laser"
+  ],
+  [
+   "T7 laser+B",
+   "T9 laser+B"
+  ],
+  [
+   "T7 laser+B",
+   "T9 plasma"
+  ],
+  [
+   "T7 laser+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T7 laser+B",
+   "T9 torp"
+  ],
+  [
+   "T7 laser+B",
+   "T9 torp+B"
+  ],
+  [
+   "T7 laser+B",
+   "T9 miss"
+  ],
+  [
+   "T7 laser+B",
+   "T9 miss+B"
+  ],
+  [
+   "T7 plasma",
+   "T9 laser"
+  ],
+  [
+   "T7 plasma",
+   "T9 laser+B"
+  ],
+  [
+   "T7 plasma",
+   "T9 plasma"
+  ],
+  [
+   "T7 plasma",
+   "T9 plasma+B"
+  ],
+  [
+   "T7 plasma",
+   "T9 torp"
+  ],
+  [
+   "T7 plasma",
+   "T9 torp+B"
+  ],
+  [
+   "T7 plasma",
+   "T9 miss"
+  ],
+  [
+   "T7 plasma",
+   "T9 miss+B"
+  ],
+  [
+   "T7 plasma+B",
+   "T9 laser"
+  ],
+  [
+   "T7 plasma+B",
+   "T9 laser+B"
+  ],
+  [
+   "T7 plasma+B",
+   "T9 plasma"
+  ],
+  [
+   "T7 plasma+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T7 plasma+B",
+   "T9 torp"
+  ],
+  [
+   "T7 plasma+B",
+   "T9 torp+B"
+  ],
+  [
+   "T7 plasma+B",
+   "T9 miss"
+  ],
+  [
+   "T7 plasma+B",
+   "T9 miss+B"
+  ],
+  [
+   "T7 torp",
+   "T9 laser"
+  ],
+  [
+   "T7 torp",
+   "T9 laser+B"
+  ],
+  [
+   "T7 torp",
+   "T9 plasma"
+  ],
+  [
+   "T7 torp",
+   "T9 plasma+B"
+  ],
+  [
+   "T7 torp",
+   "T9 torp"
+  ],
+  [
+   "T7 torp",
+   "T9 torp+B"
+  ],
+  [
+   "T7 torp",
+   "T9 miss"
+  ],
+  [
+   "T7 torp",
+   "T9 miss+B"
+  ],
+  [
+   "T7 torp+B",
+   "T9 laser"
+  ],
+  [
+   "T7 torp+B",
+   "T9 laser+B"
+  ],
+  [
+   "T7 torp+B",
+   "T9 plasma"
+  ],
+  [
+   "T7 torp+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T7 torp+B",
+   "T9 torp"
+  ],
+  [
+   "T7 torp+B",
+   "T9 torp+B"
+  ],
+  [
+   "T7 torp+B",
+   "T9 miss"
+  ],
+  [
+   "T7 torp+B",
+   "T9 miss+B"
+  ],
+  [
+   "T7 miss",
+   "T9 laser"
+  ],
+  [
+   "T7 miss",
+   "T9 laser+B"
+  ],
+  [
+   "T7 miss",
+   "T9 plasma"
+  ],
+  [
+   "T7 miss",
+   "T9 plasma+B"
+  ],
+  [
+   "T7 miss",
+   "T9 torp"
+  ],
+  [
+   "T7 miss",
+   "T9 torp+B"
+  ],
+  [
+   "T7 miss",
+   "T9 miss"
+  ],
+  [
+   "T7 miss",
+   "T9 miss+B"
+  ],
+  [
+   "T7 miss+B",
+   "T9 laser"
+  ],
+  [
+   "T7 miss+B",
+   "T9 laser+B"
+  ],
+  [
+   "T7 miss+B",
+   "T9 plasma"
+  ],
+  [
+   "T7 miss+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T7 miss+B",
+   "T9 torp"
+  ],
+  [
+   "T7 miss+B",
+   "T9 torp+B"
+  ],
+  [
+   "T7 miss+B",
+   "T9 miss"
+  ],
+  [
+   "T7 miss+B",
+   "T9 miss+B"
+  ],
+  [
+   "T8 laser",
+   "T9 laser"
+  ],
+  [
+   "T8 laser",
+   "T9 laser+B"
+  ],
+  [
+   "T8 laser",
+   "T9 plasma"
+  ],
+  [
+   "T8 laser",
+   "T9 plasma+B"
+  ],
+  [
+   "T8 laser",
+   "T9 torp"
+  ],
+  [
+   "T8 laser",
+   "T9 torp+B"
+  ],
+  [
+   "T8 laser",
+   "T9 miss"
+  ],
+  [
+   "T8 laser",
+   "T9 miss+B"
+  ],
+  [
+   "T8 laser+B",
+   "T9 laser"
+  ],
+  [
+   "T8 laser+B",
+   "T9 laser+B"
+  ],
+  [
+   "T8 laser+B",
+   "T9 plasma"
+  ],
+  [
+   "T8 laser+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T8 laser+B",
+   "T9 torp"
+  ],
+  [
+   "T8 laser+B",
+   "T9 torp+B"
+  ],
+  [
+   "T8 laser+B",
+   "T9 miss"
+  ],
+  [
+   "T8 laser+B",
+   "T9 miss+B"
+  ],
+  [
+   "T8 plasma",
+   "T9 laser"
+  ],
+  [
+   "T8 plasma",
+   "T9 laser+B"
+  ],
+  [
+   "T8 plasma",
+   "T9 plasma"
+  ],
+  [
+   "T8 plasma",
+   "T9 plasma+B"
+  ],
+  [
+   "T8 plasma",
+   "T9 torp"
+  ],
+  [
+   "T8 plasma",
+   "T9 torp+B"
+  ],
+  [
+   "T8 plasma",
+   "T9 miss"
+  ],
+  [
+   "T8 plasma",
+   "T9 miss+B"
+  ],
+  [
+   "T8 plasma+B",
+   "T9 laser"
+  ],
+  [
+   "T8 plasma+B",
+   "T9 laser+B"
+  ],
+  [
+   "T8 plasma+B",
+   "T9 plasma"
+  ],
+  [
+   "T8 plasma+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T8 plasma+B",
+   "T9 torp"
+  ],
+  [
+   "T8 plasma+B",
+   "T9 torp+B"
+  ],
+  [
+   "T8 plasma+B",
+   "T9 miss"
+  ],
+  [
+   "T8 plasma+B",
+   "T9 miss+B"
+  ],
+  [
+   "T8 torp",
+   "T9 laser"
+  ],
+  [
+   "T8 torp",
+   "T9 laser+B"
+  ],
+  [
+   "T8 torp",
+   "T9 plasma"
+  ],
+  [
+   "T8 torp",
+   "T9 plasma+B"
+  ],
+  [
+   "T8 torp",
+   "T9 torp"
+  ],
+  [
+   "T8 torp",
+   "T9 torp+B"
+  ],
+  [
+   "T8 torp",
+   "T9 miss"
+  ],
+  [
+   "T8 torp",
+   "T9 miss+B"
+  ],
+  [
+   "T8 torp+B",
+   "T9 laser"
+  ],
+  [
+   "T8 torp+B",
+   "T9 laser+B"
+  ],
+  [
+   "T8 torp+B",
+   "T9 plasma"
+  ],
+  [
+   "T8 torp+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T8 torp+B",
+   "T9 torp"
+  ],
+  [
+   "T8 torp+B",
+   "T9 torp+B"
+  ],
+  [
+   "T8 torp+B",
+   "T9 miss"
+  ],
+  [
+   "T8 torp+B",
+   "T9 miss+B"
+  ],
+  [
+   "T8 miss",
+   "T9 laser"
+  ],
+  [
+   "T8 miss",
+   "T9 laser+B"
+  ],
+  [
+   "T8 miss",
+   "T9 plasma"
+  ],
+  [
+   "T8 miss",
+   "T9 plasma+B"
+  ],
+  [
+   "T8 miss",
+   "T9 torp"
+  ],
+  [
+   "T8 miss",
+   "T9 torp+B"
+  ],
+  [
+   "T8 miss",
+   "T9 miss"
+  ],
+  [
+   "T8 miss",
+   "T9 miss+B"
+  ],
+  [
+   "T8 miss+B",
+   "T9 laser"
+  ],
+  [
+   "T8 miss+B",
+   "T9 laser+B"
+  ],
+  [
+   "T8 miss+B",
+   "T9 plasma"
+  ],
+  [
+   "T8 miss+B",
+   "T9 plasma+B"
+  ],
+  [
+   "T8 miss+B",
+   "T9 torp"
+  ],
+  [
+   "T8 miss+B",
+   "T9 torp+B"
+  ],
+  [
+   "T8 miss+B",
+   "T9 miss"
+  ],
+  [
+   "T8 miss+B",
+   "T9 miss+B"
+  ]
+ ],
+ "regles": {
+  "collisions": false
+ },
+ "variantes": {
+  "jeu actuel": {},
+  "reciblage": {
+   "reciblage": true
+  },
+  "debordement": {
+   "debordement": true
+  },
+  "tir continu": {
+   "tirContinu": true,
+   "ciblesVivantes": true,
+   "enrayement": 20
+  },
+  "tir continu sans enrayement": {
+   "tirContinu": true,
+   "ciblesVivantes": true
+  }
+ }
+}

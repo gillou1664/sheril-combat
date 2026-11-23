@@ -1,0 +1,159 @@
+{
+ "_note": "Protections des grosses coques : T6 et T8 au plasma V, sans protection, avec Boucliers V, avec absorbeur, ou les deux, contre des T3 armés de laser, plasma, missile ou torpille V. A = la grosse coque.",
+ "ressource": "prix",
+ "budgets": [
+  10000,
+  50000
+ ],
+ "n": 40,
+ "toursJeu": 3,
+ "plans": {
+  "T6 plasma": "moteurIII + 121 plasmaV",
+  "T6 boucliers": "moteurIII + 10 bouclierV + 81 plasmaV",
+  "T6 absorbeur": "moteurIII + absorbIII + 91 plasmaV",
+  "T6 abs+boucl": "moteurIII + absorbIII + 5 bouclierV + 71 plasmaV",
+  "T8 plasma": "moteurV + 482 plasmaV",
+  "T8 boucliers": "moteurV + 30 bouclierV + 362 plasmaV",
+  "T8 absorbeur": "moteurV + absorbV + 412 plasmaV",
+  "T8 abs+boucl": "moteurV + absorbV + 20 bouclierV + 332 plasmaV",
+  "T3 laser": "auto:T3:laserV",
+  "T3 plasma": "auto:T3:plasmaV",
+  "T3 missile": "auto:T3:missV",
+  "T3 torpille": "auto:T3:torpV"
+ },
+ "duels": [
+  [
+   "T6 plasma",
+   "T3 laser"
+  ],
+  [
+   "T6 plasma",
+   "T3 plasma"
+  ],
+  [
+   "T6 plasma",
+   "T3 missile"
+  ],
+  [
+   "T6 plasma",
+   "T3 torpille"
+  ],
+  [
+   "T6 boucliers",
+   "T3 laser"
+  ],
+  [
+   "T6 boucliers",
+   "T3 plasma"
+  ],
+  [
+   "T6 boucliers",
+   "T3 missile"
+  ],
+  [
+   "T6 boucliers",
+   "T3 torpille"
+  ],
+  [
+   "T6 absorbeur",
+   "T3 laser"
+  ],
+  [
+   "T6 absorbeur",
+   "T3 plasma"
+  ],
+  [
+   "T6 absorbeur",
+   "T3 missile"
+  ],
+  [
+   "T6 absorbeur",
+   "T3 torpille"
+  ],
+  [
+   "T6 abs+boucl",
+   "T3 laser"
+  ],
+  [
+   "T6 abs+boucl",
+   "T3 plasma"
+  ],
+  [
+   "T6 abs+boucl",
+   "T3 missile"
+  ],
+  [
+   "T6 abs+boucl",
+   "T3 torpille"
+  ],
+  [
+   "T8 plasma",
+   "T3 laser"
+  ],
+  [
+   "T8 plasma",
+   "T3 plasma"
+  ],
+  [
+   "T8 plasma",
+   "T3 missile"
+  ],
+  [
+   "T8 plasma",
+   "T3 torpille"
+  ],
+  [
+   "T8 boucliers",
+   "T3 laser"
+  ],
+  [
+   "T8 boucliers",
+   "T3 plasma"
+  ],
+  [
+   "T8 boucliers",
+   "T3 missile"
+  ],
+  [
+   "T8 boucliers",
+   "T3 torpille"
+  ],
+  [
+   "T8 absorbeur",
+   "T3 laser"
+  ],
+  [
+   "T8 absorbeur",
+   "T3 plasma"
+  ],
+  [
+   "T8 absorbeur",
+   "T3 missile"
+  ],
+  [
+   "T8 absorbeur",
+   "T3 torpille"
+  ],
+  [
+   "T8 abs+boucl",
+   "T3 laser"
+  ],
+  [
+   "T8 abs+boucl",
+   "T3 plasma"
+  ],
+  [
+   "T8 abs+boucl",
+   "T3 missile"
+  ],
+  [
+   "T8 abs+boucl",
+   "T3 torpille"
+  ]
+ ],
+ "variantes": {
+  "debordement": {
+   "debordement": true
+  }
+ }
+}

@@ -1,0 +1,337 @@
+{
+ "_note": "Tous au missile V. T2 à T4 sans protection ; T5 à T8 sans protection (nu), avec Boucliers V (boucl), avec absorbeur (abs) ou les deux, environ un tiers des cases. Tous contre tous dans chaque jeu de protections.",
+ "ressource": "prix",
+ "budgets": [
+  10000,
+  50000
+ ],
+ "n": 60,
+ "toursJeu": 3,
+ "plans": {
+  "T2": "moteurI + 8 missV",
+  "T3": "moteurI + 16 missV",
+  "T4": "moteurI + 32 missV",
+  "T5 nu": "moteurII + 61 missV",
+  "T5 boucl": "moteurII + 5 bouclierV + 41 missV",
+  "T5 abs": "moteurII + absorbII + 41 missV",
+  "T5 abs+boucl": "moteurII + absorbII + 3 bouclierV + 29 missV",
+  "T6 nu": "moteurIII + 121 missV",
+  "T6 boucl": "moteurIII + 10 bouclierV + 81 missV",
+  "T6 abs": "moteurIII + absorbIII + 91 missV",
+  "T6 abs+boucl": "moteurIII + absorbIII + 5 bouclierV + 71 missV",
+  "T7 nu": "moteurIV + 242 missV",
+  "T7 boucl": "moteurIV + 20 bouclierV + 162 missV",
+  "T7 abs": "moteurIV + absorbIV + 192 missV",
+  "T7 abs+boucl": "moteurIV + absorbIV + 10 bouclierV + 152 missV",
+  "T8 nu": "moteurV + 482 missV",
+  "T8 boucl": "moteurV + 30 bouclierV + 362 missV",
+  "T8 abs": "moteurV + absorbV + 412 missV",
+  "T8 abs+boucl": "moteurV + absorbV + 20 bouclierV + 332 missV"
+ },
+ "duels": [
+  [
+   "T2",
+   "T3"
+  ],
+  [
+   "T2",
+   "T4"
+  ],
+  [
+   "T2",
+   "T5 nu"
+  ],
+  [
+   "T2",
+   "T6 nu"
+  ],
+  [
+   "T2",
+   "T7 nu"
+  ],
+  [
+   "T2",
+   "T8 nu"
+  ],
+  [
+   "T3",
+   "T4"
+  ],
+  [
+   "T3",
+   "T5 nu"
+  ],
+  [
+   "T3",
+   "T6 nu"
+  ],
+  [
+   "T3",
+   "T7 nu"
+  ],
+  [
+   "T3",
+   "T8 nu"
+  ],
+  [
+   "T4",
+   "T5 nu"
+  ],
+  [
+   "T4",
+   "T6 nu"
+  ],
+  [
+   "T4",
+   "T7 nu"
+  ],
+  [
+   "T4",
+   "T8 nu"
+  ],
+  [
+   "T5 nu",
+   "T6 nu"
+  ],
+  [
+   "T5 nu",
+   "T7 nu"
+  ],
+  [
+   "T5 nu",
+   "T8 nu"
+  ],
+  [
+   "T6 nu",
+   "T7 nu"
+  ],
+  [
+   "T6 nu",
+   "T8 nu"
+  ],
+  [
+   "T7 nu",
+   "T8 nu"
+  ],
+  [
+   "T2",
+   "T5 boucl"
+  ],
+  [
+   "T2",
+   "T6 boucl"
+  ],
+  [
+   "T2",
+   "T7 boucl"
+  ],
+  [
+   "T2",
+   "T8 boucl"
+  ],
+  [
+   "T3",
+   "T5 boucl"
+  ],
+  [
+   "T3",
+   "T6 boucl"
+  ],
+  [
+   "T3",
+   "T7 boucl"
+  ],
+  [
+   "T3",
+   "T8 boucl"
+  ],
+  [
+   "T4",
+   "T5 boucl"
+  ],
+  [
+   "T4",
+   "T6 boucl"
+  ],
+  [
+   "T4",
+   "T7 boucl"
+  ],
+  [
+   "T4",
+   "T8 boucl"
+  ],
+  [
+   "T5 boucl",
+   "T6 boucl"
+  ],
+  [
+   "T5 boucl",
+   "T7 boucl"
+  ],
+  [
+   "T5 boucl",
+   "T8 boucl"
+  ],
+  [
+   "T6 boucl",
+   "T7 boucl"
+  ],
+  [
+   "T6 boucl",
+   "T8 boucl"
+  ],
+  [
+   "T7 boucl",
+   "T8 boucl"
+  ],
+  [
+   "T2",
+   "T5 abs"
+  ],
+  [
+   "T2",
+   "T6 abs"
+  ],
+  [
+   "T2",
+   "T7 abs"
+  ],
+  [
+   "T2",
+   "T8 abs"
+  ],
+  [
+   "T3",
+   "T5 abs"
+  ],
+  [
+   "T3",
+   "T6 abs"
+  ],
+  [
+   "T3",
+   "T7 abs"
+  ],
+  [
+   "T3",
+   "T8 abs"
+  ],
+  [
+   "T4",
+   "T5 abs"
+  ],
+  [
+   "T4",
+   "T6 abs"
+  ],
+  [
+   "T4",
+   "T7 abs"
+  ],
+  [
+   "T4",
+   "T8 abs"
+  ],
+  [
+   "T5 abs",
+   "T6 abs"
+  ],
+  [
+   "T5 abs",
+   "T7 abs"
+  ],
+  [
+   "T5 abs",
+   "T8 abs"
+  ],
+  [
+   "T6 abs",
+   "T7 abs"
+  ],
+  [
+   "T6 abs",
+   "T8 abs"
+  ],
+  [
+   "T7 abs",
+   "T8 abs"
+  ],
+  [
+   "T2",
+   "T5 abs+boucl"
+  ],
+  [
+   "T2",
+   "T6 abs+boucl"
+  ],
+  [
+   "T2",
+   "T7 abs+boucl"
+  ],
+  [
+   "T2",
+   "T8 abs+boucl"
+  ],
+  [
+   "T3",
+   "T5 abs+boucl"
+  ],
+  [
+   "T3",
+   "T6 abs+boucl"
+  ],
+  [
+   "T3",
+   "T7 abs+boucl"
+  ],
+  [
+   "T3",
+   "T8 abs+boucl"
+  ],
+  [
+   "T4",
+   "T5 abs+boucl"
+  ],
+  [
+   "T4",
+   "T6 abs+boucl"
+  ],
+  [
+   "T4",
+   "T7 abs+boucl"
+  ],
+  [
+   "T4",
+   "T8 abs+boucl"
+  ],
+  [
+   "T5 abs+boucl",
+   "T6 abs+boucl"
+  ],
+  [
+   "T5 abs+boucl",
+   "T7 abs+boucl"
+  ],
+  [
+   "T5 abs+boucl",
+   "T8 abs+boucl"
+  ],
+  [
+   "T6 abs+boucl",
+   "T7 abs+boucl"
+  ],
+  [
+   "T6 abs+boucl",
+   "T8 abs+boucl"
+  ],
+  [
+   "T7 abs+boucl",
+   "T8 abs+boucl"
+  ]
+ ],
+ "regles": {
+  "debordement": true
+ },
+ "attaquant": "alterne"
+}

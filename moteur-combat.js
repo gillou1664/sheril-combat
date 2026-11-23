@@ -4,7 +4,46 @@
 // Sans DOM : utilisable dans la page et sous Node (require).
 (function (racine) {
   'use strict';
-  var VERSION = '2.9';
+  var VERSION = '3.1';
+
+  // ---------------------------------------------------------------- règles
+  // Paramètres du moteur. Les valeurs par défaut sont celles du jeu actuel : ne les changer que pour tester
+  // une hypothèse (outil combat/equilibre/equilibre.js). Un tableau « …Taille » a une valeur par taille (index 0-9 = T1-T10).
+  var UNS = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], ZEROS = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  var REGLES_DEFAUT = {
+    // options déjà présentes dans le simulateur (voir combattre, positionnement, tir, collisionsInternes)
+    reciblage: false, fiabilite: false, defenseurZone: false, bugMiroir: true, collisionsReelles: false,
+    nbCibles: [0, 3, 7, 15, 31, 63, 127, 255, 511, 2000],   // cibles par round (Combat.java NB_CIBLE), selon la taille du tireur
+    combativiteBase: 5,                                   // combativité = base + niveau de moral + moral du héros
+    // hypothèses (absentes du jeu)
+    ciblage: 'proche',          // 'proche' (jeu), 'hasard' (au hasard parmi la taille choisie), 'moinsVisee' (la moins visée par sa flotte, puis la plus proche)
+    debordement: false,         // dans une salve, un vaisseau dont la cible est détruite continue sur une autre avec ses armes restantes (jusqu'à nbCibles)
+    // PR #106 du 18 novembre (commit 55fd96f4 de ydomenjoud/sheril-old-java, Combat.tirVaisseauToutesCibles) :
+    tirContinu: false,          // à son tempo, le vaisseau tire sur sa cible puis en désigne de nouvelles tant qu'il lui reste des armes (jusqu'à nbCibles, 4 recherches vides au plus)
+    ciblesVivantes: false,      // la liste de secours du choix de cible écarte les vaisseaux déjà détruits pendant le round
+    enrayement: 0,              // si > 0 : chaque tir s'enraye avec (enrayement − niveau de l'arme) % (PR #106 : 20, soit 16 % pour une arme V)
+    toucherTaille: UNS,         // multiplicateur de la chance de toucher, selon la taille de la cible
+    absorptionTaille: ZEROS,    // absorption de coque ajoutée, selon la taille de la cible (s'ajoute à celle de l'absorbeur)
+    resistanceTaille: UNS,      // diviseur des dégâts de coque reçus, selon la taille de la cible (arrondi au hasard)
+    degatsTaille: UNS,          // multiplicateur des dégâts de coque infligés, selon la taille du tireur (arrondi au hasard)
+    // collisions internes de fin de tour : force = ⌈n / (base + pas × aléa(alea))⌉ − militaire × maîtrise
+    collisionBase: 45, collisionPas: 5, collisionAlea: 5, collisionMilitaire: 2, collisionFacteur: 1,
+  };
+  function regles(r) {
+    var o = {};
+    Object.keys(REGLES_DEFAUT).forEach(function (k) { o[k] = REGLES_DEFAUT[k]; });
+    if (r) Object.keys(r).forEach(function (k) {
+      if (!(k in REGLES_DEFAUT)) throw new Error('règle inconnue : ' + k);
+      if (r[k] !== undefined) o[k] = r[k];
+    });
+    return o;
+  }
+  // arrondi au hasard (x = 2,3 → 2 ou 3, 3 avec 30 % de chances) ; aucun tirage si x est entier
+  function arrondiHasard(x, H) {
+    var e = Math.floor(x), f = x - e;
+    if (f <= 1e-9) return e;
+    return e + (H.reel() < f ? 1 : 0);
+  }
 
   // ---------------------------------------------------------------- hasard
   // Générateur à graine (mulberry32). Les tirages suivent l'ordre du Java (Univers.getInt / getInd / getTest).
@@ -21,6 +60,7 @@
       getInt: function (n) { return n <= 1 ? (n === 1 ? (suivant(), 0) : 0) : Math.floor(suivant() * n); },
       getInd: function () { return suivant() < 0.5 ? 1 : -1; },
       getTest: function (c) { return Math.floor(suivant() * 100) < c; },
+      reel: suivant,
     };
   }
 
@@ -144,6 +184,12 @@
       boucliers: null,        // usure des boucliers (transient, jamais remise à zéro)
       absorbeur: 0, combativite: 0, detruit: false, dommagesEffectues: 0,
     };
+    // état exact d'un vaisseau (combat sur plusieurs tours de jeu) : dégâts par composant
+    if (Array.isArray(opt.dommagesComposants)) {
+      v.dommages = opt.dommagesComposants.slice();
+      for (var q = 0; q < n; q++) if (estValide(v, q)) v.valides.push(q);
+      return v;
+    }
     for (var i = 0; i < n; i++) v.valides.push(i);
     // Dégâts de départ éventuels : points répartis sur les composants, dans l'ordre, sans en détruire
     // la totalité (le rapport ne dit pas lesquels). Utilisé seulement si opt.dommages > 0.
@@ -242,24 +288,27 @@
   }
 
   // Vaisseau.tir + effectuerDommages
-  function tir(v, cible, distance, h1, h2, H, NB_CIBLES, journal, fiabilite) {
+  function tir(v, cible, distance, h1, h2, H, R, journal) {
+    var NB_CIBLES = R.nbCibles, tc = cible.plan.taille;
+    var multToucher = R.toucherTaille[tc], resist = R.resistanceTaille[tc], multDegats = R.degatsTaille[v.plan.taille];
     // initialiserAbsorbeur : meilleure absorption parmi les composants valides de la cible
     var abs = 0;
     for (var k = 0; k < cible.valides.length; k++) {
       var cc = cible.plan.composants[cible.valides[k]];
       if (cc.caracs && cc.caracs.absorption > abs) abs = cc.caracs.absorption;
     }
-    cible.absorbeur = abs;
+    cible.absorbeur = abs + R.absorptionTaille[tc];
     var compteur = 0;
     while (compteur < v.armes.length && compteur <= NB_CIBLES[v.plan.taille] && !cible.detruit) {
       var a = v.armes[compteur];
       var arme = v.plan.composants[a];
-      var chance = chanceDeToucher(arme, cible.plan.taille, distance);
+      var chance = chanceDeToucher(arme, tc, distance);
+      if (multToucher !== 1) chance = trunc(chance * multToucher);
       if (chance === 0) { compteur++; continue; }
       var res = 'rate', degats = 0;
       // fiabilité (option, absente du Java : Arme.getFiabilite renvoie 100 et n'est pas utilisée en combat spatial) :
       // reprise du simulateur du développeur, l'arme s'enraye avec la probabilité de sa fiabilité et est perdue pour le round
-      if (fiabilite && H.getTest(arme.arme.fiabilite || 0)) res = 'enraye';
+      if (R.enrayement > 0 ? H.getTest(Math.max(0, R.enrayement - (arme.niv || 0))) : (R.fiabilite && H.getTest(arme.arme.fiabilite || 0))) res = 'enraye';
       else if (reussiteTir(chance, v, cible, h1, h2, H)) {
         var b = bouclierValide(cible);
         if (b !== -1) {
@@ -268,6 +317,8 @@
           res = 'bouclier';
         } else {
           var dc = arme.arme.degatCoque;
+          if (multDegats !== 1) dc = arrondiHasard(dc * multDegats, H);
+          if (resist !== 1) dc = arrondiHasard(dc / resist, H);
           if (dc > cible.absorbeur) { degats = dc - cible.absorbeur; cible.absorbeur = 0; }
           else { cible.absorbeur -= dc; degats = 0; }
           if (degats > 0) {
@@ -304,14 +355,22 @@
 
   // Combat.determinationCible : numTir = 0 en début de round (v.cible), numTir > 0 pour les tirs multiples
   // (v.cibles[numTir], cibleNonDejaChoisie : une cible déjà choisie ce round par ce vaisseau est exclue).
-  function determinationCible(f1, s1, f2, H, numTir, NB_CIBLES) {
+  function determinationCible(f1, s1, f2, H, numTir, R) {
     numTir = numTir || 0;
+    var visees = R.ciblage === 'moinsVisee' ? new Map() : null;
     f1.forEach(function (v) {
-      if (numTir > 0 && NB_CIBLES[v.plan.taille] + 1 <= numTir) return;   // inter.length > numTir
+      if (numTir > 0 && R.nbCibles[v.plan.taille] + 1 <= numTir) return;   // inter.length > numTir
+      var best = choisirCible(v, s1, f2, H, numTir > 0 ? v.cibles.slice(0, numTir) : null, R, visees);
+      if (numTir === 0) { v.cible = best; v.cibles = [best]; }
+      else v.cibles[numTir] = best;
+    });
+  }
+  // Choix d'une cible pour un vaisseau (corps de la boucle de Combat.determinationCible).
+  // deja : cibles exclues ; visees : Map cible → nombre de vaisseaux de la flotte qui la visent (ciblage 'moinsVisee').
+  function choisirCible(v, s1, f2, H, deja, R, visees) {
       var choix1 = listeDeType(f2, s1.typeCible);
       var o = s1.cibles && s1.cibles[v.type];
       var choix2 = null, j;
-      var deja = numTir > 0 ? v.cibles.slice(0, numTir) : null;
       function filtre(depart, j) {
         var t = o ? o[j] - 1 : 10 - j - 1;
         return depart.filter(function (c) { return c.plan.taille === t && (!deja || deja.indexOf(c) === -1); });
@@ -323,7 +382,7 @@
         }
       var tours = 0;
       while (choix2.length === 0 && tours < 5) {
-        choix1 = f2.slice();
+        choix1 = R.ciblesVivantes ? f2.filter(vivant) : f2.slice();
         for (j = 0; j < 10; j++) {
           if (H.getTest(50)) choix2 = filtre(choix1, j);
           if (choix2 !== null && choix2.length > 0) break;
@@ -332,15 +391,18 @@
       }
       var best = null;
       if (choix2.length > 0) {
-        var min = Infinity;
-        for (var k = 0; k < choix2.length; k++) {
-          var d = distance(v.pos, choix2[k].pos);
-          if (d < min) { min = d; best = choix2[k]; }
+        if (R.ciblage === 'hasard') best = choix2[H.getInt(choix2.length)];
+        else {
+          var min = Infinity, minV = Infinity;
+          for (var k = 0; k < choix2.length; k++) {
+            var d = distance(v.pos, choix2[k].pos);
+            var nv = visees ? (visees.get(choix2[k]) || 0) : 0;
+            if (nv < minV || (nv === minV && d < min)) { minV = nv; min = d; best = choix2[k]; }
+          }
         }
       }
-      if (numTir === 0) { v.cible = best; v.cibles = [best]; }
-      else v.cibles[numTir] = best;
-    });
+      if (best && visees) visees.set(best, (visees.get(best) || 0) + 1);
+      return best;
   }
 
   function distance(a, b) {
@@ -448,18 +510,26 @@
   // config : { camps: [campAttaquant, campDefenseur], options }
   // camp : { nom, vaisseaux: [{ plan (compilé), nombre, experience, moral, race, dommages }], heros, strategie }
   // strategie : { agressivite (0-5, 3 par défaut), typeCible (0-3), cibles: {type: [10 tailles 1-10]}, positions: {type: [x, y]} }
+  // config.reglesMoteur : paramètres du moteur (voir REGLES_DEFAUT) ; les anciennes options à la racine de config
+  // (reciblage, fiabilite, defenseurZone, bugMiroir, collisionsReelles) restent acceptées.
+  // options.etatFinal : renvoie aussi res.flottesFin (vaisseaux survivants, avant collisions) pour enchaîner les tours de jeu.
   function combattre(config, graine, options) {
     options = options || {};
     var H = creerHasard(graine == null ? (Math.random() * 4294967296) >>> 0 : graine);
-    var NB_CIBLES = [0, 3, 7, 15, 31, 63, 127, 255, 511, 2000];
+    var ancien = {};
+    ['reciblage', 'fiabilite', 'defenseurZone', 'bugMiroir', 'collisionsReelles'].forEach(function (k) {
+      if (config[k] !== undefined) ancien[k] = k === 'bugMiroir' ? config[k] !== false : !!config[k];
+    });
+    var R = regles(ancien);
+    if (config.reglesMoteur) R = regles(Object.assign(ancien, config.reglesMoteur));
+    var NB_CIBLES = R.nbCibles;
     // reciblage (option, désactivée par défaut, absente du moteur actuel : la boucle des tirs multiples de
     // Combat.java l.1001 est bridée par « i <= 0 ») : après la première salve, chaque flotte rechoisit pour tous
     // ses vaisseaux une nouvelle cible, différente de celles déjà choisies ce round, puis tire une nouvelle salve
     // avec les armes restantes ; jusqu'à NB_CIBLES[tailleMax] salves de plus, chaque vaisseau s'arrêtant à
     // NB_CIBLES[sa taille] (limite numTir <= nbCibleMax de Combat.tirVaisseau).
     // defenseurZone, fiabilite : voir positionnement et tir ; collisionsReelles : voir collisionsInternes.
-    var opts = { bugMiroir: config.bugMiroir !== false, reciblage: !!config.reciblage,
-      defenseurZone: !!config.defenseurZone, fiabilite: !!config.fiabilite };
+    var opts = { bugMiroir: R.bugMiroir !== false, reciblage: !!R.reciblage, defenseurZone: !!R.defenseurZone, fiabilite: !!R.fiabilite };
     var trace = options.trace ? { tours: [], positionsInitiales: null } : null;
     var maxTours = options.maxTours || 200;
 
@@ -481,8 +551,8 @@
     var f1 = flottes[0], f2 = flottes[1], h1 = heros[0], h2 = heros[1];
 
     // initialisation
-    f1.forEach(function (v) { v.combativite = 5 + niveauMoral(v.moral) + h1.mor; });
-    f2.forEach(function (v) { v.combativite = 5 + niveauMoral(v.moral) + h2.mor; });
+    f1.forEach(function (v) { v.combativite = R.combativiteBase + niveauMoral(v.moral) + h1.mor; });
+    f2.forEach(function (v) { v.combativite = R.combativiteBase + niveauMoral(v.moral) + h2.mor; });
     var P1 = puissanceFlotte(f1), P2 = puissanceFlotte(f2);
     var garde1 = P1 >= P2 * 5, garde2 = P2 >= P1 * 5;
     var depart = [parType(f1), parType(f2)];
@@ -500,8 +570,8 @@
       var mem = [parType(f1), parType(f2)];
       f1.forEach(preparer); f2.forEach(preparer);
       var ht1 = determinationTempo(f1, h1, H), ht2 = determinationTempo(f2, h2, H);
-      determinationCible(f1, strats[0], f2, H);
-      determinationCible(f2, strats[1], f1, H);
+      determinationCible(f1, strats[0], f2, H, 0, R);
+      determinationCible(f2, strats[1], f1, H, 0, R);
       var tTour = trace ? { avant: [f1, f2].map(function (f) { return f.map(function (v) { return [v.id, v.pos[0], v.pos[1], v.pos[2]]; }); }), tirs: [] } : null;
 
       // mouvement : tempo croissant, le camp 1 d'abord si sa clé est strictement plus petite
@@ -526,14 +596,47 @@
           else if (c1 !== -1 && ht1[c1].t > ht2[c2].t) p1 = true;
           var v, hA, hD;
           if (p1) { v = ht1[c1--].v; hA = h1; hD = h2; } else { v = ht2[c2--].v; hA = h2; hD = h1; }
+          // tir continu (PR #106, Combat.tirVaisseauToutesCibles) : cible 0, puis nouvelles cibles tant qu'il reste des armes
+          if (R.tirContinu && numTir === 0) {
+            if (v.combativite <= 0 || v.detruit) continue;
+            var tirer = function (cible, n) {
+              var dd = distance(v.pos, cible.pos), jj = tTour ? [] : null;
+              tir(v, cible, dd, hA, hD, H, R, jj);
+              if (tTour && jj.length) { tTour.tirs.push([v.camp, v.id, cible.id, dd, jj, cible.detruit ? 1 : 0]); if (n > 0) tTour.debordements = (tTour.debordements || 0) + 1; }
+            };
+            if (v.cibles[0] && !v.cibles[0].detruit) tirer(v.cibles[0], 0);
+            var vides = 0, ennemisC = p1 ? f2 : f1;
+            for (var it = 1; it <= NB_CIBLES[v.plan.taille] && !v.detruit && v.combativite > 0 && v.armes.length > 0; it++) {
+              var nc = choisirCible(v, strats[v.camp], ennemisC, H, v.cibles.slice(0, it), R, null);
+              v.cibles[it] = nc;
+              if (nc) { if (!nc.detruit) tirer(nc, it); }
+              else if (++vides > 3) break;   // plus de cible : le vaisseau garde ses armes restantes
+            }
+            continue;
+          }
           // Combat.tirVaisseau : numTir <= nbCibleMax, vaisseau combatif et vivant, cible choisie et pas encore détruite
           if (numTir > NB_CIBLES[v.plan.taille] || v.combativite <= 0 || v.detruit) continue;
           var c = v.cibles[numTir];
           if (!c || c.detruit) continue;
           var d = distance(v.pos, c.pos);
           var j = tTour ? [] : null;
-          tir(v, c, d, hA, hD, H, NB_CIBLES, j, opts.fiabilite);
+          tir(v, c, d, hA, hD, H, R, j);
           if (tTour && j.length) { tTour.tirs.push([v.camp, v.id, c.id, d, j, c.detruit ? 1 : 0]); if (numTir > 0) tTour.reciblages = (tTour.reciblages || 0) + 1; }
+          // débordement (hypothèse) : cible détruite, le vaisseau continue aussitôt sur une autre avec ses armes restantes
+          if (R.debordement) {
+            var exclues = v.cibles.slice(), nbDeb = 0;
+            while (c.detruit && v.armes.length > 0 && !v.detruit && nbDeb < NB_CIBLES[v.plan.taille]) {
+              var ennemis = (p1 ? f2 : f1).filter(vivant);
+              if (!ennemis.length) break;
+              c = choisirCible(v, strats[v.camp], ennemis, H, exclues, R, null);
+              if (!c) break;
+              exclues.push(c); nbDeb++;
+              d = distance(v.pos, c.pos);
+              j = tTour ? [] : null;
+              tir(v, c, d, hA, hD, H, R, j);
+              if (tTour && j.length) { tTour.tirs.push([v.camp, v.id, c.id, d, j, c.detruit ? 1 : 0]); tTour.debordements = (tTour.debordements || 0) + 1; }
+            }
+          }
         }
       };
       salve(0);
@@ -546,8 +649,8 @@
         for (var numTir = 1; numTir <= NB_CIBLES[tailleMax]; numTir++) {
           // raccourci : plus aucun vaisseau ne peut tirer, les tours suivants ne changeraient rien au combat
           if (!f1.some(peutTirer) && !f2.some(peutTirer)) break;
-          determinationCible(f1, strats[0], f2, H, numTir, NB_CIBLES);
-          determinationCible(f2, strats[1], f1, H, numTir, NB_CIBLES);
+          determinationCible(f1, strats[0], f2, H, numTir, R);
+          determinationCible(f2, strats[1], f1, H, numTir, R);
           salve(numTir);
         }
       }
@@ -594,16 +697,18 @@
     if (config.collisions !== false) {
       res.collisions = [f1, f2].map(function (f, i) {
         var liste = f.map(function (v) { return { type: v.type, plan: v.plan, restant: v.plan.nbCases - pointsDeDommage(v), puissance: puissanceVaisseau(v) }; });
-        return collisionsInternes(liste, config.camps[i].militaire || 0, H, config.collisionsReelles);
+        return collisionsInternes(liste, config.camps[i].militaire || 0, H, R.collisionsReelles, R);
       });
       res.nbApresCollisions = [0, 1].map(function (i) { return res.nbFin[i] - res.collisions[i].nbDetruits; });
       // puissance des vaisseaux détruits en collision retirée (les vaisseaux seulement endommagés gardent la leur)
       res.puissanceApresCollisions = [0, 1].map(function (i) { return Math.max(0, res.puissanceFin[i] - res.collisions[i].puissancePerdue); });
     }
     if (trace) res.trace = trace;
+    if (options.etatFinal) { res.flottesFin = [f1, f2]; res.hasard = H; }
     return res;
   }
 
+  function vivant(v) { return !v.detruit; }
   function dommagesTotaux(f) { var s = 0; f.forEach(function (v) { s += pointsDeDommage(v); }); return s; }
 
   // Une ligne par type, comme le rapport du jeu (Combat.ecrireDetailCombatVaisseaux) :
@@ -995,12 +1100,19 @@
   }
   // reelles (PR #106, commit « corrections des collisions ») : la réserve ne baisse que des dégâts réellement subis ;
   // sinon (moteur actuel, branche develop) : du dégât tiré entier, même au-delà des cases restantes du vaisseau.
-  function collisionsInternes(liste, militaire, H, reelles) {
+  // Force des collisions (règles R facultatives : base, pas, aléa, militaire, facteur ; voir REGLES_DEFAUT)
+  function forceCollisions(n, militaire, H, R) {
+    R = R || REGLES_DEFAUT;
+    var diviseur = R.collisionBase + R.collisionPas * H.getInt(R.collisionAlea);
+    var force = Math.ceil(n / diviseur) - R.collisionMilitaire * (militaire || 0);
+    if (R.collisionFacteur !== 1 && force > 0) force = Math.round(force * R.collisionFacteur);
+    return force;
+  }
+  function collisionsInternes(liste, militaire, H, reelles, R) {
     var r = { force: 0, detruits: {}, nbDetruits: 0, endommages: 0, dommages: 0, puissancePerdue: 0 };
     var n = liste.length;
     if (!n) return r;
-    var diviseur = 45 + 5 * H.getInt(5);
-    var force = Math.ceil(n / diviseur) - 2 * (militaire || 0);
+    var force = forceCollisions(n, militaire, H, R);
     r.force = force;
     if (force <= 0) return r;
     var D = force * force;
@@ -1033,9 +1145,9 @@
     return l;
   }
   // Estimation sans combat : n tirages
-  function estimerCollisions(camp, militaire, n, graine, reelles) {
+  function estimerCollisions(camp, militaire, n, graine, reelles, R) {
     var H = creerHasard(graine || 12345), liste = listeCollisionCamp(camp), res = [];
-    for (var k = 0; k < (n || 300); k++) res.push(collisionsInternes(liste, militaire, H, reelles));
+    for (var k = 0; k < (n || 300); k++) res.push(collisionsInternes(liste, militaire, H, reelles, R));
     var pertes = res.map(function (r) { return r.nbDetruits; }).sort(function (a, b) { return a - b; });
     var types = {};
     res.forEach(function (r) { Object.keys(r.detruits).forEach(function (t) { types[t] = (types[t] || 0) + r.detruits[t]; }); });
@@ -1090,10 +1202,10 @@
     return total;
   }
   // Collisions internes appliquées aux vaisseaux (fin de tour), pour les simulations sur plusieurs tours
-  function collisionsInternesFlotte(f, militaire, H, reelles) {
+  function collisionsInternesFlotte(f, militaire, H, reelles, R) {
     var r = { force: 0, dommages: 0 };
     var n = f.length; if (!n) return r;
-    var force = Math.ceil(n / (45 + 5 * H.getInt(5))) - 2 * (militaire || 0);
+    var force = forceCollisions(n, militaire, H, R);
     r.force = force;
     if (force <= 0) return r;
     var D = force * force, reserve = D * (5 + H.getInt(3)) + H.getInt(10);
@@ -1259,7 +1371,8 @@
     VERSION: VERSION, creerHasard: creerHasard, compilerPlan: compilerPlan, statsComposants: statsComposants,
     preparerHeros: preparerHeros, niveauExperience: niveauExperience, niveauMoral: niveauMoral,
     niveauPuissance: niveauPuissance, chanceDeToucher: chanceDeToucher, combattre: combattre, agreger: agreger,
-    collisionsInternes: collisionsInternes, estimerCollisions: estimerCollisions,
+    collisionsInternes: collisionsInternes, estimerCollisions: estimerCollisions, collisionsInternesFlotte: collisionsInternesFlotte,
+    REGLES_DEFAUT: REGLES_DEFAUT, regles: regles, puissanceVaisseau: puissanceVaisseau,
     simulerMines: simulerMines, agregerMines: agregerMines, distributionDegatDebris: distributionDegatDebris,
     combattrePlanetes: combattrePlanetes, agregerPlanetes: agregerPlanetes, miliceDeDepart: miliceDeDepart, DIRECTIVES: DIRECTIVES,
   };

@@ -33,5 +33,27 @@ Simulateur de combat flotte contre flotte pour le jeu par e-mail [Sheril](https:
 | `catalogue.js` | composants et plans standard, générés depuis le code Java du jeu |
 | `donnees.js` | lecture des fichiers du jeu et sauvegarde |
 | `interface.js` | l'interface |
+| `equilibre/` | banc d'équilibre du moteur, en ligne de commande (Node, sans dépendance) |
+| `rapport-equilibre-combat.pdf` | rapport de synthèse sur l'équilibre du combat entre les tailles de coque |
 
 Une seule flotte affronte une autre : l'enchaînement de plusieurs combats sur une même case n'est pas simulé.
+
+## Banc d'équilibre et rapport
+
+Le moteur (version 3.x) rend toutes les règles du combat de flottes paramétrables, dans `config.reglesMoteur`. Les valeurs par défaut sont celles du jeu actuel. Il ajoute aussi des variantes :
+
+- le reciblage, première version de la PR #106 ;
+- le tir continu, PR #106 du 18 novembre (`tirContinu`, `ciblesVivantes`, `enrayement`) ;
+- le débordement ;
+- des leviers selon la taille (toucher, résistance, dégâts, vitesse, coût).
+
+Le banc `equilibre/equilibre.js` fait combattre des flottes à budget égal sous plusieurs variantes de ces règles, et mesure qui garde le plus de valeur. Le mode d'emploi est dans `equilibre/README.md`, et les scénarios du rapport sont dans `equilibre/scenarios/`.
+
+```
+node equilibre/equilibre.js --aide
+node equilibre/equilibre.js equilibre/scenarios/conditions-developpeur.json --sans-actuel
+node equilibre/equilibre.js equilibre/scenarios/meilleur-equipement.json --json res.json
+node equilibre/meilleur-equipement.js res.json --variante actuel
+```
+
+Le rapport `rapport-equilibre-combat.pdf` donne les résultats. Ses commandes citent `combat/equilibre/…`, qui correspond ici à `equilibre/…`.

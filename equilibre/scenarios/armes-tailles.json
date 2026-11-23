@@ -1,0 +1,291 @@
+{
+ "_note": "Armement contre armement : grosses coques (T6, T8) contre petites (T2, T3), chacune avec une arme de niveau V (laser, plasma, missile, torpille). A = la grosse coque.",
+ "ressource": "prix",
+ "budgets": [
+  10000,
+  50000
+ ],
+ "n": 40,
+ "toursJeu": 3,
+ "plans": {
+  "T2 laser": "auto:T2:laserV",
+  "T2 plasma": "auto:T2:plasmaV",
+  "T2 missile": "auto:T2:missV",
+  "T2 torpille": "auto:T2:torpV",
+  "T3 laser": "auto:T3:laserV",
+  "T3 plasma": "auto:T3:plasmaV",
+  "T3 missile": "auto:T3:missV",
+  "T3 torpille": "auto:T3:torpV",
+  "T6 laser": "auto:T6:laserV",
+  "T6 plasma": "auto:T6:plasmaV",
+  "T6 missile": "auto:T6:missV",
+  "T6 torpille": "auto:T6:torpV",
+  "T8 laser": "auto:T8:laserV",
+  "T8 plasma": "auto:T8:plasmaV",
+  "T8 missile": "auto:T8:missV",
+  "T8 torpille": "auto:T8:torpV"
+ },
+ "duels": [
+  [
+   "T6 laser",
+   "T2 laser"
+  ],
+  [
+   "T6 laser",
+   "T2 plasma"
+  ],
+  [
+   "T6 laser",
+   "T2 missile"
+  ],
+  [
+   "T6 laser",
+   "T2 torpille"
+  ],
+  [
+   "T6 laser",
+   "T3 laser"
+  ],
+  [
+   "T6 laser",
+   "T3 plasma"
+  ],
+  [
+   "T6 laser",
+   "T3 missile"
+  ],
+  [
+   "T6 laser",
+   "T3 torpille"
+  ],
+  [
+   "T6 plasma",
+   "T2 laser"
+  ],
+  [
+   "T6 plasma",
+   "T2 plasma"
+  ],
+  [
+   "T6 plasma",
+   "T2 missile"
+  ],
+  [
+   "T6 plasma",
+   "T2 torpille"
+  ],
+  [
+   "T6 plasma",
+   "T3 laser"
+  ],
+  [
+   "T6 plasma",
+   "T3 plasma"
+  ],
+  [
+   "T6 plasma",
+   "T3 missile"
+  ],
+  [
+   "T6 plasma",
+   "T3 torpille"
+  ],
+  [
+   "T6 missile",
+   "T2 laser"
+  ],
+  [
+   "T6 missile",
+   "T2 plasma"
+  ],
+  [
+   "T6 missile",
+   "T2 missile"
+  ],
+  [
+   "T6 missile",
+   "T2 torpille"
+  ],
+  [
+   "T6 missile",
+   "T3 laser"
+  ],
+  [
+   "T6 missile",
+   "T3 plasma"
+  ],
+  [
+   "T6 missile",
+   "T3 missile"
+  ],
+  [
+   "T6 missile",
+   "T3 torpille"
+  ],
+  [
+   "T6 torpille",
+   "T2 laser"
+  ],
+  [
+   "T6 torpille",
+   "T2 plasma"
+  ],
+  [
+   "T6 torpille",
+   "T2 missile"
+  ],
+  [
+   "T6 torpille",
+   "T2 torpille"
+  ],
+  [
+   "T6 torpille",
+   "T3 laser"
+  ],
+  [
+   "T6 torpille",
+   "T3 plasma"
+  ],
+  [
+   "T6 torpille",
+   "T3 missile"
+  ],
+  [
+   "T6 torpille",
+   "T3 torpille"
+  ],
+  [
+   "T8 laser",
+   "T2 laser"
+  ],
+  [
+   "T8 laser",
+   "T2 plasma"
+  ],
+  [
+   "T8 laser",
+   "T2 missile"
+  ],
+  [
+   "T8 laser",
+   "T2 torpille"
+  ],
+  [
+   "T8 laser",
+   "T3 laser"
+  ],
+  [
+   "T8 laser",
+   "T3 plasma"
+  ],
+  [
+   "T8 laser",
+   "T3 missile"
+  ],
+  [
+   "T8 laser",
+   "T3 torpille"
+  ],
+  [
+   "T8 plasma",
+   "T2 laser"
+  ],
+  [
+   "T8 plasma",
+   "T2 plasma"
+  ],
+  [
+   "T8 plasma",
+   "T2 missile"
+  ],
+  [
+   "T8 plasma",
+   "T2 torpille"
+  ],
+  [
+   "T8 plasma",
+   "T3 laser"
+  ],
+  [
+   "T8 plasma",
+   "T3 plasma"
+  ],
+  [
+   "T8 plasma",
+   "T3 missile"
+  ],
+  [
+   "T8 plasma",
+   "T3 torpille"
+  ],
+  [
+   "T8 missile",
+   "T2 laser"
+  ],
+  [
+   "T8 missile",
+   "T2 plasma"
+  ],
+  [
+   "T8 missile",
+   "T2 missile"
+  ],
+  [
+   "T8 missile",
+   "T2 torpille"
+  ],
+  [
+   "T8 missile",
+   "T3 laser"
+  ],
+  [
+   "T8 missile",
+   "T3 plasma"
+  ],
+  [
+   "T8 missile",
+   "T3 missile"
+  ],
+  [
+   "T8 missile",
+   "T3 torpille"
+  ],
+  [
+   "T8 torpille",
+   "T2 laser"
+  ],
+  [
+   "T8 torpille",
+   "T2 plasma"
+  ],
+  [
+   "T8 torpille",
+   "T2 missile"
+  ],
+  [
+   "T8 torpille",
+   "T2 torpille"
+  ],
+  [
+   "T8 torpille",
+   "T3 laser"
+  ],
+  [
+   "T8 torpille",
+   "T3 plasma"
+  ],
+  [
+   "T8 torpille",
+   "T3 missile"
+  ],
+  [
+   "T8 torpille",
+   "T3 torpille"
+  ]
+ ],
+ "variantes": {
+  "debordement": {
+   "debordement": true
+  }
+ }
+}

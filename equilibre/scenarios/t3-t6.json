@@ -1,0 +1,16 @@
+{
+ "_note": "Reprend l'étude T3 contre T6 (docs/etude-t3-t6.md) : budget égal en centaures, de 1 à 50 T6.",
+ "ressource": "prix",
+ "budgets": [1222, 3666, 9776, 24440, 61100, 97760],
+ "n": 100,
+ "toursJeu": 1,
+ "plans": {
+  "T3": "moteurI + 16 plasmaV",
+  "T6": "moteurIII + 121 plasmaV"
+ },
+ "duels": [["T3", "T6"]],
+ "variantes": {
+  "reciblage": { "reciblage": true },
+  "debordement": { "debordement": true }
+ }
+}

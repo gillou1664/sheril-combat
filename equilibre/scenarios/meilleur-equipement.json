@@ -1,0 +1,6029 @@
+{
+ "_note": "Meilleur équipement contre meilleur équipement : pour chaque paire de tailles (T2 à T8), toutes les combinaisons d arme V (laser, plasma, missile, torpille) et de protection (T5 à T8 : aucune, Boucliers V, absorbeur), avec débordement. Le choix optimal se calcule à part (jeu à somme nulle).",
+ "ressource": "prix",
+ "budgets": [
+  10000,
+  50000
+ ],
+ "n": 40,
+ "toursJeu": 3,
+ "plans": {
+  "T2 laser": "moteurI + 8 laserV",
+  "T2 plasma": "moteurI + 8 plasmaV",
+  "T2 missile": "moteurI + 8 missV",
+  "T2 torpille": "moteurI + 8 torpV",
+  "T3 laser": "moteurI + 16 laserV",
+  "T3 plasma": "moteurI + 16 plasmaV",
+  "T3 missile": "moteurI + 16 missV",
+  "T3 torpille": "moteurI + 16 torpV",
+  "T4 laser": "moteurI + 32 laserV",
+  "T4 plasma": "moteurI + 32 plasmaV",
+  "T4 missile": "moteurI + 32 missV",
+  "T4 torpille": "moteurI + 32 torpV",
+  "T5 laser": "moteurII + 61 laserV",
+  "T5 laser boucl": "moteurII + 5 bouclierV + 41 laserV",
+  "T5 laser abs": "moteurII + absorbII + 41 laserV",
+  "T5 plasma": "moteurII + 61 plasmaV",
+  "T5 plasma boucl": "moteurII + 5 bouclierV + 41 plasmaV",
+  "T5 plasma abs": "moteurII + absorbII + 41 plasmaV",
+  "T5 missile": "moteurII + 61 missV",
+  "T5 missile boucl": "moteurII + 5 bouclierV + 41 missV",
+  "T5 missile abs": "moteurII + absorbII + 41 missV",
+  "T5 torpille": "moteurII + 61 torpV",
+  "T5 torpille boucl": "moteurII + 5 bouclierV + 41 torpV",
+  "T5 torpille abs": "moteurII + absorbII + 41 torpV",
+  "T6 laser": "moteurIII + 121 laserV",
+  "T6 laser boucl": "moteurIII + 10 bouclierV + 81 laserV",
+  "T6 laser abs": "moteurIII + absorbIII + 91 laserV",
+  "T6 plasma": "moteurIII + 121 plasmaV",
+  "T6 plasma boucl": "moteurIII + 10 bouclierV + 81 plasmaV",
+  "T6 plasma abs": "moteurIII + absorbIII + 91 plasmaV",
+  "T6 missile": "moteurIII + 121 missV",
+  "T6 missile boucl": "moteurIII + 10 bouclierV + 81 missV",
+  "T6 missile abs": "moteurIII + absorbIII + 91 missV",
+  "T6 torpille": "moteurIII + 121 torpV",
+  "T6 torpille boucl": "moteurIII + 10 bouclierV + 81 torpV",
+  "T6 torpille abs": "moteurIII + absorbIII + 91 torpV",
+  "T7 laser": "moteurIV + 242 laserV",
+  "T7 laser boucl": "moteurIV + 20 bouclierV + 162 laserV",
+  "T7 laser abs": "moteurIV + absorbIV + 192 laserV",
+  "T7 plasma": "moteurIV + 242 plasmaV",
+  "T7 plasma boucl": "moteurIV + 20 bouclierV + 162 plasmaV",
+  "T7 plasma abs": "moteurIV + absorbIV + 192 plasmaV",
+  "T7 missile": "moteurIV + 242 missV",
+  "T7 missile boucl": "moteurIV + 20 bouclierV + 162 missV",
+  "T7 missile abs": "moteurIV + absorbIV + 192 missV",
+  "T7 torpille": "moteurIV + 242 torpV",
+  "T7 torpille boucl": "moteurIV + 20 bouclierV + 162 torpV",
+  "T7 torpille abs": "moteurIV + absorbIV + 192 torpV",
+  "T8 laser": "moteurV + 482 laserV",
+  "T8 laser boucl": "moteurV + 30 bouclierV + 362 laserV",
+  "T8 laser abs": "moteurV + absorbV + 412 laserV",
+  "T8 plasma": "moteurV + 482 plasmaV",
+  "T8 plasma boucl": "moteurV + 30 bouclierV + 362 plasmaV",
+  "T8 plasma abs": "moteurV + absorbV + 412 plasmaV",
+  "T8 missile": "moteurV + 482 missV",
+  "T8 missile boucl": "moteurV + 30 bouclierV + 362 missV",
+  "T8 missile abs": "moteurV + absorbV + 412 missV",
+  "T8 torpille": "moteurV + 482 torpV",
+  "T8 torpille boucl": "moteurV + 30 bouclierV + 362 torpV",
+  "T8 torpille abs": "moteurV + absorbV + 412 torpV"
+ },
+ "duels": [
+  [
+   "T2 laser",
+   "T3 laser"
+  ],
+  [
+   "T2 laser",
+   "T3 plasma"
+  ],
+  [
+   "T2 laser",
+   "T3 missile"
+  ],
+  [
+   "T2 laser",
+   "T3 torpille"
+  ],
+  [
+   "T2 plasma",
+   "T3 laser"
+  ],
+  [
+   "T2 plasma",
+   "T3 plasma"
+  ],
+  [
+   "T2 plasma",
+   "T3 missile"
+  ],
+  [
+   "T2 plasma",
+   "T3 torpille"
+  ],
+  [
+   "T2 missile",
+   "T3 laser"
+  ],
+  [
+   "T2 missile",
+   "T3 plasma"
+  ],
+  [
+   "T2 missile",
+   "T3 missile"
+  ],
+  [
+   "T2 missile",
+   "T3 torpille"
+  ],
+  [
+   "T2 torpille",
+   "T3 laser"
+  ],
+  [
+   "T2 torpille",
+   "T3 plasma"
+  ],
+  [
+   "T2 torpille",
+   "T3 missile"
+  ],
+  [
+   "T2 torpille",
+   "T3 torpille"
+  ],
+  [
+   "T2 laser",
+   "T4 laser"
+  ],
+  [
+   "T2 laser",
+   "T4 plasma"
+  ],
+  [
+   "T2 laser",
+   "T4 missile"
+  ],
+  [
+   "T2 laser",
+   "T4 torpille"
+  ],
+  [
+   "T2 plasma",
+   "T4 laser"
+  ],
+  [
+   "T2 plasma",
+   "T4 plasma"
+  ],
+  [
+   "T2 plasma",
+   "T4 missile"
+  ],
+  [
+   "T2 plasma",
+   "T4 torpille"
+  ],
+  [
+   "T2 missile",
+   "T4 laser"
+  ],
+  [
+   "T2 missile",
+   "T4 plasma"
+  ],
+  [
+   "T2 missile",
+   "T4 missile"
+  ],
+  [
+   "T2 missile",
+   "T4 torpille"
+  ],
+  [
+   "T2 torpille",
+   "T4 laser"
+  ],
+  [
+   "T2 torpille",
+   "T4 plasma"
+  ],
+  [
+   "T2 torpille",
+   "T4 missile"
+  ],
+  [
+   "T2 torpille",
+   "T4 torpille"
+  ],
+  [
+   "T2 laser",
+   "T5 laser"
+  ],
+  [
+   "T2 laser",
+   "T5 laser boucl"
+  ],
+  [
+   "T2 laser",
+   "T5 laser abs"
+  ],
+  [
+   "T2 laser",
+   "T5 plasma"
+  ],
+  [
+   "T2 laser",
+   "T5 plasma boucl"
+  ],
+  [
+   "T2 laser",
+   "T5 plasma abs"
+  ],
+  [
+   "T2 laser",
+   "T5 missile"
+  ],
+  [
+   "T2 laser",
+   "T5 missile boucl"
+  ],
+  [
+   "T2 laser",
+   "T5 missile abs"
+  ],
+  [
+   "T2 laser",
+   "T5 torpille"
+  ],
+  [
+   "T2 laser",
+   "T5 torpille boucl"
+  ],
+  [
+   "T2 laser",
+   "T5 torpille abs"
+  ],
+  [
+   "T2 plasma",
+   "T5 laser"
+  ],
+  [
+   "T2 plasma",
+   "T5 laser boucl"
+  ],
+  [
+   "T2 plasma",
+   "T5 laser abs"
+  ],
+  [
+   "T2 plasma",
+   "T5 plasma"
+  ],
+  [
+   "T2 plasma",
+   "T5 plasma boucl"
+  ],
+  [
+   "T2 plasma",
+   "T5 plasma abs"
+  ],
+  [
+   "T2 plasma",
+   "T5 missile"
+  ],
+  [
+   "T2 plasma",
+   "T5 missile boucl"
+  ],
+  [
+   "T2 plasma",
+   "T5 missile abs"
+  ],
+  [
+   "T2 plasma",
+   "T5 torpille"
+  ],
+  [
+   "T2 plasma",
+   "T5 torpille boucl"
+  ],
+  [
+   "T2 plasma",
+   "T5 torpille abs"
+  ],
+  [
+   "T2 missile",
+   "T5 laser"
+  ],
+  [
+   "T2 missile",
+   "T5 laser boucl"
+  ],
+  [
+   "T2 missile",
+   "T5 laser abs"
+  ],
+  [
+   "T2 missile",
+   "T5 plasma"
+  ],
+  [
+   "T2 missile",
+   "T5 plasma boucl"
+  ],
+  [
+   "T2 missile",
+   "T5 plasma abs"
+  ],
+  [
+   "T2 missile",
+   "T5 missile"
+  ],
+  [
+   "T2 missile",
+   "T5 missile boucl"
+  ],
+  [
+   "T2 missile",
+   "T5 missile abs"
+  ],
+  [
+   "T2 missile",
+   "T5 torpille"
+  ],
+  [
+   "T2 missile",
+   "T5 torpille boucl"
+  ],
+  [
+   "T2 missile",
+   "T5 torpille abs"
+  ],
+  [
+   "T2 torpille",
+   "T5 laser"
+  ],
+  [
+   "T2 torpille",
+   "T5 laser boucl"
+  ],
+  [
+   "T2 torpille",
+   "T5 laser abs"
+  ],
+  [
+   "T2 torpille",
+   "T5 plasma"
+  ],
+  [
+   "T2 torpille",
+   "T5 plasma boucl"
+  ],
+  [
+   "T2 torpille",
+   "T5 plasma abs"
+  ],
+  [
+   "T2 torpille",
+   "T5 missile"
+  ],
+  [
+   "T2 torpille",
+   "T5 missile boucl"
+  ],
+  [
+   "T2 torpille",
+   "T5 missile abs"
+  ],
+  [
+   "T2 torpille",
+   "T5 torpille"
+  ],
+  [
+   "T2 torpille",
+   "T5 torpille boucl"
+  ],
+  [
+   "T2 torpille",
+   "T5 torpille abs"
+  ],
+  [
+   "T2 laser",
+   "T6 laser"
+  ],
+  [
+   "T2 laser",
+   "T6 laser boucl"
+  ],
+  [
+   "T2 laser",
+   "T6 laser abs"
+  ],
+  [
+   "T2 laser",
+   "T6 plasma"
+  ],
+  [
+   "T2 laser",
+   "T6 plasma boucl"
+  ],
+  [
+   "T2 laser",
+   "T6 plasma abs"
+  ],
+  [
+   "T2 laser",
+   "T6 missile"
+  ],
+  [
+   "T2 laser",
+   "T6 missile boucl"
+  ],
+  [
+   "T2 laser",
+   "T6 missile abs"
+  ],
+  [
+   "T2 laser",
+   "T6 torpille"
+  ],
+  [
+   "T2 laser",
+   "T6 torpille boucl"
+  ],
+  [
+   "T2 laser",
+   "T6 torpille abs"
+  ],
+  [
+   "T2 plasma",
+   "T6 laser"
+  ],
+  [
+   "T2 plasma",
+   "T6 laser boucl"
+  ],
+  [
+   "T2 plasma",
+   "T6 laser abs"
+  ],
+  [
+   "T2 plasma",
+   "T6 plasma"
+  ],
+  [
+   "T2 plasma",
+   "T6 plasma boucl"
+  ],
+  [
+   "T2 plasma",
+   "T6 plasma abs"
+  ],
+  [
+   "T2 plasma",
+   "T6 missile"
+  ],
+  [
+   "T2 plasma",
+   "T6 missile boucl"
+  ],
+  [
+   "T2 plasma",
+   "T6 missile abs"
+  ],
+  [
+   "T2 plasma",
+   "T6 torpille"
+  ],
+  [
+   "T2 plasma",
+   "T6 torpille boucl"
+  ],
+  [
+   "T2 plasma",
+   "T6 torpille abs"
+  ],
+  [
+   "T2 missile",
+   "T6 laser"
+  ],
+  [
+   "T2 missile",
+   "T6 laser boucl"
+  ],
+  [
+   "T2 missile",
+   "T6 laser abs"
+  ],
+  [
+   "T2 missile",
+   "T6 plasma"
+  ],
+  [
+   "T2 missile",
+   "T6 plasma boucl"
+  ],
+  [
+   "T2 missile",
+   "T6 plasma abs"
+  ],
+  [
+   "T2 missile",
+   "T6 missile"
+  ],
+  [
+   "T2 missile",
+   "T6 missile boucl"
+  ],
+  [
+   "T2 missile",
+   "T6 missile abs"
+  ],
+  [
+   "T2 missile",
+   "T6 torpille"
+  ],
+  [
+   "T2 missile",
+   "T6 torpille boucl"
+  ],
+  [
+   "T2 missile",
+   "T6 torpille abs"
+  ],
+  [
+   "T2 torpille",
+   "T6 laser"
+  ],
+  [
+   "T2 torpille",
+   "T6 laser boucl"
+  ],
+  [
+   "T2 torpille",
+   "T6 laser abs"
+  ],
+  [
+   "T2 torpille",
+   "T6 plasma"
+  ],
+  [
+   "T2 torpille",
+   "T6 plasma boucl"
+  ],
+  [
+   "T2 torpille",
+   "T6 plasma abs"
+  ],
+  [
+   "T2 torpille",
+   "T6 missile"
+  ],
+  [
+   "T2 torpille",
+   "T6 missile boucl"
+  ],
+  [
+   "T2 torpille",
+   "T6 missile abs"
+  ],
+  [
+   "T2 torpille",
+   "T6 torpille"
+  ],
+  [
+   "T2 torpille",
+   "T6 torpille boucl"
+  ],
+  [
+   "T2 torpille",
+   "T6 torpille abs"
+  ],
+  [
+   "T2 laser",
+   "T7 laser"
+  ],
+  [
+   "T2 laser",
+   "T7 laser boucl"
+  ],
+  [
+   "T2 laser",
+   "T7 laser abs"
+  ],
+  [
+   "T2 laser",
+   "T7 plasma"
+  ],
+  [
+   "T2 laser",
+   "T7 plasma boucl"
+  ],
+  [
+   "T2 laser",
+   "T7 plasma abs"
+  ],
+  [
+   "T2 laser",
+   "T7 missile"
+  ],
+  [
+   "T2 laser",
+   "T7 missile boucl"
+  ],
+  [
+   "T2 laser",
+   "T7 missile abs"
+  ],
+  [
+   "T2 laser",
+   "T7 torpille"
+  ],
+  [
+   "T2 laser",
+   "T7 torpille boucl"
+  ],
+  [
+   "T2 laser",
+   "T7 torpille abs"
+  ],
+  [
+   "T2 plasma",
+   "T7 laser"
+  ],
+  [
+   "T2 plasma",
+   "T7 laser boucl"
+  ],
+  [
+   "T2 plasma",
+   "T7 laser abs"
+  ],
+  [
+   "T2 plasma",
+   "T7 plasma"
+  ],
+  [
+   "T2 plasma",
+   "T7 plasma boucl"
+  ],
+  [
+   "T2 plasma",
+   "T7 plasma abs"
+  ],
+  [
+   "T2 plasma",
+   "T7 missile"
+  ],
+  [
+   "T2 plasma",
+   "T7 missile boucl"
+  ],
+  [
+   "T2 plasma",
+   "T7 missile abs"
+  ],
+  [
+   "T2 plasma",
+   "T7 torpille"
+  ],
+  [
+   "T2 plasma",
+   "T7 torpille boucl"
+  ],
+  [
+   "T2 plasma",
+   "T7 torpille abs"
+  ],
+  [
+   "T2 missile",
+   "T7 laser"
+  ],
+  [
+   "T2 missile",
+   "T7 laser boucl"
+  ],
+  [
+   "T2 missile",
+   "T7 laser abs"
+  ],
+  [
+   "T2 missile",
+   "T7 plasma"
+  ],
+  [
+   "T2 missile",
+   "T7 plasma boucl"
+  ],
+  [
+   "T2 missile",
+   "T7 plasma abs"
+  ],
+  [
+   "T2 missile",
+   "T7 missile"
+  ],
+  [
+   "T2 missile",
+   "T7 missile boucl"
+  ],
+  [
+   "T2 missile",
+   "T7 missile abs"
+  ],
+  [
+   "T2 missile",
+   "T7 torpille"
+  ],
+  [
+   "T2 missile",
+   "T7 torpille boucl"
+  ],
+  [
+   "T2 missile",
+   "T7 torpille abs"
+  ],
+  [
+   "T2 torpille",
+   "T7 laser"
+  ],
+  [
+   "T2 torpille",
+   "T7 laser boucl"
+  ],
+  [
+   "T2 torpille",
+   "T7 laser abs"
+  ],
+  [
+   "T2 torpille",
+   "T7 plasma"
+  ],
+  [
+   "T2 torpille",
+   "T7 plasma boucl"
+  ],
+  [
+   "T2 torpille",
+   "T7 plasma abs"
+  ],
+  [
+   "T2 torpille",
+   "T7 missile"
+  ],
+  [
+   "T2 torpille",
+   "T7 missile boucl"
+  ],
+  [
+   "T2 torpille",
+   "T7 missile abs"
+  ],
+  [
+   "T2 torpille",
+   "T7 torpille"
+  ],
+  [
+   "T2 torpille",
+   "T7 torpille boucl"
+  ],
+  [
+   "T2 torpille",
+   "T7 torpille abs"
+  ],
+  [
+   "T2 laser",
+   "T8 laser"
+  ],
+  [
+   "T2 laser",
+   "T8 laser boucl"
+  ],
+  [
+   "T2 laser",
+   "T8 laser abs"
+  ],
+  [
+   "T2 laser",
+   "T8 plasma"
+  ],
+  [
+   "T2 laser",
+   "T8 plasma boucl"
+  ],
+  [
+   "T2 laser",
+   "T8 plasma abs"
+  ],
+  [
+   "T2 laser",
+   "T8 missile"
+  ],
+  [
+   "T2 laser",
+   "T8 missile boucl"
+  ],
+  [
+   "T2 laser",
+   "T8 missile abs"
+  ],
+  [
+   "T2 laser",
+   "T8 torpille"
+  ],
+  [
+   "T2 laser",
+   "T8 torpille boucl"
+  ],
+  [
+   "T2 laser",
+   "T8 torpille abs"
+  ],
+  [
+   "T2 plasma",
+   "T8 laser"
+  ],
+  [
+   "T2 plasma",
+   "T8 laser boucl"
+  ],
+  [
+   "T2 plasma",
+   "T8 laser abs"
+  ],
+  [
+   "T2 plasma",
+   "T8 plasma"
+  ],
+  [
+   "T2 plasma",
+   "T8 plasma boucl"
+  ],
+  [
+   "T2 plasma",
+   "T8 plasma abs"
+  ],
+  [
+   "T2 plasma",
+   "T8 missile"
+  ],
+  [
+   "T2 plasma",
+   "T8 missile boucl"
+  ],
+  [
+   "T2 plasma",
+   "T8 missile abs"
+  ],
+  [
+   "T2 plasma",
+   "T8 torpille"
+  ],
+  [
+   "T2 plasma",
+   "T8 torpille boucl"
+  ],
+  [
+   "T2 plasma",
+   "T8 torpille abs"
+  ],
+  [
+   "T2 missile",
+   "T8 laser"
+  ],
+  [
+   "T2 missile",
+   "T8 laser boucl"
+  ],
+  [
+   "T2 missile",
+   "T8 laser abs"
+  ],
+  [
+   "T2 missile",
+   "T8 plasma"
+  ],
+  [
+   "T2 missile",
+   "T8 plasma boucl"
+  ],
+  [
+   "T2 missile",
+   "T8 plasma abs"
+  ],
+  [
+   "T2 missile",
+   "T8 missile"
+  ],
+  [
+   "T2 missile",
+   "T8 missile boucl"
+  ],
+  [
+   "T2 missile",
+   "T8 missile abs"
+  ],
+  [
+   "T2 missile",
+   "T8 torpille"
+  ],
+  [
+   "T2 missile",
+   "T8 torpille boucl"
+  ],
+  [
+   "T2 missile",
+   "T8 torpille abs"
+  ],
+  [
+   "T2 torpille",
+   "T8 laser"
+  ],
+  [
+   "T2 torpille",
+   "T8 laser boucl"
+  ],
+  [
+   "T2 torpille",
+   "T8 laser abs"
+  ],
+  [
+   "T2 torpille",
+   "T8 plasma"
+  ],
+  [
+   "T2 torpille",
+   "T8 plasma boucl"
+  ],
+  [
+   "T2 torpille",
+   "T8 plasma abs"
+  ],
+  [
+   "T2 torpille",
+   "T8 missile"
+  ],
+  [
+   "T2 torpille",
+   "T8 missile boucl"
+  ],
+  [
+   "T2 torpille",
+   "T8 missile abs"
+  ],
+  [
+   "T2 torpille",
+   "T8 torpille"
+  ],
+  [
+   "T2 torpille",
+   "T8 torpille boucl"
+  ],
+  [
+   "T2 torpille",
+   "T8 torpille abs"
+  ],
+  [
+   "T3 laser",
+   "T4 laser"
+  ],
+  [
+   "T3 laser",
+   "T4 plasma"
+  ],
+  [
+   "T3 laser",
+   "T4 missile"
+  ],
+  [
+   "T3 laser",
+   "T4 torpille"
+  ],
+  [
+   "T3 plasma",
+   "T4 laser"
+  ],
+  [
+   "T3 plasma",
+   "T4 plasma"
+  ],
+  [
+   "T3 plasma",
+   "T4 missile"
+  ],
+  [
+   "T3 plasma",
+   "T4 torpille"
+  ],
+  [
+   "T3 missile",
+   "T4 laser"
+  ],
+  [
+   "T3 missile",
+   "T4 plasma"
+  ],
+  [
+   "T3 missile",
+   "T4 missile"
+  ],
+  [
+   "T3 missile",
+   "T4 torpille"
+  ],
+  [
+   "T3 torpille",
+   "T4 laser"
+  ],
+  [
+   "T3 torpille",
+   "T4 plasma"
+  ],
+  [
+   "T3 torpille",
+   "T4 missile"
+  ],
+  [
+   "T3 torpille",
+   "T4 torpille"
+  ],
+  [
+   "T3 laser",
+   "T5 laser"
+  ],
+  [
+   "T3 laser",
+   "T5 laser boucl"
+  ],
+  [
+   "T3 laser",
+   "T5 laser abs"
+  ],
+  [
+   "T3 laser",
+   "T5 plasma"
+  ],
+  [
+   "T3 laser",
+   "T5 plasma boucl"
+  ],
+  [
+   "T3 laser",
+   "T5 plasma abs"
+  ],
+  [
+   "T3 laser",
+   "T5 missile"
+  ],
+  [
+   "T3 laser",
+   "T5 missile boucl"
+  ],
+  [
+   "T3 laser",
+   "T5 missile abs"
+  ],
+  [
+   "T3 laser",
+   "T5 torpille"
+  ],
+  [
+   "T3 laser",
+   "T5 torpille boucl"
+  ],
+  [
+   "T3 laser",
+   "T5 torpille abs"
+  ],
+  [
+   "T3 plasma",
+   "T5 laser"
+  ],
+  [
+   "T3 plasma",
+   "T5 laser boucl"
+  ],
+  [
+   "T3 plasma",
+   "T5 laser abs"
+  ],
+  [
+   "T3 plasma",
+   "T5 plasma"
+  ],
+  [
+   "T3 plasma",
+   "T5 plasma boucl"
+  ],
+  [
+   "T3 plasma",
+   "T5 plasma abs"
+  ],
+  [
+   "T3 plasma",
+   "T5 missile"
+  ],
+  [
+   "T3 plasma",
+   "T5 missile boucl"
+  ],
+  [
+   "T3 plasma",
+   "T5 missile abs"
+  ],
+  [
+   "T3 plasma",
+   "T5 torpille"
+  ],
+  [
+   "T3 plasma",
+   "T5 torpille boucl"
+  ],
+  [
+   "T3 plasma",
+   "T5 torpille abs"
+  ],
+  [
+   "T3 missile",
+   "T5 laser"
+  ],
+  [
+   "T3 missile",
+   "T5 laser boucl"
+  ],
+  [
+   "T3 missile",
+   "T5 laser abs"
+  ],
+  [
+   "T3 missile",
+   "T5 plasma"
+  ],
+  [
+   "T3 missile",
+   "T5 plasma boucl"
+  ],
+  [
+   "T3 missile",
+   "T5 plasma abs"
+  ],
+  [
+   "T3 missile",
+   "T5 missile"
+  ],
+  [
+   "T3 missile",
+   "T5 missile boucl"
+  ],
+  [
+   "T3 missile",
+   "T5 missile abs"
+  ],
+  [
+   "T3 missile",
+   "T5 torpille"
+  ],
+  [
+   "T3 missile",
+   "T5 torpille boucl"
+  ],
+  [
+   "T3 missile",
+   "T5 torpille abs"
+  ],
+  [
+   "T3 torpille",
+   "T5 laser"
+  ],
+  [
+   "T3 torpille",
+   "T5 laser boucl"
+  ],
+  [
+   "T3 torpille",
+   "T5 laser abs"
+  ],
+  [
+   "T3 torpille",
+   "T5 plasma"
+  ],
+  [
+   "T3 torpille",
+   "T5 plasma boucl"
+  ],
+  [
+   "T3 torpille",
+   "T5 plasma abs"
+  ],
+  [
+   "T3 torpille",
+   "T5 missile"
+  ],
+  [
+   "T3 torpille",
+   "T5 missile boucl"
+  ],
+  [
+   "T3 torpille",
+   "T5 missile abs"
+  ],
+  [
+   "T3 torpille",
+   "T5 torpille"
+  ],
+  [
+   "T3 torpille",
+   "T5 torpille boucl"
+  ],
+  [
+   "T3 torpille",
+   "T5 torpille abs"
+  ],
+  [
+   "T3 laser",
+   "T6 laser"
+  ],
+  [
+   "T3 laser",
+   "T6 laser boucl"
+  ],
+  [
+   "T3 laser",
+   "T6 laser abs"
+  ],
+  [
+   "T3 laser",
+   "T6 plasma"
+  ],
+  [
+   "T3 laser",
+   "T6 plasma boucl"
+  ],
+  [
+   "T3 laser",
+   "T6 plasma abs"
+  ],
+  [
+   "T3 laser",
+   "T6 missile"
+  ],
+  [
+   "T3 laser",
+   "T6 missile boucl"
+  ],
+  [
+   "T3 laser",
+   "T6 missile abs"
+  ],
+  [
+   "T3 laser",
+   "T6 torpille"
+  ],
+  [
+   "T3 laser",
+   "T6 torpille boucl"
+  ],
+  [
+   "T3 laser",
+   "T6 torpille abs"
+  ],
+  [
+   "T3 plasma",
+   "T6 laser"
+  ],
+  [
+   "T3 plasma",
+   "T6 laser boucl"
+  ],
+  [
+   "T3 plasma",
+   "T6 laser abs"
+  ],
+  [
+   "T3 plasma",
+   "T6 plasma"
+  ],
+  [
+   "T3 plasma",
+   "T6 plasma boucl"
+  ],
+  [
+   "T3 plasma",
+   "T6 plasma abs"
+  ],
+  [
+   "T3 plasma",
+   "T6 missile"
+  ],
+  [
+   "T3 plasma",
+   "T6 missile boucl"
+  ],
+  [
+   "T3 plasma",
+   "T6 missile abs"
+  ],
+  [
+   "T3 plasma",
+   "T6 torpille"
+  ],
+  [
+   "T3 plasma",
+   "T6 torpille boucl"
+  ],
+  [
+   "T3 plasma",
+   "T6 torpille abs"
+  ],
+  [
+   "T3 missile",
+   "T6 laser"
+  ],
+  [
+   "T3 missile",
+   "T6 laser boucl"
+  ],
+  [
+   "T3 missile",
+   "T6 laser abs"
+  ],
+  [
+   "T3 missile",
+   "T6 plasma"
+  ],
+  [
+   "T3 missile",
+   "T6 plasma boucl"
+  ],
+  [
+   "T3 missile",
+   "T6 plasma abs"
+  ],
+  [
+   "T3 missile",
+   "T6 missile"
+  ],
+  [
+   "T3 missile",
+   "T6 missile boucl"
+  ],
+  [
+   "T3 missile",
+   "T6 missile abs"
+  ],
+  [
+   "T3 missile",
+   "T6 torpille"
+  ],
+  [
+   "T3 missile",
+   "T6 torpille boucl"
+  ],
+  [
+   "T3 missile",
+   "T6 torpille abs"
+  ],
+  [
+   "T3 torpille",
+   "T6 laser"
+  ],
+  [
+   "T3 torpille",
+   "T6 laser boucl"
+  ],
+  [
+   "T3 torpille",
+   "T6 laser abs"
+  ],
+  [
+   "T3 torpille",
+   "T6 plasma"
+  ],
+  [
+   "T3 torpille",
+   "T6 plasma boucl"
+  ],
+  [
+   "T3 torpille",
+   "T6 plasma abs"
+  ],
+  [
+   "T3 torpille",
+   "T6 missile"
+  ],
+  [
+   "T3 torpille",
+   "T6 missile boucl"
+  ],
+  [
+   "T3 torpille",
+   "T6 missile abs"
+  ],
+  [
+   "T3 torpille",
+   "T6 torpille"
+  ],
+  [
+   "T3 torpille",
+   "T6 torpille boucl"
+  ],
+  [
+   "T3 torpille",
+   "T6 torpille abs"
+  ],
+  [
+   "T3 laser",
+   "T7 laser"
+  ],
+  [
+   "T3 laser",
+   "T7 laser boucl"
+  ],
+  [
+   "T3 laser",
+   "T7 laser abs"
+  ],
+  [
+   "T3 laser",
+   "T7 plasma"
+  ],
+  [
+   "T3 laser",
+   "T7 plasma boucl"
+  ],
+  [
+   "T3 laser",
+   "T7 plasma abs"
+  ],
+  [
+   "T3 laser",
+   "T7 missile"
+  ],
+  [
+   "T3 laser",
+   "T7 missile boucl"
+  ],
+  [
+   "T3 laser",
+   "T7 missile abs"
+  ],
+  [
+   "T3 laser",
+   "T7 torpille"
+  ],
+  [
+   "T3 laser",
+   "T7 torpille boucl"
+  ],
+  [
+   "T3 laser",
+   "T7 torpille abs"
+  ],
+  [
+   "T3 plasma",
+   "T7 laser"
+  ],
+  [
+   "T3 plasma",
+   "T7 laser boucl"
+  ],
+  [
+   "T3 plasma",
+   "T7 laser abs"
+  ],
+  [
+   "T3 plasma",
+   "T7 plasma"
+  ],
+  [
+   "T3 plasma",
+   "T7 plasma boucl"
+  ],
+  [
+   "T3 plasma",
+   "T7 plasma abs"
+  ],
+  [
+   "T3 plasma",
+   "T7 missile"
+  ],
+  [
+   "T3 plasma",
+   "T7 missile boucl"
+  ],
+  [
+   "T3 plasma",
+   "T7 missile abs"
+  ],
+  [
+   "T3 plasma",
+   "T7 torpille"
+  ],
+  [
+   "T3 plasma",
+   "T7 torpille boucl"
+  ],
+  [
+   "T3 plasma",
+   "T7 torpille abs"
+  ],
+  [
+   "T3 missile",
+   "T7 laser"
+  ],
+  [
+   "T3 missile",
+   "T7 laser boucl"
+  ],
+  [
+   "T3 missile",
+   "T7 laser abs"
+  ],
+  [
+   "T3 missile",
+   "T7 plasma"
+  ],
+  [
+   "T3 missile",
+   "T7 plasma boucl"
+  ],
+  [
+   "T3 missile",
+   "T7 plasma abs"
+  ],
+  [
+   "T3 missile",
+   "T7 missile"
+  ],
+  [
+   "T3 missile",
+   "T7 missile boucl"
+  ],
+  [
+   "T3 missile",
+   "T7 missile abs"
+  ],
+  [
+   "T3 missile",
+   "T7 torpille"
+  ],
+  [
+   "T3 missile",
+   "T7 torpille boucl"
+  ],
+  [
+   "T3 missile",
+   "T7 torpille abs"
+  ],
+  [
+   "T3 torpille",
+   "T7 laser"
+  ],
+  [
+   "T3 torpille",
+   "T7 laser boucl"
+  ],
+  [
+   "T3 torpille",
+   "T7 laser abs"
+  ],
+  [
+   "T3 torpille",
+   "T7 plasma"
+  ],
+  [
+   "T3 torpille",
+   "T7 plasma boucl"
+  ],
+  [
+   "T3 torpille",
+   "T7 plasma abs"
+  ],
+  [
+   "T3 torpille",
+   "T7 missile"
+  ],
+  [
+   "T3 torpille",
+   "T7 missile boucl"
+  ],
+  [
+   "T3 torpille",
+   "T7 missile abs"
+  ],
+  [
+   "T3 torpille",
+   "T7 torpille"
+  ],
+  [
+   "T3 torpille",
+   "T7 torpille boucl"
+  ],
+  [
+   "T3 torpille",
+   "T7 torpille abs"
+  ],
+  [
+   "T3 laser",
+   "T8 laser"
+  ],
+  [
+   "T3 laser",
+   "T8 laser boucl"
+  ],
+  [
+   "T3 laser",
+   "T8 laser abs"
+  ],
+  [
+   "T3 laser",
+   "T8 plasma"
+  ],
+  [
+   "T3 laser",
+   "T8 plasma boucl"
+  ],
+  [
+   "T3 laser",
+   "T8 plasma abs"
+  ],
+  [
+   "T3 laser",
+   "T8 missile"
+  ],
+  [
+   "T3 laser",
+   "T8 missile boucl"
+  ],
+  [
+   "T3 laser",
+   "T8 missile abs"
+  ],
+  [
+   "T3 laser",
+   "T8 torpille"
+  ],
+  [
+   "T3 laser",
+   "T8 torpille boucl"
+  ],
+  [
+   "T3 laser",
+   "T8 torpille abs"
+  ],
+  [
+   "T3 plasma",
+   "T8 laser"
+  ],
+  [
+   "T3 plasma",
+   "T8 laser boucl"
+  ],
+  [
+   "T3 plasma",
+   "T8 laser abs"
+  ],
+  [
+   "T3 plasma",
+   "T8 plasma"
+  ],
+  [
+   "T3 plasma",
+   "T8 plasma boucl"
+  ],
+  [
+   "T3 plasma",
+   "T8 plasma abs"
+  ],
+  [
+   "T3 plasma",
+   "T8 missile"
+  ],
+  [
+   "T3 plasma",
+   "T8 missile boucl"
+  ],
+  [
+   "T3 plasma",
+   "T8 missile abs"
+  ],
+  [
+   "T3 plasma",
+   "T8 torpille"
+  ],
+  [
+   "T3 plasma",
+   "T8 torpille boucl"
+  ],
+  [
+   "T3 plasma",
+   "T8 torpille abs"
+  ],
+  [
+   "T3 missile",
+   "T8 laser"
+  ],
+  [
+   "T3 missile",
+   "T8 laser boucl"
+  ],
+  [
+   "T3 missile",
+   "T8 laser abs"
+  ],
+  [
+   "T3 missile",
+   "T8 plasma"
+  ],
+  [
+   "T3 missile",
+   "T8 plasma boucl"
+  ],
+  [
+   "T3 missile",
+   "T8 plasma abs"
+  ],
+  [
+   "T3 missile",
+   "T8 missile"
+  ],
+  [
+   "T3 missile",
+   "T8 missile boucl"
+  ],
+  [
+   "T3 missile",
+   "T8 missile abs"
+  ],
+  [
+   "T3 missile",
+   "T8 torpille"
+  ],
+  [
+   "T3 missile",
+   "T8 torpille boucl"
+  ],
+  [
+   "T3 missile",
+   "T8 torpille abs"
+  ],
+  [
+   "T3 torpille",
+   "T8 laser"
+  ],
+  [
+   "T3 torpille",
+   "T8 laser boucl"
+  ],
+  [
+   "T3 torpille",
+   "T8 laser abs"
+  ],
+  [
+   "T3 torpille",
+   "T8 plasma"
+  ],
+  [
+   "T3 torpille",
+   "T8 plasma boucl"
+  ],
+  [
+   "T3 torpille",
+   "T8 plasma abs"
+  ],
+  [
+   "T3 torpille",
+   "T8 missile"
+  ],
+  [
+   "T3 torpille",
+   "T8 missile boucl"
+  ],
+  [
+   "T3 torpille",
+   "T8 missile abs"
+  ],
+  [
+   "T3 torpille",
+   "T8 torpille"
+  ],
+  [
+   "T3 torpille",
+   "T8 torpille boucl"
+  ],
+  [
+   "T3 torpille",
+   "T8 torpille abs"
+  ],
+  [
+   "T4 laser",
+   "T5 laser"
+  ],
+  [
+   "T4 laser",
+   "T5 laser boucl"
+  ],
+  [
+   "T4 laser",
+   "T5 laser abs"
+  ],
+  [
+   "T4 laser",
+   "T5 plasma"
+  ],
+  [
+   "T4 laser",
+   "T5 plasma boucl"
+  ],
+  [
+   "T4 laser",
+   "T5 plasma abs"
+  ],
+  [
+   "T4 laser",
+   "T5 missile"
+  ],
+  [
+   "T4 laser",
+   "T5 missile boucl"
+  ],
+  [
+   "T4 laser",
+   "T5 missile abs"
+  ],
+  [
+   "T4 laser",
+   "T5 torpille"
+  ],
+  [
+   "T4 laser",
+   "T5 torpille boucl"
+  ],
+  [
+   "T4 laser",
+   "T5 torpille abs"
+  ],
+  [
+   "T4 plasma",
+   "T5 laser"
+  ],
+  [
+   "T4 plasma",
+   "T5 laser boucl"
+  ],
+  [
+   "T4 plasma",
+   "T5 laser abs"
+  ],
+  [
+   "T4 plasma",
+   "T5 plasma"
+  ],
+  [
+   "T4 plasma",
+   "T5 plasma boucl"
+  ],
+  [
+   "T4 plasma",
+   "T5 plasma abs"
+  ],
+  [
+   "T4 plasma",
+   "T5 missile"
+  ],
+  [
+   "T4 plasma",
+   "T5 missile boucl"
+  ],
+  [
+   "T4 plasma",
+   "T5 missile abs"
+  ],
+  [
+   "T4 plasma",
+   "T5 torpille"
+  ],
+  [
+   "T4 plasma",
+   "T5 torpille boucl"
+  ],
+  [
+   "T4 plasma",
+   "T5 torpille abs"
+  ],
+  [
+   "T4 missile",
+   "T5 laser"
+  ],
+  [
+   "T4 missile",
+   "T5 laser boucl"
+  ],
+  [
+   "T4 missile",
+   "T5 laser abs"
+  ],
+  [
+   "T4 missile",
+   "T5 plasma"
+  ],
+  [
+   "T4 missile",
+   "T5 plasma boucl"
+  ],
+  [
+   "T4 missile",
+   "T5 plasma abs"
+  ],
+  [
+   "T4 missile",
+   "T5 missile"
+  ],
+  [
+   "T4 missile",
+   "T5 missile boucl"
+  ],
+  [
+   "T4 missile",
+   "T5 missile abs"
+  ],
+  [
+   "T4 missile",
+   "T5 torpille"
+  ],
+  [
+   "T4 missile",
+   "T5 torpille boucl"
+  ],
+  [
+   "T4 missile",
+   "T5 torpille abs"
+  ],
+  [
+   "T4 torpille",
+   "T5 laser"
+  ],
+  [
+   "T4 torpille",
+   "T5 laser boucl"
+  ],
+  [
+   "T4 torpille",
+   "T5 laser abs"
+  ],
+  [
+   "T4 torpille",
+   "T5 plasma"
+  ],
+  [
+   "T4 torpille",
+   "T5 plasma boucl"
+  ],
+  [
+   "T4 torpille",
+   "T5 plasma abs"
+  ],
+  [
+   "T4 torpille",
+   "T5 missile"
+  ],
+  [
+   "T4 torpille",
+   "T5 missile boucl"
+  ],
+  [
+   "T4 torpille",
+   "T5 missile abs"
+  ],
+  [
+   "T4 torpille",
+   "T5 torpille"
+  ],
+  [
+   "T4 torpille",
+   "T5 torpille boucl"
+  ],
+  [
+   "T4 torpille",
+   "T5 torpille abs"
+  ],
+  [
+   "T4 laser",
+   "T6 laser"
+  ],
+  [
+   "T4 laser",
+   "T6 laser boucl"
+  ],
+  [
+   "T4 laser",
+   "T6 laser abs"
+  ],
+  [
+   "T4 laser",
+   "T6 plasma"
+  ],
+  [
+   "T4 laser",
+   "T6 plasma boucl"
+  ],
+  [
+   "T4 laser",
+   "T6 plasma abs"
+  ],
+  [
+   "T4 laser",
+   "T6 missile"
+  ],
+  [
+   "T4 laser",
+   "T6 missile boucl"
+  ],
+  [
+   "T4 laser",
+   "T6 missile abs"
+  ],
+  [
+   "T4 laser",
+   "T6 torpille"
+  ],
+  [
+   "T4 laser",
+   "T6 torpille boucl"
+  ],
+  [
+   "T4 laser",
+   "T6 torpille abs"
+  ],
+  [
+   "T4 plasma",
+   "T6 laser"
+  ],
+  [
+   "T4 plasma",
+   "T6 laser boucl"
+  ],
+  [
+   "T4 plasma",
+   "T6 laser abs"
+  ],
+  [
+   "T4 plasma",
+   "T6 plasma"
+  ],
+  [
+   "T4 plasma",
+   "T6 plasma boucl"
+  ],
+  [
+   "T4 plasma",
+   "T6 plasma abs"
+  ],
+  [
+   "T4 plasma",
+   "T6 missile"
+  ],
+  [
+   "T4 plasma",
+   "T6 missile boucl"
+  ],
+  [
+   "T4 plasma",
+   "T6 missile abs"
+  ],
+  [
+   "T4 plasma",
+   "T6 torpille"
+  ],
+  [
+   "T4 plasma",
+   "T6 torpille boucl"
+  ],
+  [
+   "T4 plasma",
+   "T6 torpille abs"
+  ],
+  [
+   "T4 missile",
+   "T6 laser"
+  ],
+  [
+   "T4 missile",
+   "T6 laser boucl"
+  ],
+  [
+   "T4 missile",
+   "T6 laser abs"
+  ],
+  [
+   "T4 missile",
+   "T6 plasma"
+  ],
+  [
+   "T4 missile",
+   "T6 plasma boucl"
+  ],
+  [
+   "T4 missile",
+   "T6 plasma abs"
+  ],
+  [
+   "T4 missile",
+   "T6 missile"
+  ],
+  [
+   "T4 missile",
+   "T6 missile boucl"
+  ],
+  [
+   "T4 missile",
+   "T6 missile abs"
+  ],
+  [
+   "T4 missile",
+   "T6 torpille"
+  ],
+  [
+   "T4 missile",
+   "T6 torpille boucl"
+  ],
+  [
+   "T4 missile",
+   "T6 torpille abs"
+  ],
+  [
+   "T4 torpille",
+   "T6 laser"
+  ],
+  [
+   "T4 torpille",
+   "T6 laser boucl"
+  ],
+  [
+   "T4 torpille",
+   "T6 laser abs"
+  ],
+  [
+   "T4 torpille",
+   "T6 plasma"
+  ],
+  [
+   "T4 torpille",
+   "T6 plasma boucl"
+  ],
+  [
+   "T4 torpille",
+   "T6 plasma abs"
+  ],
+  [
+   "T4 torpille",
+   "T6 missile"
+  ],
+  [
+   "T4 torpille",
+   "T6 missile boucl"
+  ],
+  [
+   "T4 torpille",
+   "T6 missile abs"
+  ],
+  [
+   "T4 torpille",
+   "T6 torpille"
+  ],
+  [
+   "T4 torpille",
+   "T6 torpille boucl"
+  ],
+  [
+   "T4 torpille",
+   "T6 torpille abs"
+  ],
+  [
+   "T4 laser",
+   "T7 laser"
+  ],
+  [
+   "T4 laser",
+   "T7 laser boucl"
+  ],
+  [
+   "T4 laser",
+   "T7 laser abs"
+  ],
+  [
+   "T4 laser",
+   "T7 plasma"
+  ],
+  [
+   "T4 laser",
+   "T7 plasma boucl"
+  ],
+  [
+   "T4 laser",
+   "T7 plasma abs"
+  ],
+  [
+   "T4 laser",
+   "T7 missile"
+  ],
+  [
+   "T4 laser",
+   "T7 missile boucl"
+  ],
+  [
+   "T4 laser",
+   "T7 missile abs"
+  ],
+  [
+   "T4 laser",
+   "T7 torpille"
+  ],
+  [
+   "T4 laser",
+   "T7 torpille boucl"
+  ],
+  [
+   "T4 laser",
+   "T7 torpille abs"
+  ],
+  [
+   "T4 plasma",
+   "T7 laser"
+  ],
+  [
+   "T4 plasma",
+   "T7 laser boucl"
+  ],
+  [
+   "T4 plasma",
+   "T7 laser abs"
+  ],
+  [
+   "T4 plasma",
+   "T7 plasma"
+  ],
+  [
+   "T4 plasma",
+   "T7 plasma boucl"
+  ],
+  [
+   "T4 plasma",
+   "T7 plasma abs"
+  ],
+  [
+   "T4 plasma",
+   "T7 missile"
+  ],
+  [
+   "T4 plasma",
+   "T7 missile boucl"
+  ],
+  [
+   "T4 plasma",
+   "T7 missile abs"
+  ],
+  [
+   "T4 plasma",
+   "T7 torpille"
+  ],
+  [
+   "T4 plasma",
+   "T7 torpille boucl"
+  ],
+  [
+   "T4 plasma",
+   "T7 torpille abs"
+  ],
+  [
+   "T4 missile",
+   "T7 laser"
+  ],
+  [
+   "T4 missile",
+   "T7 laser boucl"
+  ],
+  [
+   "T4 missile",
+   "T7 laser abs"
+  ],
+  [
+   "T4 missile",
+   "T7 plasma"
+  ],
+  [
+   "T4 missile",
+   "T7 plasma boucl"
+  ],
+  [
+   "T4 missile",
+   "T7 plasma abs"
+  ],
+  [
+   "T4 missile",
+   "T7 missile"
+  ],
+  [
+   "T4 missile",
+   "T7 missile boucl"
+  ],
+  [
+   "T4 missile",
+   "T7 missile abs"
+  ],
+  [
+   "T4 missile",
+   "T7 torpille"
+  ],
+  [
+   "T4 missile",
+   "T7 torpille boucl"
+  ],
+  [
+   "T4 missile",
+   "T7 torpille abs"
+  ],
+  [
+   "T4 torpille",
+   "T7 laser"
+  ],
+  [
+   "T4 torpille",
+   "T7 laser boucl"
+  ],
+  [
+   "T4 torpille",
+   "T7 laser abs"
+  ],
+  [
+   "T4 torpille",
+   "T7 plasma"
+  ],
+  [
+   "T4 torpille",
+   "T7 plasma boucl"
+  ],
+  [
+   "T4 torpille",
+   "T7 plasma abs"
+  ],
+  [
+   "T4 torpille",
+   "T7 missile"
+  ],
+  [
+   "T4 torpille",
+   "T7 missile boucl"
+  ],
+  [
+   "T4 torpille",
+   "T7 missile abs"
+  ],
+  [
+   "T4 torpille",
+   "T7 torpille"
+  ],
+  [
+   "T4 torpille",
+   "T7 torpille boucl"
+  ],
+  [
+   "T4 torpille",
+   "T7 torpille abs"
+  ],
+  [
+   "T4 laser",
+   "T8 laser"
+  ],
+  [
+   "T4 laser",
+   "T8 laser boucl"
+  ],
+  [
+   "T4 laser",
+   "T8 laser abs"
+  ],
+  [
+   "T4 laser",
+   "T8 plasma"
+  ],
+  [
+   "T4 laser",
+   "T8 plasma boucl"
+  ],
+  [
+   "T4 laser",
+   "T8 plasma abs"
+  ],
+  [
+   "T4 laser",
+   "T8 missile"
+  ],
+  [
+   "T4 laser",
+   "T8 missile boucl"
+  ],
+  [
+   "T4 laser",
+   "T8 missile abs"
+  ],
+  [
+   "T4 laser",
+   "T8 torpille"
+  ],
+  [
+   "T4 laser",
+   "T8 torpille boucl"
+  ],
+  [
+   "T4 laser",
+   "T8 torpille abs"
+  ],
+  [
+   "T4 plasma",
+   "T8 laser"
+  ],
+  [
+   "T4 plasma",
+   "T8 laser boucl"
+  ],
+  [
+   "T4 plasma",
+   "T8 laser abs"
+  ],
+  [
+   "T4 plasma",
+   "T8 plasma"
+  ],
+  [
+   "T4 plasma",
+   "T8 plasma boucl"
+  ],
+  [
+   "T4 plasma",
+   "T8 plasma abs"
+  ],
+  [
+   "T4 plasma",
+   "T8 missile"
+  ],
+  [
+   "T4 plasma",
+   "T8 missile boucl"
+  ],
+  [
+   "T4 plasma",
+   "T8 missile abs"
+  ],
+  [
+   "T4 plasma",
+   "T8 torpille"
+  ],
+  [
+   "T4 plasma",
+   "T8 torpille boucl"
+  ],
+  [
+   "T4 plasma",
+   "T8 torpille abs"
+  ],
+  [
+   "T4 missile",
+   "T8 laser"
+  ],
+  [
+   "T4 missile",
+   "T8 laser boucl"
+  ],
+  [
+   "T4 missile",
+   "T8 laser abs"
+  ],
+  [
+   "T4 missile",
+   "T8 plasma"
+  ],
+  [
+   "T4 missile",
+   "T8 plasma boucl"
+  ],
+  [
+   "T4 missile",
+   "T8 plasma abs"
+  ],
+  [
+   "T4 missile",
+   "T8 missile"
+  ],
+  [
+   "T4 missile",
+   "T8 missile boucl"
+  ],
+  [
+   "T4 missile",
+   "T8 missile abs"
+  ],
+  [
+   "T4 missile",
+   "T8 torpille"
+  ],
+  [
+   "T4 missile",
+   "T8 torpille boucl"
+  ],
+  [
+   "T4 missile",
+   "T8 torpille abs"
+  ],
+  [
+   "T4 torpille",
+   "T8 laser"
+  ],
+  [
+   "T4 torpille",
+   "T8 laser boucl"
+  ],
+  [
+   "T4 torpille",
+   "T8 laser abs"
+  ],
+  [
+   "T4 torpille",
+   "T8 plasma"
+  ],
+  [
+   "T4 torpille",
+   "T8 plasma boucl"
+  ],
+  [
+   "T4 torpille",
+   "T8 plasma abs"
+  ],
+  [
+   "T4 torpille",
+   "T8 missile"
+  ],
+  [
+   "T4 torpille",
+   "T8 missile boucl"
+  ],
+  [
+   "T4 torpille",
+   "T8 missile abs"
+  ],
+  [
+   "T4 torpille",
+   "T8 torpille"
+  ],
+  [
+   "T4 torpille",
+   "T8 torpille boucl"
+  ],
+  [
+   "T4 torpille",
+   "T8 torpille abs"
+  ],
+  [
+   "T5 laser",
+   "T6 laser"
+  ],
+  [
+   "T5 laser",
+   "T6 laser boucl"
+  ],
+  [
+   "T5 laser",
+   "T6 laser abs"
+  ],
+  [
+   "T5 laser",
+   "T6 plasma"
+  ],
+  [
+   "T5 laser",
+   "T6 plasma boucl"
+  ],
+  [
+   "T5 laser",
+   "T6 plasma abs"
+  ],
+  [
+   "T5 laser",
+   "T6 missile"
+  ],
+  [
+   "T5 laser",
+   "T6 missile boucl"
+  ],
+  [
+   "T5 laser",
+   "T6 missile abs"
+  ],
+  [
+   "T5 laser",
+   "T6 torpille"
+  ],
+  [
+   "T5 laser",
+   "T6 torpille boucl"
+  ],
+  [
+   "T5 laser",
+   "T6 torpille abs"
+  ],
+  [
+   "T5 laser boucl",
+   "T6 laser"
+  ],
+  [
+   "T5 laser boucl",
+   "T6 laser boucl"
+  ],
+  [
+   "T5 laser boucl",
+   "T6 laser abs"
+  ],
+  [
+   "T5 laser boucl",
+   "T6 plasma"
+  ],
+  [
+   "T5 laser boucl",
+   "T6 plasma boucl"
+  ],
+  [
+   "T5 laser boucl",
+   "T6 plasma abs"
+  ],
+  [
+   "T5 laser boucl",
+   "T6 missile"
+  ],
+  [
+   "T5 laser boucl",
+   "T6 missile boucl"
+  ],
+  [
+   "T5 laser boucl",
+   "T6 missile abs"
+  ],
+  [
+   "T5 laser boucl",
+   "T6 torpille"
+  ],
+  [
+   "T5 laser boucl",
+   "T6 torpille boucl"
+  ],
+  [
+   "T5 laser boucl",
+   "T6 torpille abs"
+  ],
+  [
+   "T5 laser abs",
+   "T6 laser"
+  ],
+  [
+   "T5 laser abs",
+   "T6 laser boucl"
+  ],
+  [
+   "T5 laser abs",
+   "T6 laser abs"
+  ],
+  [
+   "T5 laser abs",
+   "T6 plasma"
+  ],
+  [
+   "T5 laser abs",
+   "T6 plasma boucl"
+  ],
+  [
+   "T5 laser abs",
+   "T6 plasma abs"
+  ],
+  [
+   "T5 laser abs",
+   "T6 missile"
+  ],
+  [
+   "T5 laser abs",
+   "T6 missile boucl"
+  ],
+  [
+   "T5 laser abs",
+   "T6 missile abs"
+  ],
+  [
+   "T5 laser abs",
+   "T6 torpille"
+  ],
+  [
+   "T5 laser abs",
+   "T6 torpille boucl"
+  ],
+  [
+   "T5 laser abs",
+   "T6 torpille abs"
+  ],
+  [
+   "T5 plasma",
+   "T6 laser"
+  ],
+  [
+   "T5 plasma",
+   "T6 laser boucl"
+  ],
+  [
+   "T5 plasma",
+   "T6 laser abs"
+  ],
+  [
+   "T5 plasma",
+   "T6 plasma"
+  ],
+  [
+   "T5 plasma",
+   "T6 plasma boucl"
+  ],
+  [
+   "T5 plasma",
+   "T6 plasma abs"
+  ],
+  [
+   "T5 plasma",
+   "T6 missile"
+  ],
+  [
+   "T5 plasma",
+   "T6 missile boucl"
+  ],
+  [
+   "T5 plasma",
+   "T6 missile abs"
+  ],
+  [
+   "T5 plasma",
+   "T6 torpille"
+  ],
+  [
+   "T5 plasma",
+   "T6 torpille boucl"
+  ],
+  [
+   "T5 plasma",
+   "T6 torpille abs"
+  ],
+  [
+   "T5 plasma boucl",
+   "T6 laser"
+  ],
+  [
+   "T5 plasma boucl",
+   "T6 laser boucl"
+  ],
+  [
+   "T5 plasma boucl",
+   "T6 laser abs"
+  ],
+  [
+   "T5 plasma boucl",
+   "T6 plasma"
+  ],
+  [
+   "T5 plasma boucl",
+   "T6 plasma boucl"
+  ],
+  [
+   "T5 plasma boucl",
+   "T6 plasma abs"
+  ],
+  [
+   "T5 plasma boucl",
+   "T6 missile"
+  ],
+  [
+   "T5 plasma boucl",
+   "T6 missile boucl"
+  ],
+  [
+   "T5 plasma boucl",
+   "T6 missile abs"
+  ],
+  [
+   "T5 plasma boucl",
+   "T6 torpille"
+  ],
+  [
+   "T5 plasma boucl",
+   "T6 torpille boucl"
+  ],
+  [
+   "T5 plasma boucl",
+   "T6 torpille abs"
+  ],
+  [
+   "T5 plasma abs",
+   "T6 laser"
+  ],
+  [
+   "T5 plasma abs",
+   "T6 laser boucl"
+  ],
+  [
+   "T5 plasma abs",
+   "T6 laser abs"
+  ],
+  [
+   "T5 plasma abs",
+   "T6 plasma"
+  ],
+  [
+   "T5 plasma abs",
+   "T6 plasma boucl"
+  ],
+  [
+   "T5 plasma abs",
+   "T6 plasma abs"
+  ],
+  [
+   "T5 plasma abs",
+   "T6 missile"
+  ],
+  [
+   "T5 plasma abs",
+   "T6 missile boucl"
+  ],
+  [
+   "T5 plasma abs",
+   "T6 missile abs"
+  ],
+  [
+   "T5 plasma abs",
+   "T6 torpille"
+  ],
+  [
+   "T5 plasma abs",
+   "T6 torpille boucl"
+  ],
+  [
+   "T5 plasma abs",
+   "T6 torpille abs"
+  ],
+  [
+   "T5 missile",
+   "T6 laser"
+  ],
+  [
+   "T5 missile",
+   "T6 laser boucl"
+  ],
+  [
+   "T5 missile",
+   "T6 laser abs"
+  ],
+  [
+   "T5 missile",
+   "T6 plasma"
+  ],
+  [
+   "T5 missile",
+   "T6 plasma boucl"
+  ],
+  [
+   "T5 missile",
+   "T6 plasma abs"
+  ],
+  [
+   "T5 missile",
+   "T6 missile"
+  ],
+  [
+   "T5 missile",
+   "T6 missile boucl"
+  ],
+  [
+   "T5 missile",
+   "T6 missile abs"
+  ],
+  [
+   "T5 missile",
+   "T6 torpille"
+  ],
+  [
+   "T5 missile",
+   "T6 torpille boucl"
+  ],
+  [
+   "T5 missile",
+   "T6 torpille abs"
+  ],
+  [
+   "T5 missile boucl",
+   "T6 laser"
+  ],
+  [
+   "T5 missile boucl",
+   "T6 laser boucl"
+  ],
+  [
+   "T5 missile boucl",
+   "T6 laser abs"
+  ],
+  [
+   "T5 missile boucl",
+   "T6 plasma"
+  ],
+  [
+   "T5 missile boucl",
+   "T6 plasma boucl"
+  ],
+  [
+   "T5 missile boucl",
+   "T6 plasma abs"
+  ],
+  [
+   "T5 missile boucl",
+   "T6 missile"
+  ],
+  [
+   "T5 missile boucl",
+   "T6 missile boucl"
+  ],
+  [
+   "T5 missile boucl",
+   "T6 missile abs"
+  ],
+  [
+   "T5 missile boucl",
+   "T6 torpille"
+  ],
+  [
+   "T5 missile boucl",
+   "T6 torpille boucl"
+  ],
+  [
+   "T5 missile boucl",
+   "T6 torpille abs"
+  ],
+  [
+   "T5 missile abs",
+   "T6 laser"
+  ],
+  [
+   "T5 missile abs",
+   "T6 laser boucl"
+  ],
+  [
+   "T5 missile abs",
+   "T6 laser abs"
+  ],
+  [
+   "T5 missile abs",
+   "T6 plasma"
+  ],
+  [
+   "T5 missile abs",
+   "T6 plasma boucl"
+  ],
+  [
+   "T5 missile abs",
+   "T6 plasma abs"
+  ],
+  [
+   "T5 missile abs",
+   "T6 missile"
+  ],
+  [
+   "T5 missile abs",
+   "T6 missile boucl"
+  ],
+  [
+   "T5 missile abs",
+   "T6 missile abs"
+  ],
+  [
+   "T5 missile abs",
+   "T6 torpille"
+  ],
+  [
+   "T5 missile abs",
+   "T6 torpille boucl"
+  ],
+  [
+   "T5 missile abs",
+   "T6 torpille abs"
+  ],
+  [
+   "T5 torpille",
+   "T6 laser"
+  ],
+  [
+   "T5 torpille",
+   "T6 laser boucl"
+  ],
+  [
+   "T5 torpille",
+   "T6 laser abs"
+  ],
+  [
+   "T5 torpille",
+   "T6 plasma"
+  ],
+  [
+   "T5 torpille",
+   "T6 plasma boucl"
+  ],
+  [
+   "T5 torpille",
+   "T6 plasma abs"
+  ],
+  [
+   "T5 torpille",
+   "T6 missile"
+  ],
+  [
+   "T5 torpille",
+   "T6 missile boucl"
+  ],
+  [
+   "T5 torpille",
+   "T6 missile abs"
+  ],
+  [
+   "T5 torpille",
+   "T6 torpille"
+  ],
+  [
+   "T5 torpille",
+   "T6 torpille boucl"
+  ],
+  [
+   "T5 torpille",
+   "T6 torpille abs"
+  ],
+  [
+   "T5 torpille boucl",
+   "T6 laser"
+  ],
+  [
+   "T5 torpille boucl",
+   "T6 laser boucl"
+  ],
+  [
+   "T5 torpille boucl",
+   "T6 laser abs"
+  ],
+  [
+   "T5 torpille boucl",
+   "T6 plasma"
+  ],
+  [
+   "T5 torpille boucl",
+   "T6 plasma boucl"
+  ],
+  [
+   "T5 torpille boucl",
+   "T6 plasma abs"
+  ],
+  [
+   "T5 torpille boucl",
+   "T6 missile"
+  ],
+  [
+   "T5 torpille boucl",
+   "T6 missile boucl"
+  ],
+  [
+   "T5 torpille boucl",
+   "T6 missile abs"
+  ],
+  [
+   "T5 torpille boucl",
+   "T6 torpille"
+  ],
+  [
+   "T5 torpille boucl",
+   "T6 torpille boucl"
+  ],
+  [
+   "T5 torpille boucl",
+   "T6 torpille abs"
+  ],
+  [
+   "T5 torpille abs",
+   "T6 laser"
+  ],
+  [
+   "T5 torpille abs",
+   "T6 laser boucl"
+  ],
+  [
+   "T5 torpille abs",
+   "T6 laser abs"
+  ],
+  [
+   "T5 torpille abs",
+   "T6 plasma"
+  ],
+  [
+   "T5 torpille abs",
+   "T6 plasma boucl"
+  ],
+  [
+   "T5 torpille abs",
+   "T6 plasma abs"
+  ],
+  [
+   "T5 torpille abs",
+   "T6 missile"
+  ],
+  [
+   "T5 torpille abs",
+   "T6 missile boucl"
+  ],
+  [
+   "T5 torpille abs",
+   "T6 missile abs"
+  ],
+  [
+   "T5 torpille abs",
+   "T6 torpille"
+  ],
+  [
+   "T5 torpille abs",
+   "T6 torpille boucl"
+  ],
+  [
+   "T5 torpille abs",
+   "T6 torpille abs"
+  ],
+  [
+   "T5 laser",
+   "T7 laser"
+  ],
+  [
+   "T5 laser",
+   "T7 laser boucl"
+  ],
+  [
+   "T5 laser",
+   "T7 laser abs"
+  ],
+  [
+   "T5 laser",
+   "T7 plasma"
+  ],
+  [
+   "T5 laser",
+   "T7 plasma boucl"
+  ],
+  [
+   "T5 laser",
+   "T7 plasma abs"
+  ],
+  [
+   "T5 laser",
+   "T7 missile"
+  ],
+  [
+   "T5 laser",
+   "T7 missile boucl"
+  ],
+  [
+   "T5 laser",
+   "T7 missile abs"
+  ],
+  [
+   "T5 laser",
+   "T7 torpille"
+  ],
+  [
+   "T5 laser",
+   "T7 torpille boucl"
+  ],
+  [
+   "T5 laser",
+   "T7 torpille abs"
+  ],
+  [
+   "T5 laser boucl",
+   "T7 laser"
+  ],
+  [
+   "T5 laser boucl",
+   "T7 laser boucl"
+  ],
+  [
+   "T5 laser boucl",
+   "T7 laser abs"
+  ],
+  [
+   "T5 laser boucl",
+   "T7 plasma"
+  ],
+  [
+   "T5 laser boucl",
+   "T7 plasma boucl"
+  ],
+  [
+   "T5 laser boucl",
+   "T7 plasma abs"
+  ],
+  [
+   "T5 laser boucl",
+   "T7 missile"
+  ],
+  [
+   "T5 laser boucl",
+   "T7 missile boucl"
+  ],
+  [
+   "T5 laser boucl",
+   "T7 missile abs"
+  ],
+  [
+   "T5 laser boucl",
+   "T7 torpille"
+  ],
+  [
+   "T5 laser boucl",
+   "T7 torpille boucl"
+  ],
+  [
+   "T5 laser boucl",
+   "T7 torpille abs"
+  ],
+  [
+   "T5 laser abs",
+   "T7 laser"
+  ],
+  [
+   "T5 laser abs",
+   "T7 laser boucl"
+  ],
+  [
+   "T5 laser abs",
+   "T7 laser abs"
+  ],
+  [
+   "T5 laser abs",
+   "T7 plasma"
+  ],
+  [
+   "T5 laser abs",
+   "T7 plasma boucl"
+  ],
+  [
+   "T5 laser abs",
+   "T7 plasma abs"
+  ],
+  [
+   "T5 laser abs",
+   "T7 missile"
+  ],
+  [
+   "T5 laser abs",
+   "T7 missile boucl"
+  ],
+  [
+   "T5 laser abs",
+   "T7 missile abs"
+  ],
+  [
+   "T5 laser abs",
+   "T7 torpille"
+  ],
+  [
+   "T5 laser abs",
+   "T7 torpille boucl"
+  ],
+  [
+   "T5 laser abs",
+   "T7 torpille abs"
+  ],
+  [
+   "T5 plasma",
+   "T7 laser"
+  ],
+  [
+   "T5 plasma",
+   "T7 laser boucl"
+  ],
+  [
+   "T5 plasma",
+   "T7 laser abs"
+  ],
+  [
+   "T5 plasma",
+   "T7 plasma"
+  ],
+  [
+   "T5 plasma",
+   "T7 plasma boucl"
+  ],
+  [
+   "T5 plasma",
+   "T7 plasma abs"
+  ],
+  [
+   "T5 plasma",
+   "T7 missile"
+  ],
+  [
+   "T5 plasma",
+   "T7 missile boucl"
+  ],
+  [
+   "T5 plasma",
+   "T7 missile abs"
+  ],
+  [
+   "T5 plasma",
+   "T7 torpille"
+  ],
+  [
+   "T5 plasma",
+   "T7 torpille boucl"
+  ],
+  [
+   "T5 plasma",
+   "T7 torpille abs"
+  ],
+  [
+   "T5 plasma boucl",
+   "T7 laser"
+  ],
+  [
+   "T5 plasma boucl",
+   "T7 laser boucl"
+  ],
+  [
+   "T5 plasma boucl",
+   "T7 laser abs"
+  ],
+  [
+   "T5 plasma boucl",
+   "T7 plasma"
+  ],
+  [
+   "T5 plasma boucl",
+   "T7 plasma boucl"
+  ],
+  [
+   "T5 plasma boucl",
+   "T7 plasma abs"
+  ],
+  [
+   "T5 plasma boucl",
+   "T7 missile"
+  ],
+  [
+   "T5 plasma boucl",
+   "T7 missile boucl"
+  ],
+  [
+   "T5 plasma boucl",
+   "T7 missile abs"
+  ],
+  [
+   "T5 plasma boucl",
+   "T7 torpille"
+  ],
+  [
+   "T5 plasma boucl",
+   "T7 torpille boucl"
+  ],
+  [
+   "T5 plasma boucl",
+   "T7 torpille abs"
+  ],
+  [
+   "T5 plasma abs",
+   "T7 laser"
+  ],
+  [
+   "T5 plasma abs",
+   "T7 laser boucl"
+  ],
+  [
+   "T5 plasma abs",
+   "T7 laser abs"
+  ],
+  [
+   "T5 plasma abs",
+   "T7 plasma"
+  ],
+  [
+   "T5 plasma abs",
+   "T7 plasma boucl"
+  ],
+  [
+   "T5 plasma abs",
+   "T7 plasma abs"
+  ],
+  [
+   "T5 plasma abs",
+   "T7 missile"
+  ],
+  [
+   "T5 plasma abs",
+   "T7 missile boucl"
+  ],
+  [
+   "T5 plasma abs",
+   "T7 missile abs"
+  ],
+  [
+   "T5 plasma abs",
+   "T7 torpille"
+  ],
+  [
+   "T5 plasma abs",
+   "T7 torpille boucl"
+  ],
+  [
+   "T5 plasma abs",
+   "T7 torpille abs"
+  ],
+  [
+   "T5 missile",
+   "T7 laser"
+  ],
+  [
+   "T5 missile",
+   "T7 laser boucl"
+  ],
+  [
+   "T5 missile",
+   "T7 laser abs"
+  ],
+  [
+   "T5 missile",
+   "T7 plasma"
+  ],
+  [
+   "T5 missile",
+   "T7 plasma boucl"
+  ],
+  [
+   "T5 missile",
+   "T7 plasma abs"
+  ],
+  [
+   "T5 missile",
+   "T7 missile"
+  ],
+  [
+   "T5 missile",
+   "T7 missile boucl"
+  ],
+  [
+   "T5 missile",
+   "T7 missile abs"
+  ],
+  [
+   "T5 missile",
+   "T7 torpille"
+  ],
+  [
+   "T5 missile",
+   "T7 torpille boucl"
+  ],
+  [
+   "T5 missile",
+   "T7 torpille abs"
+  ],
+  [
+   "T5 missile boucl",
+   "T7 laser"
+  ],
+  [
+   "T5 missile boucl",
+   "T7 laser boucl"
+  ],
+  [
+   "T5 missile boucl",
+   "T7 laser abs"
+  ],
+  [
+   "T5 missile boucl",
+   "T7 plasma"
+  ],
+  [
+   "T5 missile boucl",
+   "T7 plasma boucl"
+  ],
+  [
+   "T5 missile boucl",
+   "T7 plasma abs"
+  ],
+  [
+   "T5 missile boucl",
+   "T7 missile"
+  ],
+  [
+   "T5 missile boucl",
+   "T7 missile boucl"
+  ],
+  [
+   "T5 missile boucl",
+   "T7 missile abs"
+  ],
+  [
+   "T5 missile boucl",
+   "T7 torpille"
+  ],
+  [
+   "T5 missile boucl",
+   "T7 torpille boucl"
+  ],
+  [
+   "T5 missile boucl",
+   "T7 torpille abs"
+  ],
+  [
+   "T5 missile abs",
+   "T7 laser"
+  ],
+  [
+   "T5 missile abs",
+   "T7 laser boucl"
+  ],
+  [
+   "T5 missile abs",
+   "T7 laser abs"
+  ],
+  [
+   "T5 missile abs",
+   "T7 plasma"
+  ],
+  [
+   "T5 missile abs",
+   "T7 plasma boucl"
+  ],
+  [
+   "T5 missile abs",
+   "T7 plasma abs"
+  ],
+  [
+   "T5 missile abs",
+   "T7 missile"
+  ],
+  [
+   "T5 missile abs",
+   "T7 missile boucl"
+  ],
+  [
+   "T5 missile abs",
+   "T7 missile abs"
+  ],
+  [
+   "T5 missile abs",
+   "T7 torpille"
+  ],
+  [
+   "T5 missile abs",
+   "T7 torpille boucl"
+  ],
+  [
+   "T5 missile abs",
+   "T7 torpille abs"
+  ],
+  [
+   "T5 torpille",
+   "T7 laser"
+  ],
+  [
+   "T5 torpille",
+   "T7 laser boucl"
+  ],
+  [
+   "T5 torpille",
+   "T7 laser abs"
+  ],
+  [
+   "T5 torpille",
+   "T7 plasma"
+  ],
+  [
+   "T5 torpille",
+   "T7 plasma boucl"
+  ],
+  [
+   "T5 torpille",
+   "T7 plasma abs"
+  ],
+  [
+   "T5 torpille",
+   "T7 missile"
+  ],
+  [
+   "T5 torpille",
+   "T7 missile boucl"
+  ],
+  [
+   "T5 torpille",
+   "T7 missile abs"
+  ],
+  [
+   "T5 torpille",
+   "T7 torpille"
+  ],
+  [
+   "T5 torpille",
+   "T7 torpille boucl"
+  ],
+  [
+   "T5 torpille",
+   "T7 torpille abs"
+  ],
+  [
+   "T5 torpille boucl",
+   "T7 laser"
+  ],
+  [
+   "T5 torpille boucl",
+   "T7 laser boucl"
+  ],
+  [
+   "T5 torpille boucl",
+   "T7 laser abs"
+  ],
+  [
+   "T5 torpille boucl",
+   "T7 plasma"
+  ],
+  [
+   "T5 torpille boucl",
+   "T7 plasma boucl"
+  ],
+  [
+   "T5 torpille boucl",
+   "T7 plasma abs"
+  ],
+  [
+   "T5 torpille boucl",
+   "T7 missile"
+  ],
+  [
+   "T5 torpille boucl",
+   "T7 missile boucl"
+  ],
+  [
+   "T5 torpille boucl",
+   "T7 missile abs"
+  ],
+  [
+   "T5 torpille boucl",
+   "T7 torpille"
+  ],
+  [
+   "T5 torpille boucl",
+   "T7 torpille boucl"
+  ],
+  [
+   "T5 torpille boucl",
+   "T7 torpille abs"
+  ],
+  [
+   "T5 torpille abs",
+   "T7 laser"
+  ],
+  [
+   "T5 torpille abs",
+   "T7 laser boucl"
+  ],
+  [
+   "T5 torpille abs",
+   "T7 laser abs"
+  ],
+  [
+   "T5 torpille abs",
+   "T7 plasma"
+  ],
+  [
+   "T5 torpille abs",
+   "T7 plasma boucl"
+  ],
+  [
+   "T5 torpille abs",
+   "T7 plasma abs"
+  ],
+  [
+   "T5 torpille abs",
+   "T7 missile"
+  ],
+  [
+   "T5 torpille abs",
+   "T7 missile boucl"
+  ],
+  [
+   "T5 torpille abs",
+   "T7 missile abs"
+  ],
+  [
+   "T5 torpille abs",
+   "T7 torpille"
+  ],
+  [
+   "T5 torpille abs",
+   "T7 torpille boucl"
+  ],
+  [
+   "T5 torpille abs",
+   "T7 torpille abs"
+  ],
+  [
+   "T5 laser",
+   "T8 laser"
+  ],
+  [
+   "T5 laser",
+   "T8 laser boucl"
+  ],
+  [
+   "T5 laser",
+   "T8 laser abs"
+  ],
+  [
+   "T5 laser",
+   "T8 plasma"
+  ],
+  [
+   "T5 laser",
+   "T8 plasma boucl"
+  ],
+  [
+   "T5 laser",
+   "T8 plasma abs"
+  ],
+  [
+   "T5 laser",
+   "T8 missile"
+  ],
+  [
+   "T5 laser",
+   "T8 missile boucl"
+  ],
+  [
+   "T5 laser",
+   "T8 missile abs"
+  ],
+  [
+   "T5 laser",
+   "T8 torpille"
+  ],
+  [
+   "T5 laser",
+   "T8 torpille boucl"
+  ],
+  [
+   "T5 laser",
+   "T8 torpille abs"
+  ],
+  [
+   "T5 laser boucl",
+   "T8 laser"
+  ],
+  [
+   "T5 laser boucl",
+   "T8 laser boucl"
+  ],
+  [
+   "T5 laser boucl",
+   "T8 laser abs"
+  ],
+  [
+   "T5 laser boucl",
+   "T8 plasma"
+  ],
+  [
+   "T5 laser boucl",
+   "T8 plasma boucl"
+  ],
+  [
+   "T5 laser boucl",
+   "T8 plasma abs"
+  ],
+  [
+   "T5 laser boucl",
+   "T8 missile"
+  ],
+  [
+   "T5 laser boucl",
+   "T8 missile boucl"
+  ],
+  [
+   "T5 laser boucl",
+   "T8 missile abs"
+  ],
+  [
+   "T5 laser boucl",
+   "T8 torpille"
+  ],
+  [
+   "T5 laser boucl",
+   "T8 torpille boucl"
+  ],
+  [
+   "T5 laser boucl",
+   "T8 torpille abs"
+  ],
+  [
+   "T5 laser abs",
+   "T8 laser"
+  ],
+  [
+   "T5 laser abs",
+   "T8 laser boucl"
+  ],
+  [
+   "T5 laser abs",
+   "T8 laser abs"
+  ],
+  [
+   "T5 laser abs",
+   "T8 plasma"
+  ],
+  [
+   "T5 laser abs",
+   "T8 plasma boucl"
+  ],
+  [
+   "T5 laser abs",
+   "T8 plasma abs"
+  ],
+  [
+   "T5 laser abs",
+   "T8 missile"
+  ],
+  [
+   "T5 laser abs",
+   "T8 missile boucl"
+  ],
+  [
+   "T5 laser abs",
+   "T8 missile abs"
+  ],
+  [
+   "T5 laser abs",
+   "T8 torpille"
+  ],
+  [
+   "T5 laser abs",
+   "T8 torpille boucl"
+  ],
+  [
+   "T5 laser abs",
+   "T8 torpille abs"
+  ],
+  [
+   "T5 plasma",
+   "T8 laser"
+  ],
+  [
+   "T5 plasma",
+   "T8 laser boucl"
+  ],
+  [
+   "T5 plasma",
+   "T8 laser abs"
+  ],
+  [
+   "T5 plasma",
+   "T8 plasma"
+  ],
+  [
+   "T5 plasma",
+   "T8 plasma boucl"
+  ],
+  [
+   "T5 plasma",
+   "T8 plasma abs"
+  ],
+  [
+   "T5 plasma",
+   "T8 missile"
+  ],
+  [
+   "T5 plasma",
+   "T8 missile boucl"
+  ],
+  [
+   "T5 plasma",
+   "T8 missile abs"
+  ],
+  [
+   "T5 plasma",
+   "T8 torpille"
+  ],
+  [
+   "T5 plasma",
+   "T8 torpille boucl"
+  ],
+  [
+   "T5 plasma",
+   "T8 torpille abs"
+  ],
+  [
+   "T5 plasma boucl",
+   "T8 laser"
+  ],
+  [
+   "T5 plasma boucl",
+   "T8 laser boucl"
+  ],
+  [
+   "T5 plasma boucl",
+   "T8 laser abs"
+  ],
+  [
+   "T5 plasma boucl",
+   "T8 plasma"
+  ],
+  [
+   "T5 plasma boucl",
+   "T8 plasma boucl"
+  ],
+  [
+   "T5 plasma boucl",
+   "T8 plasma abs"
+  ],
+  [
+   "T5 plasma boucl",
+   "T8 missile"
+  ],
+  [
+   "T5 plasma boucl",
+   "T8 missile boucl"
+  ],
+  [
+   "T5 plasma boucl",
+   "T8 missile abs"
+  ],
+  [
+   "T5 plasma boucl",
+   "T8 torpille"
+  ],
+  [
+   "T5 plasma boucl",
+   "T8 torpille boucl"
+  ],
+  [
+   "T5 plasma boucl",
+   "T8 torpille abs"
+  ],
+  [
+   "T5 plasma abs",
+   "T8 laser"
+  ],
+  [
+   "T5 plasma abs",
+   "T8 laser boucl"
+  ],
+  [
+   "T5 plasma abs",
+   "T8 laser abs"
+  ],
+  [
+   "T5 plasma abs",
+   "T8 plasma"
+  ],
+  [
+   "T5 plasma abs",
+   "T8 plasma boucl"
+  ],
+  [
+   "T5 plasma abs",
+   "T8 plasma abs"
+  ],
+  [
+   "T5 plasma abs",
+   "T8 missile"
+  ],
+  [
+   "T5 plasma abs",
+   "T8 missile boucl"
+  ],
+  [
+   "T5 plasma abs",
+   "T8 missile abs"
+  ],
+  [
+   "T5 plasma abs",
+   "T8 torpille"
+  ],
+  [
+   "T5 plasma abs",
+   "T8 torpille boucl"
+  ],
+  [
+   "T5 plasma abs",
+   "T8 torpille abs"
+  ],
+  [
+   "T5 missile",
+   "T8 laser"
+  ],
+  [
+   "T5 missile",
+   "T8 laser boucl"
+  ],
+  [
+   "T5 missile",
+   "T8 laser abs"
+  ],
+  [
+   "T5 missile",
+   "T8 plasma"
+  ],
+  [
+   "T5 missile",
+   "T8 plasma boucl"
+  ],
+  [
+   "T5 missile",
+   "T8 plasma abs"
+  ],
+  [
+   "T5 missile",
+   "T8 missile"
+  ],
+  [
+   "T5 missile",
+   "T8 missile boucl"
+  ],
+  [
+   "T5 missile",
+   "T8 missile abs"
+  ],
+  [
+   "T5 missile",
+   "T8 torpille"
+  ],
+  [
+   "T5 missile",
+   "T8 torpille boucl"
+  ],
+  [
+   "T5 missile",
+   "T8 torpille abs"
+  ],
+  [
+   "T5 missile boucl",
+   "T8 laser"
+  ],
+  [
+   "T5 missile boucl",
+   "T8 laser boucl"
+  ],
+  [
+   "T5 missile boucl",
+   "T8 laser abs"
+  ],
+  [
+   "T5 missile boucl",
+   "T8 plasma"
+  ],
+  [
+   "T5 missile boucl",
+   "T8 plasma boucl"
+  ],
+  [
+   "T5 missile boucl",
+   "T8 plasma abs"
+  ],
+  [
+   "T5 missile boucl",
+   "T8 missile"
+  ],
+  [
+   "T5 missile boucl",
+   "T8 missile boucl"
+  ],
+  [
+   "T5 missile boucl",
+   "T8 missile abs"
+  ],
+  [
+   "T5 missile boucl",
+   "T8 torpille"
+  ],
+  [
+   "T5 missile boucl",
+   "T8 torpille boucl"
+  ],
+  [
+   "T5 missile boucl",
+   "T8 torpille abs"
+  ],
+  [
+   "T5 missile abs",
+   "T8 laser"
+  ],
+  [
+   "T5 missile abs",
+   "T8 laser boucl"
+  ],
+  [
+   "T5 missile abs",
+   "T8 laser abs"
+  ],
+  [
+   "T5 missile abs",
+   "T8 plasma"
+  ],
+  [
+   "T5 missile abs",
+   "T8 plasma boucl"
+  ],
+  [
+   "T5 missile abs",
+   "T8 plasma abs"
+  ],
+  [
+   "T5 missile abs",
+   "T8 missile"
+  ],
+  [
+   "T5 missile abs",
+   "T8 missile boucl"
+  ],
+  [
+   "T5 missile abs",
+   "T8 missile abs"
+  ],
+  [
+   "T5 missile abs",
+   "T8 torpille"
+  ],
+  [
+   "T5 missile abs",
+   "T8 torpille boucl"
+  ],
+  [
+   "T5 missile abs",
+   "T8 torpille abs"
+  ],
+  [
+   "T5 torpille",
+   "T8 laser"
+  ],
+  [
+   "T5 torpille",
+   "T8 laser boucl"
+  ],
+  [
+   "T5 torpille",
+   "T8 laser abs"
+  ],
+  [
+   "T5 torpille",
+   "T8 plasma"
+  ],
+  [
+   "T5 torpille",
+   "T8 plasma boucl"
+  ],
+  [
+   "T5 torpille",
+   "T8 plasma abs"
+  ],
+  [
+   "T5 torpille",
+   "T8 missile"
+  ],
+  [
+   "T5 torpille",
+   "T8 missile boucl"
+  ],
+  [
+   "T5 torpille",
+   "T8 missile abs"
+  ],
+  [
+   "T5 torpille",
+   "T8 torpille"
+  ],
+  [
+   "T5 torpille",
+   "T8 torpille boucl"
+  ],
+  [
+   "T5 torpille",
+   "T8 torpille abs"
+  ],
+  [
+   "T5 torpille boucl",
+   "T8 laser"
+  ],
+  [
+   "T5 torpille boucl",
+   "T8 laser boucl"
+  ],
+  [
+   "T5 torpille boucl",
+   "T8 laser abs"
+  ],
+  [
+   "T5 torpille boucl",
+   "T8 plasma"
+  ],
+  [
+   "T5 torpille boucl",
+   "T8 plasma boucl"
+  ],
+  [
+   "T5 torpille boucl",
+   "T8 plasma abs"
+  ],
+  [
+   "T5 torpille boucl",
+   "T8 missile"
+  ],
+  [
+   "T5 torpille boucl",
+   "T8 missile boucl"
+  ],
+  [
+   "T5 torpille boucl",
+   "T8 missile abs"
+  ],
+  [
+   "T5 torpille boucl",
+   "T8 torpille"
+  ],
+  [
+   "T5 torpille boucl",
+   "T8 torpille boucl"
+  ],
+  [
+   "T5 torpille boucl",
+   "T8 torpille abs"
+  ],
+  [
+   "T5 torpille abs",
+   "T8 laser"
+  ],
+  [
+   "T5 torpille abs",
+   "T8 laser boucl"
+  ],
+  [
+   "T5 torpille abs",
+   "T8 laser abs"
+  ],
+  [
+   "T5 torpille abs",
+   "T8 plasma"
+  ],
+  [
+   "T5 torpille abs",
+   "T8 plasma boucl"
+  ],
+  [
+   "T5 torpille abs",
+   "T8 plasma abs"
+  ],
+  [
+   "T5 torpille abs",
+   "T8 missile"
+  ],
+  [
+   "T5 torpille abs",
+   "T8 missile boucl"
+  ],
+  [
+   "T5 torpille abs",
+   "T8 missile abs"
+  ],
+  [
+   "T5 torpille abs",
+   "T8 torpille"
+  ],
+  [
+   "T5 torpille abs",
+   "T8 torpille boucl"
+  ],
+  [
+   "T5 torpille abs",
+   "T8 torpille abs"
+  ],
+  [
+   "T6 laser",
+   "T7 laser"
+  ],
+  [
+   "T6 laser",
+   "T7 laser boucl"
+  ],
+  [
+   "T6 laser",
+   "T7 laser abs"
+  ],
+  [
+   "T6 laser",
+   "T7 plasma"
+  ],
+  [
+   "T6 laser",
+   "T7 plasma boucl"
+  ],
+  [
+   "T6 laser",
+   "T7 plasma abs"
+  ],
+  [
+   "T6 laser",
+   "T7 missile"
+  ],
+  [
+   "T6 laser",
+   "T7 missile boucl"
+  ],
+  [
+   "T6 laser",
+   "T7 missile abs"
+  ],
+  [
+   "T6 laser",
+   "T7 torpille"
+  ],
+  [
+   "T6 laser",
+   "T7 torpille boucl"
+  ],
+  [
+   "T6 laser",
+   "T7 torpille abs"
+  ],
+  [
+   "T6 laser boucl",
+   "T7 laser"
+  ],
+  [
+   "T6 laser boucl",
+   "T7 laser boucl"
+  ],
+  [
+   "T6 laser boucl",
+   "T7 laser abs"
+  ],
+  [
+   "T6 laser boucl",
+   "T7 plasma"
+  ],
+  [
+   "T6 laser boucl",
+   "T7 plasma boucl"
+  ],
+  [
+   "T6 laser boucl",
+   "T7 plasma abs"
+  ],
+  [
+   "T6 laser boucl",
+   "T7 missile"
+  ],
+  [
+   "T6 laser boucl",
+   "T7 missile boucl"
+  ],
+  [
+   "T6 laser boucl",
+   "T7 missile abs"
+  ],
+  [
+   "T6 laser boucl",
+   "T7 torpille"
+  ],
+  [
+   "T6 laser boucl",
+   "T7 torpille boucl"
+  ],
+  [
+   "T6 laser boucl",
+   "T7 torpille abs"
+  ],
+  [
+   "T6 laser abs",
+   "T7 laser"
+  ],
+  [
+   "T6 laser abs",
+   "T7 laser boucl"
+  ],
+  [
+   "T6 laser abs",
+   "T7 laser abs"
+  ],
+  [
+   "T6 laser abs",
+   "T7 plasma"
+  ],
+  [
+   "T6 laser abs",
+   "T7 plasma boucl"
+  ],
+  [
+   "T6 laser abs",
+   "T7 plasma abs"
+  ],
+  [
+   "T6 laser abs",
+   "T7 missile"
+  ],
+  [
+   "T6 laser abs",
+   "T7 missile boucl"
+  ],
+  [
+   "T6 laser abs",
+   "T7 missile abs"
+  ],
+  [
+   "T6 laser abs",
+   "T7 torpille"
+  ],
+  [
+   "T6 laser abs",
+   "T7 torpille boucl"
+  ],
+  [
+   "T6 laser abs",
+   "T7 torpille abs"
+  ],
+  [
+   "T6 plasma",
+   "T7 laser"
+  ],
+  [
+   "T6 plasma",
+   "T7 laser boucl"
+  ],
+  [
+   "T6 plasma",
+   "T7 laser abs"
+  ],
+  [
+   "T6 plasma",
+   "T7 plasma"
+  ],
+  [
+   "T6 plasma",
+   "T7 plasma boucl"
+  ],
+  [
+   "T6 plasma",
+   "T7 plasma abs"
+  ],
+  [
+   "T6 plasma",
+   "T7 missile"
+  ],
+  [
+   "T6 plasma",
+   "T7 missile boucl"
+  ],
+  [
+   "T6 plasma",
+   "T7 missile abs"
+  ],
+  [
+   "T6 plasma",
+   "T7 torpille"
+  ],
+  [
+   "T6 plasma",
+   "T7 torpille boucl"
+  ],
+  [
+   "T6 plasma",
+   "T7 torpille abs"
+  ],
+  [
+   "T6 plasma boucl",
+   "T7 laser"
+  ],
+  [
+   "T6 plasma boucl",
+   "T7 laser boucl"
+  ],
+  [
+   "T6 plasma boucl",
+   "T7 laser abs"
+  ],
+  [
+   "T6 plasma boucl",
+   "T7 plasma"
+  ],
+  [
+   "T6 plasma boucl",
+   "T7 plasma boucl"
+  ],
+  [
+   "T6 plasma boucl",
+   "T7 plasma abs"
+  ],
+  [
+   "T6 plasma boucl",
+   "T7 missile"
+  ],
+  [
+   "T6 plasma boucl",
+   "T7 missile boucl"
+  ],
+  [
+   "T6 plasma boucl",
+   "T7 missile abs"
+  ],
+  [
+   "T6 plasma boucl",
+   "T7 torpille"
+  ],
+  [
+   "T6 plasma boucl",
+   "T7 torpille boucl"
+  ],
+  [
+   "T6 plasma boucl",
+   "T7 torpille abs"
+  ],
+  [
+   "T6 plasma abs",
+   "T7 laser"
+  ],
+  [
+   "T6 plasma abs",
+   "T7 laser boucl"
+  ],
+  [
+   "T6 plasma abs",
+   "T7 laser abs"
+  ],
+  [
+   "T6 plasma abs",
+   "T7 plasma"
+  ],
+  [
+   "T6 plasma abs",
+   "T7 plasma boucl"
+  ],
+  [
+   "T6 plasma abs",
+   "T7 plasma abs"
+  ],
+  [
+   "T6 plasma abs",
+   "T7 missile"
+  ],
+  [
+   "T6 plasma abs",
+   "T7 missile boucl"
+  ],
+  [
+   "T6 plasma abs",
+   "T7 missile abs"
+  ],
+  [
+   "T6 plasma abs",
+   "T7 torpille"
+  ],
+  [
+   "T6 plasma abs",
+   "T7 torpille boucl"
+  ],
+  [
+   "T6 plasma abs",
+   "T7 torpille abs"
+  ],
+  [
+   "T6 missile",
+   "T7 laser"
+  ],
+  [
+   "T6 missile",
+   "T7 laser boucl"
+  ],
+  [
+   "T6 missile",
+   "T7 laser abs"
+  ],
+  [
+   "T6 missile",
+   "T7 plasma"
+  ],
+  [
+   "T6 missile",
+   "T7 plasma boucl"
+  ],
+  [
+   "T6 missile",
+   "T7 plasma abs"
+  ],
+  [
+   "T6 missile",
+   "T7 missile"
+  ],
+  [
+   "T6 missile",
+   "T7 missile boucl"
+  ],
+  [
+   "T6 missile",
+   "T7 missile abs"
+  ],
+  [
+   "T6 missile",
+   "T7 torpille"
+  ],
+  [
+   "T6 missile",
+   "T7 torpille boucl"
+  ],
+  [
+   "T6 missile",
+   "T7 torpille abs"
+  ],
+  [
+   "T6 missile boucl",
+   "T7 laser"
+  ],
+  [
+   "T6 missile boucl",
+   "T7 laser boucl"
+  ],
+  [
+   "T6 missile boucl",
+   "T7 laser abs"
+  ],
+  [
+   "T6 missile boucl",
+   "T7 plasma"
+  ],
+  [
+   "T6 missile boucl",
+   "T7 plasma boucl"
+  ],
+  [
+   "T6 missile boucl",
+   "T7 plasma abs"
+  ],
+  [
+   "T6 missile boucl",
+   "T7 missile"
+  ],
+  [
+   "T6 missile boucl",
+   "T7 missile boucl"
+  ],
+  [
+   "T6 missile boucl",
+   "T7 missile abs"
+  ],
+  [
+   "T6 missile boucl",
+   "T7 torpille"
+  ],
+  [
+   "T6 missile boucl",
+   "T7 torpille boucl"
+  ],
+  [
+   "T6 missile boucl",
+   "T7 torpille abs"
+  ],
+  [
+   "T6 missile abs",
+   "T7 laser"
+  ],
+  [
+   "T6 missile abs",
+   "T7 laser boucl"
+  ],
+  [
+   "T6 missile abs",
+   "T7 laser abs"
+  ],
+  [
+   "T6 missile abs",
+   "T7 plasma"
+  ],
+  [
+   "T6 missile abs",
+   "T7 plasma boucl"
+  ],
+  [
+   "T6 missile abs",
+   "T7 plasma abs"
+  ],
+  [
+   "T6 missile abs",
+   "T7 missile"
+  ],
+  [
+   "T6 missile abs",
+   "T7 missile boucl"
+  ],
+  [
+   "T6 missile abs",
+   "T7 missile abs"
+  ],
+  [
+   "T6 missile abs",
+   "T7 torpille"
+  ],
+  [
+   "T6 missile abs",
+   "T7 torpille boucl"
+  ],
+  [
+   "T6 missile abs",
+   "T7 torpille abs"
+  ],
+  [
+   "T6 torpille",
+   "T7 laser"
+  ],
+  [
+   "T6 torpille",
+   "T7 laser boucl"
+  ],
+  [
+   "T6 torpille",
+   "T7 laser abs"
+  ],
+  [
+   "T6 torpille",
+   "T7 plasma"
+  ],
+  [
+   "T6 torpille",
+   "T7 plasma boucl"
+  ],
+  [
+   "T6 torpille",
+   "T7 plasma abs"
+  ],
+  [
+   "T6 torpille",
+   "T7 missile"
+  ],
+  [
+   "T6 torpille",
+   "T7 missile boucl"
+  ],
+  [
+   "T6 torpille",
+   "T7 missile abs"
+  ],
+  [
+   "T6 torpille",
+   "T7 torpille"
+  ],
+  [
+   "T6 torpille",
+   "T7 torpille boucl"
+  ],
+  [
+   "T6 torpille",
+   "T7 torpille abs"
+  ],
+  [
+   "T6 torpille boucl",
+   "T7 laser"
+  ],
+  [
+   "T6 torpille boucl",
+   "T7 laser boucl"
+  ],
+  [
+   "T6 torpille boucl",
+   "T7 laser abs"
+  ],
+  [
+   "T6 torpille boucl",
+   "T7 plasma"
+  ],
+  [
+   "T6 torpille boucl",
+   "T7 plasma boucl"
+  ],
+  [
+   "T6 torpille boucl",
+   "T7 plasma abs"
+  ],
+  [
+   "T6 torpille boucl",
+   "T7 missile"
+  ],
+  [
+   "T6 torpille boucl",
+   "T7 missile boucl"
+  ],
+  [
+   "T6 torpille boucl",
+   "T7 missile abs"
+  ],
+  [
+   "T6 torpille boucl",
+   "T7 torpille"
+  ],
+  [
+   "T6 torpille boucl",
+   "T7 torpille boucl"
+  ],
+  [
+   "T6 torpille boucl",
+   "T7 torpille abs"
+  ],
+  [
+   "T6 torpille abs",
+   "T7 laser"
+  ],
+  [
+   "T6 torpille abs",
+   "T7 laser boucl"
+  ],
+  [
+   "T6 torpille abs",
+   "T7 laser abs"
+  ],
+  [
+   "T6 torpille abs",
+   "T7 plasma"
+  ],
+  [
+   "T6 torpille abs",
+   "T7 plasma boucl"
+  ],
+  [
+   "T6 torpille abs",
+   "T7 plasma abs"
+  ],
+  [
+   "T6 torpille abs",
+   "T7 missile"
+  ],
+  [
+   "T6 torpille abs",
+   "T7 missile boucl"
+  ],
+  [
+   "T6 torpille abs",
+   "T7 missile abs"
+  ],
+  [
+   "T6 torpille abs",
+   "T7 torpille"
+  ],
+  [
+   "T6 torpille abs",
+   "T7 torpille boucl"
+  ],
+  [
+   "T6 torpille abs",
+   "T7 torpille abs"
+  ],
+  [
+   "T6 laser",
+   "T8 laser"
+  ],
+  [
+   "T6 laser",
+   "T8 laser boucl"
+  ],
+  [
+   "T6 laser",
+   "T8 laser abs"
+  ],
+  [
+   "T6 laser",
+   "T8 plasma"
+  ],
+  [
+   "T6 laser",
+   "T8 plasma boucl"
+  ],
+  [
+   "T6 laser",
+   "T8 plasma abs"
+  ],
+  [
+   "T6 laser",
+   "T8 missile"
+  ],
+  [
+   "T6 laser",
+   "T8 missile boucl"
+  ],
+  [
+   "T6 laser",
+   "T8 missile abs"
+  ],
+  [
+   "T6 laser",
+   "T8 torpille"
+  ],
+  [
+   "T6 laser",
+   "T8 torpille boucl"
+  ],
+  [
+   "T6 laser",
+   "T8 torpille abs"
+  ],
+  [
+   "T6 laser boucl",
+   "T8 laser"
+  ],
+  [
+   "T6 laser boucl",
+   "T8 laser boucl"
+  ],
+  [
+   "T6 laser boucl",
+   "T8 laser abs"
+  ],
+  [
+   "T6 laser boucl",
+   "T8 plasma"
+  ],
+  [
+   "T6 laser boucl",
+   "T8 plasma boucl"
+  ],
+  [
+   "T6 laser boucl",
+   "T8 plasma abs"
+  ],
+  [
+   "T6 laser boucl",
+   "T8 missile"
+  ],
+  [
+   "T6 laser boucl",
+   "T8 missile boucl"
+  ],
+  [
+   "T6 laser boucl",
+   "T8 missile abs"
+  ],
+  [
+   "T6 laser boucl",
+   "T8 torpille"
+  ],
+  [
+   "T6 laser boucl",
+   "T8 torpille boucl"
+  ],
+  [
+   "T6 laser boucl",
+   "T8 torpille abs"
+  ],
+  [
+   "T6 laser abs",
+   "T8 laser"
+  ],
+  [
+   "T6 laser abs",
+   "T8 laser boucl"
+  ],
+  [
+   "T6 laser abs",
+   "T8 laser abs"
+  ],
+  [
+   "T6 laser abs",
+   "T8 plasma"
+  ],
+  [
+   "T6 laser abs",
+   "T8 plasma boucl"
+  ],
+  [
+   "T6 laser abs",
+   "T8 plasma abs"
+  ],
+  [
+   "T6 laser abs",
+   "T8 missile"
+  ],
+  [
+   "T6 laser abs",
+   "T8 missile boucl"
+  ],
+  [
+   "T6 laser abs",
+   "T8 missile abs"
+  ],
+  [
+   "T6 laser abs",
+   "T8 torpille"
+  ],
+  [
+   "T6 laser abs",
+   "T8 torpille boucl"
+  ],
+  [
+   "T6 laser abs",
+   "T8 torpille abs"
+  ],
+  [
+   "T6 plasma",
+   "T8 laser"
+  ],
+  [
+   "T6 plasma",
+   "T8 laser boucl"
+  ],
+  [
+   "T6 plasma",
+   "T8 laser abs"
+  ],
+  [
+   "T6 plasma",
+   "T8 plasma"
+  ],
+  [
+   "T6 plasma",
+   "T8 plasma boucl"
+  ],
+  [
+   "T6 plasma",
+   "T8 plasma abs"
+  ],
+  [
+   "T6 plasma",
+   "T8 missile"
+  ],
+  [
+   "T6 plasma",
+   "T8 missile boucl"
+  ],
+  [
+   "T6 plasma",
+   "T8 missile abs"
+  ],
+  [
+   "T6 plasma",
+   "T8 torpille"
+  ],
+  [
+   "T6 plasma",
+   "T8 torpille boucl"
+  ],
+  [
+   "T6 plasma",
+   "T8 torpille abs"
+  ],
+  [
+   "T6 plasma boucl",
+   "T8 laser"
+  ],
+  [
+   "T6 plasma boucl",
+   "T8 laser boucl"
+  ],
+  [
+   "T6 plasma boucl",
+   "T8 laser abs"
+  ],
+  [
+   "T6 plasma boucl",
+   "T8 plasma"
+  ],
+  [
+   "T6 plasma boucl",
+   "T8 plasma boucl"
+  ],
+  [
+   "T6 plasma boucl",
+   "T8 plasma abs"
+  ],
+  [
+   "T6 plasma boucl",
+   "T8 missile"
+  ],
+  [
+   "T6 plasma boucl",
+   "T8 missile boucl"
+  ],
+  [
+   "T6 plasma boucl",
+   "T8 missile abs"
+  ],
+  [
+   "T6 plasma boucl",
+   "T8 torpille"
+  ],
+  [
+   "T6 plasma boucl",
+   "T8 torpille boucl"
+  ],
+  [
+   "T6 plasma boucl",
+   "T8 torpille abs"
+  ],
+  [
+   "T6 plasma abs",
+   "T8 laser"
+  ],
+  [
+   "T6 plasma abs",
+   "T8 laser boucl"
+  ],
+  [
+   "T6 plasma abs",
+   "T8 laser abs"
+  ],
+  [
+   "T6 plasma abs",
+   "T8 plasma"
+  ],
+  [
+   "T6 plasma abs",
+   "T8 plasma boucl"
+  ],
+  [
+   "T6 plasma abs",
+   "T8 plasma abs"
+  ],
+  [
+   "T6 plasma abs",
+   "T8 missile"
+  ],
+  [
+   "T6 plasma abs",
+   "T8 missile boucl"
+  ],
+  [
+   "T6 plasma abs",
+   "T8 missile abs"
+  ],
+  [
+   "T6 plasma abs",
+   "T8 torpille"
+  ],
+  [
+   "T6 plasma abs",
+   "T8 torpille boucl"
+  ],
+  [
+   "T6 plasma abs",
+   "T8 torpille abs"
+  ],
+  [
+   "T6 missile",
+   "T8 laser"
+  ],
+  [
+   "T6 missile",
+   "T8 laser boucl"
+  ],
+  [
+   "T6 missile",
+   "T8 laser abs"
+  ],
+  [
+   "T6 missile",
+   "T8 plasma"
+  ],
+  [
+   "T6 missile",
+   "T8 plasma boucl"
+  ],
+  [
+   "T6 missile",
+   "T8 plasma abs"
+  ],
+  [
+   "T6 missile",
+   "T8 missile"
+  ],
+  [
+   "T6 missile",
+   "T8 missile boucl"
+  ],
+  [
+   "T6 missile",
+   "T8 missile abs"
+  ],
+  [
+   "T6 missile",
+   "T8 torpille"
+  ],
+  [
+   "T6 missile",
+   "T8 torpille boucl"
+  ],
+  [
+   "T6 missile",
+   "T8 torpille abs"
+  ],
+  [
+   "T6 missile boucl",
+   "T8 laser"
+  ],
+  [
+   "T6 missile boucl",
+   "T8 laser boucl"
+  ],
+  [
+   "T6 missile boucl",
+   "T8 laser abs"
+  ],
+  [
+   "T6 missile boucl",
+   "T8 plasma"
+  ],
+  [
+   "T6 missile boucl",
+   "T8 plasma boucl"
+  ],
+  [
+   "T6 missile boucl",
+   "T8 plasma abs"
+  ],
+  [
+   "T6 missile boucl",
+   "T8 missile"
+  ],
+  [
+   "T6 missile boucl",
+   "T8 missile boucl"
+  ],
+  [
+   "T6 missile boucl",
+   "T8 missile abs"
+  ],
+  [
+   "T6 missile boucl",
+   "T8 torpille"
+  ],
+  [
+   "T6 missile boucl",
+   "T8 torpille boucl"
+  ],
+  [
+   "T6 missile boucl",
+   "T8 torpille abs"
+  ],
+  [
+   "T6 missile abs",
+   "T8 laser"
+  ],
+  [
+   "T6 missile abs",
+   "T8 laser boucl"
+  ],
+  [
+   "T6 missile abs",
+   "T8 laser abs"
+  ],
+  [
+   "T6 missile abs",
+   "T8 plasma"
+  ],
+  [
+   "T6 missile abs",
+   "T8 plasma boucl"
+  ],
+  [
+   "T6 missile abs",
+   "T8 plasma abs"
+  ],
+  [
+   "T6 missile abs",
+   "T8 missile"
+  ],
+  [
+   "T6 missile abs",
+   "T8 missile boucl"
+  ],
+  [
+   "T6 missile abs",
+   "T8 missile abs"
+  ],
+  [
+   "T6 missile abs",
+   "T8 torpille"
+  ],
+  [
+   "T6 missile abs",
+   "T8 torpille boucl"
+  ],
+  [
+   "T6 missile abs",
+   "T8 torpille abs"
+  ],
+  [
+   "T6 torpille",
+   "T8 laser"
+  ],
+  [
+   "T6 torpille",
+   "T8 laser boucl"
+  ],
+  [
+   "T6 torpille",
+   "T8 laser abs"
+  ],
+  [
+   "T6 torpille",
+   "T8 plasma"
+  ],
+  [
+   "T6 torpille",
+   "T8 plasma boucl"
+  ],
+  [
+   "T6 torpille",
+   "T8 plasma abs"
+  ],
+  [
+   "T6 torpille",
+   "T8 missile"
+  ],
+  [
+   "T6 torpille",
+   "T8 missile boucl"
+  ],
+  [
+   "T6 torpille",
+   "T8 missile abs"
+  ],
+  [
+   "T6 torpille",
+   "T8 torpille"
+  ],
+  [
+   "T6 torpille",
+   "T8 torpille boucl"
+  ],
+  [
+   "T6 torpille",
+   "T8 torpille abs"
+  ],
+  [
+   "T6 torpille boucl",
+   "T8 laser"
+  ],
+  [
+   "T6 torpille boucl",
+   "T8 laser boucl"
+  ],
+  [
+   "T6 torpille boucl",
+   "T8 laser abs"
+  ],
+  [
+   "T6 torpille boucl",
+   "T8 plasma"
+  ],
+  [
+   "T6 torpille boucl",
+   "T8 plasma boucl"
+  ],
+  [
+   "T6 torpille boucl",
+   "T8 plasma abs"
+  ],
+  [
+   "T6 torpille boucl",
+   "T8 missile"
+  ],
+  [
+   "T6 torpille boucl",
+   "T8 missile boucl"
+  ],
+  [
+   "T6 torpille boucl",
+   "T8 missile abs"
+  ],
+  [
+   "T6 torpille boucl",
+   "T8 torpille"
+  ],
+  [
+   "T6 torpille boucl",
+   "T8 torpille boucl"
+  ],
+  [
+   "T6 torpille boucl",
+   "T8 torpille abs"
+  ],
+  [
+   "T6 torpille abs",
+   "T8 laser"
+  ],
+  [
+   "T6 torpille abs",
+   "T8 laser boucl"
+  ],
+  [
+   "T6 torpille abs",
+   "T8 laser abs"
+  ],
+  [
+   "T6 torpille abs",
+   "T8 plasma"
+  ],
+  [
+   "T6 torpille abs",
+   "T8 plasma boucl"
+  ],
+  [
+   "T6 torpille abs",
+   "T8 plasma abs"
+  ],
+  [
+   "T6 torpille abs",
+   "T8 missile"
+  ],
+  [
+   "T6 torpille abs",
+   "T8 missile boucl"
+  ],
+  [
+   "T6 torpille abs",
+   "T8 missile abs"
+  ],
+  [
+   "T6 torpille abs",
+   "T8 torpille"
+  ],
+  [
+   "T6 torpille abs",
+   "T8 torpille boucl"
+  ],
+  [
+   "T6 torpille abs",
+   "T8 torpille abs"
+  ],
+  [
+   "T7 laser",
+   "T8 laser"
+  ],
+  [
+   "T7 laser",
+   "T8 laser boucl"
+  ],
+  [
+   "T7 laser",
+   "T8 laser abs"
+  ],
+  [
+   "T7 laser",
+   "T8 plasma"
+  ],
+  [
+   "T7 laser",
+   "T8 plasma boucl"
+  ],
+  [
+   "T7 laser",
+   "T8 plasma abs"
+  ],
+  [
+   "T7 laser",
+   "T8 missile"
+  ],
+  [
+   "T7 laser",
+   "T8 missile boucl"
+  ],
+  [
+   "T7 laser",
+   "T8 missile abs"
+  ],
+  [
+   "T7 laser",
+   "T8 torpille"
+  ],
+  [
+   "T7 laser",
+   "T8 torpille boucl"
+  ],
+  [
+   "T7 laser",
+   "T8 torpille abs"
+  ],
+  [
+   "T7 laser boucl",
+   "T8 laser"
+  ],
+  [
+   "T7 laser boucl",
+   "T8 laser boucl"
+  ],
+  [
+   "T7 laser boucl",
+   "T8 laser abs"
+  ],
+  [
+   "T7 laser boucl",
+   "T8 plasma"
+  ],
+  [
+   "T7 laser boucl",
+   "T8 plasma boucl"
+  ],
+  [
+   "T7 laser boucl",
+   "T8 plasma abs"
+  ],
+  [
+   "T7 laser boucl",
+   "T8 missile"
+  ],
+  [
+   "T7 laser boucl",
+   "T8 missile boucl"
+  ],
+  [
+   "T7 laser boucl",
+   "T8 missile abs"
+  ],
+  [
+   "T7 laser boucl",
+   "T8 torpille"
+  ],
+  [
+   "T7 laser boucl",
+   "T8 torpille boucl"
+  ],
+  [
+   "T7 laser boucl",
+   "T8 torpille abs"
+  ],
+  [
+   "T7 laser abs",
+   "T8 laser"
+  ],
+  [
+   "T7 laser abs",
+   "T8 laser boucl"
+  ],
+  [
+   "T7 laser abs",
+   "T8 laser abs"
+  ],
+  [
+   "T7 laser abs",
+   "T8 plasma"
+  ],
+  [
+   "T7 laser abs",
+   "T8 plasma boucl"
+  ],
+  [
+   "T7 laser abs",
+   "T8 plasma abs"
+  ],
+  [
+   "T7 laser abs",
+   "T8 missile"
+  ],
+  [
+   "T7 laser abs",
+   "T8 missile boucl"
+  ],
+  [
+   "T7 laser abs",
+   "T8 missile abs"
+  ],
+  [
+   "T7 laser abs",
+   "T8 torpille"
+  ],
+  [
+   "T7 laser abs",
+   "T8 torpille boucl"
+  ],
+  [
+   "T7 laser abs",
+   "T8 torpille abs"
+  ],
+  [
+   "T7 plasma",
+   "T8 laser"
+  ],
+  [
+   "T7 plasma",
+   "T8 laser boucl"
+  ],
+  [
+   "T7 plasma",
+   "T8 laser abs"
+  ],
+  [
+   "T7 plasma",
+   "T8 plasma"
+  ],
+  [
+   "T7 plasma",
+   "T8 plasma boucl"
+  ],
+  [
+   "T7 plasma",
+   "T8 plasma abs"
+  ],
+  [
+   "T7 plasma",
+   "T8 missile"
+  ],
+  [
+   "T7 plasma",
+   "T8 missile boucl"
+  ],
+  [
+   "T7 plasma",
+   "T8 missile abs"
+  ],
+  [
+   "T7 plasma",
+   "T8 torpille"
+  ],
+  [
+   "T7 plasma",
+   "T8 torpille boucl"
+  ],
+  [
+   "T7 plasma",
+   "T8 torpille abs"
+  ],
+  [
+   "T7 plasma boucl",
+   "T8 laser"
+  ],
+  [
+   "T7 plasma boucl",
+   "T8 laser boucl"
+  ],
+  [
+   "T7 plasma boucl",
+   "T8 laser abs"
+  ],
+  [
+   "T7 plasma boucl",
+   "T8 plasma"
+  ],
+  [
+   "T7 plasma boucl",
+   "T8 plasma boucl"
+  ],
+  [
+   "T7 plasma boucl",
+   "T8 plasma abs"
+  ],
+  [
+   "T7 plasma boucl",
+   "T8 missile"
+  ],
+  [
+   "T7 plasma boucl",
+   "T8 missile boucl"
+  ],
+  [
+   "T7 plasma boucl",
+   "T8 missile abs"
+  ],
+  [
+   "T7 plasma boucl",
+   "T8 torpille"
+  ],
+  [
+   "T7 plasma boucl",
+   "T8 torpille boucl"
+  ],
+  [
+   "T7 plasma boucl",
+   "T8 torpille abs"
+  ],
+  [
+   "T7 plasma abs",
+   "T8 laser"
+  ],
+  [
+   "T7 plasma abs",
+   "T8 laser boucl"
+  ],
+  [
+   "T7 plasma abs",
+   "T8 laser abs"
+  ],
+  [
+   "T7 plasma abs",
+   "T8 plasma"
+  ],
+  [
+   "T7 plasma abs",
+   "T8 plasma boucl"
+  ],
+  [
+   "T7 plasma abs",
+   "T8 plasma abs"
+  ],
+  [
+   "T7 plasma abs",
+   "T8 missile"
+  ],
+  [
+   "T7 plasma abs",
+   "T8 missile boucl"
+  ],
+  [
+   "T7 plasma abs",
+   "T8 missile abs"
+  ],
+  [
+   "T7 plasma abs",
+   "T8 torpille"
+  ],
+  [
+   "T7 plasma abs",
+   "T8 torpille boucl"
+  ],
+  [
+   "T7 plasma abs",
+   "T8 torpille abs"
+  ],
+  [
+   "T7 missile",
+   "T8 laser"
+  ],
+  [
+   "T7 missile",
+   "T8 laser boucl"
+  ],
+  [
+   "T7 missile",
+   "T8 laser abs"
+  ],
+  [
+   "T7 missile",
+   "T8 plasma"
+  ],
+  [
+   "T7 missile",
+   "T8 plasma boucl"
+  ],
+  [
+   "T7 missile",
+   "T8 plasma abs"
+  ],
+  [
+   "T7 missile",
+   "T8 missile"
+  ],
+  [
+   "T7 missile",
+   "T8 missile boucl"
+  ],
+  [
+   "T7 missile",
+   "T8 missile abs"
+  ],
+  [
+   "T7 missile",
+   "T8 torpille"
+  ],
+  [
+   "T7 missile",
+   "T8 torpille boucl"
+  ],
+  [
+   "T7 missile",
+   "T8 torpille abs"
+  ],
+  [
+   "T7 missile boucl",
+   "T8 laser"
+  ],
+  [
+   "T7 missile boucl",
+   "T8 laser boucl"
+  ],
+  [
+   "T7 missile boucl",
+   "T8 laser abs"
+  ],
+  [
+   "T7 missile boucl",
+   "T8 plasma"
+  ],
+  [
+   "T7 missile boucl",
+   "T8 plasma boucl"
+  ],
+  [
+   "T7 missile boucl",
+   "T8 plasma abs"
+  ],
+  [
+   "T7 missile boucl",
+   "T8 missile"
+  ],
+  [
+   "T7 missile boucl",
+   "T8 missile boucl"
+  ],
+  [
+   "T7 missile boucl",
+   "T8 missile abs"
+  ],
+  [
+   "T7 missile boucl",
+   "T8 torpille"
+  ],
+  [
+   "T7 missile boucl",
+   "T8 torpille boucl"
+  ],
+  [
+   "T7 missile boucl",
+   "T8 torpille abs"
+  ],
+  [
+   "T7 missile abs",
+   "T8 laser"
+  ],
+  [
+   "T7 missile abs",
+   "T8 laser boucl"
+  ],
+  [
+   "T7 missile abs",
+   "T8 laser abs"
+  ],
+  [
+   "T7 missile abs",
+   "T8 plasma"
+  ],
+  [
+   "T7 missile abs",
+   "T8 plasma boucl"
+  ],
+  [
+   "T7 missile abs",
+   "T8 plasma abs"
+  ],
+  [
+   "T7 missile abs",
+   "T8 missile"
+  ],
+  [
+   "T7 missile abs",
+   "T8 missile boucl"
+  ],
+  [
+   "T7 missile abs",
+   "T8 missile abs"
+  ],
+  [
+   "T7 missile abs",
+   "T8 torpille"
+  ],
+  [
+   "T7 missile abs",
+   "T8 torpille boucl"
+  ],
+  [
+   "T7 missile abs",
+   "T8 torpille abs"
+  ],
+  [
+   "T7 torpille",
+   "T8 laser"
+  ],
+  [
+   "T7 torpille",
+   "T8 laser boucl"
+  ],
+  [
+   "T7 torpille",
+   "T8 laser abs"
+  ],
+  [
+   "T7 torpille",
+   "T8 plasma"
+  ],
+  [
+   "T7 torpille",
+   "T8 plasma boucl"
+  ],
+  [
+   "T7 torpille",
+   "T8 plasma abs"
+  ],
+  [
+   "T7 torpille",
+   "T8 missile"
+  ],
+  [
+   "T7 torpille",
+   "T8 missile boucl"
+  ],
+  [
+   "T7 torpille",
+   "T8 missile abs"
+  ],
+  [
+   "T7 torpille",
+   "T8 torpille"
+  ],
+  [
+   "T7 torpille",
+   "T8 torpille boucl"
+  ],
+  [
+   "T7 torpille",
+   "T8 torpille abs"
+  ],
+  [
+   "T7 torpille boucl",
+   "T8 laser"
+  ],
+  [
+   "T7 torpille boucl",
+   "T8 laser boucl"
+  ],
+  [
+   "T7 torpille boucl",
+   "T8 laser abs"
+  ],
+  [
+   "T7 torpille boucl",
+   "T8 plasma"
+  ],
+  [
+   "T7 torpille boucl",
+   "T8 plasma boucl"
+  ],
+  [
+   "T7 torpille boucl",
+   "T8 plasma abs"
+  ],
+  [
+   "T7 torpille boucl",
+   "T8 missile"
+  ],
+  [
+   "T7 torpille boucl",
+   "T8 missile boucl"
+  ],
+  [
+   "T7 torpille boucl",
+   "T8 missile abs"
+  ],
+  [
+   "T7 torpille boucl",
+   "T8 torpille"
+  ],
+  [
+   "T7 torpille boucl",
+   "T8 torpille boucl"
+  ],
+  [
+   "T7 torpille boucl",
+   "T8 torpille abs"
+  ],
+  [
+   "T7 torpille abs",
+   "T8 laser"
+  ],
+  [
+   "T7 torpille abs",
+   "T8 laser boucl"
+  ],
+  [
+   "T7 torpille abs",
+   "T8 laser abs"
+  ],
+  [
+   "T7 torpille abs",
+   "T8 plasma"
+  ],
+  [
+   "T7 torpille abs",
+   "T8 plasma boucl"
+  ],
+  [
+   "T7 torpille abs",
+   "T8 plasma abs"
+  ],
+  [
+   "T7 torpille abs",
+   "T8 missile"
+  ],
+  [
+   "T7 torpille abs",
+   "T8 missile boucl"
+  ],
+  [
+   "T7 torpille abs",
+   "T8 missile abs"
+  ],
+  [
+   "T7 torpille abs",
+   "T8 torpille"
+  ],
+  [
+   "T7 torpille abs",
+   "T8 torpille boucl"
+  ],
+  [
+   "T7 torpille abs",
+   "T8 torpille abs"
+  ]
+ ],
+ "regles": {
+  "debordement": true
+ }
+}
